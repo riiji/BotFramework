@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using BotFramework.BotFramework.Exceptions;
-using BotFramework.Common;
+using Tef.BotFramework.BotFramework.Exceptions;
+using Tef.BotFramework.Common;
 
-namespace BotFramework.BotFramework
+namespace Tef.BotFramework.BotFramework
 {
     public class CommandParser : ICommandParser
     {

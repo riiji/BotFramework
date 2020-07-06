@@ -1,10 +1,10 @@
-﻿using BotFramework.BotCommands;
-using BotFramework.Common;
-using FakeItEasy;
+﻿using FakeItEasy;
 using FluentAssertions;
 using NUnit.Framework;
+using Tef.BotFramework.BotCommands;
+using Tef.BotFramework.Common;
 
-namespace ItmoSchedule.Tests.Commands_Should
+namespace Tef.BotFramework.Tests.Commands_Should
 {
     public class PingCommand_Should
     {

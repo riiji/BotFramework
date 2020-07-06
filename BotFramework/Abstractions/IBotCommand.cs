@@ -1,6 +1,6 @@
-﻿using BotFramework.Common;
+﻿using Tef.BotFramework.Common;
 
-namespace BotFramework.Abstractions
+namespace Tef.BotFramework.Abstractions
 {
     public interface IBotCommand
     {

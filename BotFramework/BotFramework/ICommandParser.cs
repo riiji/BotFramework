@@ -1,6 +1,6 @@
-﻿using BotFramework.Common;
+﻿using Tef.BotFramework.Common;
 
-namespace BotFramework.BotFramework
+namespace Tef.BotFramework.BotFramework
 {
     public interface ICommandParser
     {

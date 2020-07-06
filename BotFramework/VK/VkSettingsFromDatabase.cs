@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using BotFramework.Database;
+using Tef.BotFramework.Database;
 
-namespace BotFramework.VK
+namespace Tef.BotFramework.VK
 {
     class VkSettingsFromDatabase : IGetVkSettings
     {

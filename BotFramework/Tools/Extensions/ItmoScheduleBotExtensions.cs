@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace BotFramework.Tools.Extensions
+namespace Tef.BotFramework.Tools.Extensions
 {
     public static class ItmoScheduleBotExtensions
     {

@@ -1,6 +1,6 @@
 ﻿using MihaZupan;
 
-namespace BotFramework.Telegram
+namespace Tef.BotFramework.Telegram
 {
     public static class TelegramSettings
     {

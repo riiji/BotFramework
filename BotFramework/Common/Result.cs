@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BotFramework.Common
+namespace Tef.BotFramework.Common
 {
     public class Result<T> : Result
     {

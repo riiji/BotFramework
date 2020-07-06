@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BotFramework.BotFramework.Exceptions
+namespace Tef.BotFramework.BotFramework.Exceptions
 {
     public class BotValidException : ArgumentNullException 
     {

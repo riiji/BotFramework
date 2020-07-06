@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BotFramework.VK
+﻿namespace Tef.BotFramework.VK
 {
     interface IGetVkSettings
     {

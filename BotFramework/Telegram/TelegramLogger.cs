@@ -1,7 +1,7 @@
 ﻿using System;
 using Telegram.Bot;
 
-namespace BotFramework.Telegram
+namespace Tef.BotFramework.Telegram
 {
     public class TelegramLogger
     {

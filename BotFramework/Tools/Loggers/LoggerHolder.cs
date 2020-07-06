@@ -1,7 +1,7 @@
 ﻿using Serilog;
 using Serilog.Core;
 
-namespace BotFramework.Tools.Loggers
+namespace Tef.BotFramework.Tools.Loggers
 {
     public static class LoggerHolder
     {

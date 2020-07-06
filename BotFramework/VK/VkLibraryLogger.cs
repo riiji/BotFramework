@@ -1,7 +1,7 @@
 ﻿using Serilog.Core;
 using VkApi.Wrapper.Services;
 
-namespace BotFramework.VK
+namespace Tef.BotFramework.VK
 {
     public class VkLibraryLogger : ILogger
     {

@@ -4,6 +4,10 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
 
     <IsPackable>false</IsPackable>
+
+    <RootNamespace>Tef.BotFramework.Tests</RootNamespace>
+
+    <AssemblyName>Tef.BotFramework.Tests</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BotFramework\BotFramework.csproj" />
     <ProjectReference Include="..\ITMOSchedule\BotFramework.csproj" />
   </ItemGroup>
 

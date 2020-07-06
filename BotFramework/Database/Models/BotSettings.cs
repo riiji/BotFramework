@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BotFramework.Database.Models
+namespace Tef.BotFramework.Database.Models
 {
     public class BotSettings
     {

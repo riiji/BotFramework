@@ -1,8 +1,8 @@
 ﻿using System;
-using BotFramework.BotFramework;
-using BotFramework.Common;
+using Tef.BotFramework.BotFramework;
+using Tef.BotFramework.Common;
 
-namespace BotFramework.Abstractions
+namespace Tef.BotFramework.Abstractions
 {
     public interface IBotApiProvider : IWriteMessage
     {

@@ -1,4 +1,4 @@
-﻿namespace BotFramework.Common
+﻿namespace Tef.BotFramework.Common
 {
     public class SenderData
     {

@@ -1,10 +1,10 @@
-using BotFramework.Abstractions;
-using BotFramework.BotFramework.CommandControllers;
 using FakeItEasy;
 using FluentAssertions;
 using NUnit.Framework;
+using Tef.BotFramework.Abstractions;
+using Tef.BotFramework.BotFramework.CommandControllers;
 
-namespace ItmoSchedule.Tests
+namespace Tef.BotFramework.Tests
 {
     public class CommandsList_Should
     {

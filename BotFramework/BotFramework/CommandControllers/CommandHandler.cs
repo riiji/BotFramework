@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using BotFramework.Abstractions;
-using BotFramework.Common;
+using Tef.BotFramework.Abstractions;
+using Tef.BotFramework.Common;
 
-namespace BotFramework.BotFramework.CommandControllers
+namespace Tef.BotFramework.BotFramework.CommandControllers
 {
     public class CommandHandler
     {

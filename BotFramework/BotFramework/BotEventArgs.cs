@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BotFramework.BotFramework
+namespace Tef.BotFramework.BotFramework
 {
     public class BotEventArgs : EventArgs
     {

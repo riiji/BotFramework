@@ -1,20 +1,20 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using BotFramework.Abstractions;
-using BotFramework.BotFramework;
-using BotFramework.Common;
-using BotFramework.Tools.Extensions;
-using BotFramework.Tools.Loggers;
 using Newtonsoft.Json.Linq;
 using Serilog;
 using Serilog.Core;
+using Tef.BotFramework.Abstractions;
+using Tef.BotFramework.BotFramework;
+using Tef.BotFramework.Common;
+using Tef.BotFramework.Tools.Extensions;
+using Tef.BotFramework.Tools.Loggers;
 using VkApi.Wrapper;
 using VkApi.Wrapper.Auth;
 using VkApi.Wrapper.LongPolling.Bot;
 using VkApi.Wrapper.Objects;
 
-namespace BotFramework.VK
+namespace Tef.BotFramework.VK
 {
     public class VkBotApiProvider : IBotApiProvider, IDisposable
     {

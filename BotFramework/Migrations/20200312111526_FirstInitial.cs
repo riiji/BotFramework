@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace BotFramework.Migrations
+namespace Tef.BotFramework.Migrations
 {
     public partial class FirstInitial : Migration
     {

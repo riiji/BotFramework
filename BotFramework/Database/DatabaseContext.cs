@@ -1,8 +1,8 @@
-﻿using BotFramework.Database.Models;
-using Microsoft.Data.Sqlite;
+﻿using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Tef.BotFramework.Database.Models;
 
-namespace BotFramework.Database
+namespace Tef.BotFramework.Database
 {
     public class DatabaseContext : DbContext
     {

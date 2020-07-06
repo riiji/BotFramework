@@ -1,11 +1,10 @@
 ﻿using System;
-using BotFramework.Abstractions;
-using BotFramework.BotCommands;
-using BotFramework.BotFramework.CommandControllers;
-using BotFramework.Common;
-using BotFramework.Tools.Loggers;
+using Tef.BotFramework.Abstractions;
+using Tef.BotFramework.BotFramework.CommandControllers;
+using Tef.BotFramework.Common;
+using Tef.BotFramework.Tools.Loggers;
 
-namespace BotFramework.BotFramework
+namespace Tef.BotFramework.BotFramework
 {
     public class Bot : IDisposable
     {

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using BotFramework.Tools.Extensions;
 using FakeItEasy;
 using FluentAssertions;
 using NUnit.Framework;
+using Tef.BotFramework.Tools.Extensions;
 
-namespace ItmoSchedule.Tests
+namespace Tef.BotFramework.Tests
 {
     public class WaitSafe_Should
     {

@@ -1,7 +1,7 @@
-﻿using BotFramework.Abstractions;
-using BotFramework.Common;
+﻿using Tef.BotFramework.Abstractions;
+using Tef.BotFramework.Common;
 
-namespace BotFramework.BotCommands
+namespace Tef.BotFramework.BotCommands
 {
     public class PingCommand : IBotCommand
     {

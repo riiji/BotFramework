@@ -1,4 +1,4 @@
-﻿namespace BotFramework.VK
+﻿namespace Tef.BotFramework.VK
 {
     public class VkSettings
     {
