@@ -33,7 +33,6 @@ namespace Tef.BotFramework.VK
                 .WriteTo.File("vk-api.txt")
                 .CreateLogger();
         }
-
         
         public Result WriteMessage(SenderData sender, string message)
         {
@@ -118,6 +117,7 @@ namespace Tef.BotFramework.VK
         {
             _client.OnMessageNew -= Client_OnMessageNew;
             _client.LongPollFailureReceived -= Client_OnFail;
+            _client.ResponseReceived -= Client_OnResponse;
             _vkApi.Dispose();
         }
     }
