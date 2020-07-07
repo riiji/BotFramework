@@ -43,20 +43,15 @@ class Program
 {
         static async Task MainAsync()
         {
-            // получение настроек из json конфига
-            var settings = new SettingsFromConfig<VkSettings>("config.json");
+            // получение настроек
+            var settings = new SettingsFromSqlite<VkSettings>("filename");
             
-            // создание провайдера вк для бота
+            // создание провайдера
             var api = new VkBotApiProvider(settings);
-
-            // создание списка команд
-            var commands = new CommandsList();
             
-            // добавление команды
-            commands.AddCommand(new PingCommand());
-
-            // запуск бота с логированием и установленным префиксом (по умолчанию !)
-            new Bot(api, new CommandParser(), commands)
+            // запуск бота с командой ping, logger'ом и prefix'ом 
+            new Bot(api)
+                .AddCommand(new PingCommand())
                 .AddLogger()
                 .SetPrefix('.')
                 .Start();
