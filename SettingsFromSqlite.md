@@ -2,8 +2,7 @@
 
 
 ```csharp
-var config = new SettingsFromSqlite<VkSettings>("filename");
-var settings = config.GetSettings()
+var settings = new SettingsFromSqlite<VkSettings>("filename");
 ```
 TSettings - класс, в котором описаны настройки бота
 
@@ -39,8 +38,7 @@ public class VkSettings
 
 После этого можно получить настройки
 ```csharp
-var config = new SettingsFromConfig<VkSettings>("filename");
-var settings = config.GetSettings()
+var settings = new SettingsFromConfig<VkSettings>("filename");
 ```
 в sqlite файле должна находится таблица BotSettings
 
