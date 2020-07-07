@@ -3,21 +3,19 @@ using Tef.BotFramework.Database;
 
 namespace Tef.BotFramework.Settings
 {
-    public class SettingsFromDatabase<TSettings> : IGetSettings<TSettings> where TSettings : new()
+    public class SettingsFromSqlite<TSettings> : IGetSettings<TSettings> where TSettings : new()
     {
         private readonly string _connectionString;
-        private readonly DatabaseType _databaseType;
-
-        public SettingsFromDatabase(string connectionString, DatabaseType databaseType)
+        
+        public SettingsFromSqlite(string connectionString)
         {
             _connectionString = connectionString;
-            _databaseType = databaseType;
         }
 
         public TSettings GetSettings()
         {
             var settings = new TSettings();
-            using var context = new DatabaseContext(_connectionString, _databaseType);
+            using var context = new DatabaseContext(_connectionString);
 
             foreach (var property in typeof(TSettings).GetProperties())
             {
