@@ -43,3 +43,13 @@ public class VkSettings
 var config = new SettingsFromConfig<VkSettings>("filename");
 var settings = config.GetSettings()
 ```
+вид JSON конфига для VkSettings
+
+```json
+{
+"VkKey":"",
+"VkAppId":"",
+"VkAppSecret":"",
+"VkGroupId":""
+}
+```
