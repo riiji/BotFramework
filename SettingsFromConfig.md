@@ -2,8 +2,7 @@
 
 
 ```csharp
-var config = new SettingsFromConfig<TSettings>("filename");
-var settings = config.GetSettings()
+var settings = new SettingsFromConfig<TSettings>("filename");
 ```
 
 TSettings - класс, в котором описаны настройки бота
@@ -40,8 +39,7 @@ public class VkSettings
 
 После этого можно получить настройки
 ```csharp
-var config = new SettingsFromConfig<VkSettings>("filename");
-var settings = config.GetSettings()
+var settings = new SettingsFromConfig<VkSettings>("filename");
 ```
 вид JSON конфига для VkSettings
 
