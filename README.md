@@ -43,8 +43,8 @@ class Program
 {
         static async Task MainAsync()
         {
-            var config = new SettingsFromConfig<VkSettings>("config.json");
-            var settings = config.GetSettings();
+            // получение настроек из json конфига
+            var settings = new SettingsFromConfig<VkSettings>("config.json");
             
             // создание провайдера вк для бота
             var api = new VkBotApiProvider(settings);
