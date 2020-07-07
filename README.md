@@ -8,9 +8,9 @@ BotFramework
 
 * [Через конфиг](https://github.com/TEF-Dev/BotFramework/blob/master/SettingsFromConfig.md)
 
-* Через Sql, Postgres, Sqlite
+* [Через Sqlite](https://github.com/TEF-Dev/BotFramework/blob/master/SettingsFromSqlite.md)
 
-* Через пользовательский метод
+* [Через пользовательский метод](https://github.com/TEF-Dev/BotFramework/blob/master/SettingsFromUserMethod.md)
 
 2. Добавление новых команд:
 
