@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tef.BotFramework.BotFramework
+namespace Tef.BotFramework.Core
 {
     public static class Utilities
     {

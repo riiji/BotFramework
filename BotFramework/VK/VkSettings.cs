@@ -2,20 +2,25 @@
 {
     public class VkSettings
     {
-        public VkSettings(string key, int appId, string appSecret, int groupId)
+        public VkSettings(string vkKey, int vkAppId, string vkAppSecret, int vkGroupId)
         {
-            Key = key;
-            AppId = appId;
-            AppSecret = appSecret;
-            GroupId = groupId;
+            VkKey = vkKey;
+            VkAppId = vkAppId;
+            VkAppSecret = vkAppSecret;
+            VkGroupId = vkGroupId;
         }
 
-        public string Key { get; }
+        public VkSettings()
+        {
+            
+        }
 
-        public int AppId { get; }
+        public string VkKey { get; set; }
 
-        public string AppSecret { get; }
+        public int VkAppId { get; set; }
 
-        public int GroupId { get; }
+        public string VkAppSecret { get; set; }
+
+        public int VkGroupId { get; set; }
     }
 }

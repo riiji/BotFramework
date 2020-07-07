@@ -5,8 +5,8 @@ using Newtonsoft.Json.Linq;
 using Serilog;
 using Serilog.Core;
 using Tef.BotFramework.Abstractions;
-using Tef.BotFramework.BotFramework;
 using Tef.BotFramework.Common;
+using Tef.BotFramework.Core;
 using Tef.BotFramework.Tools.Extensions;
 using Tef.BotFramework.Tools.Loggers;
 using VkApi.Wrapper;
@@ -32,6 +32,8 @@ namespace Tef.BotFramework.VK
                 .MinimumLevel.Verbose()
                 .WriteTo.File("vk-api.txt")
                 .CreateLogger();
+
+            Initialize();
         }
         
         public Result WriteMessage(SenderData sender, string message)
@@ -48,11 +50,11 @@ namespace Tef.BotFramework.VK
             return new Result(true, $"Vk write {message} to {sender.GroupId} ok");
         }
 
-        public Result Initialize()
+        private Result Initialize()
         {
-            var accessToken = AccessToken.FromString(_settings.Key);
-            _vkApi = new Vkontakte(_settings.AppId, new VkLibraryLogger(_vkFileLogger), _settings.AppSecret) { AccessToken = accessToken };
-            Task<GroupsLongPollServer> getSettingsTask = _vkApi.Groups.GetLongPollServer(_settings.GroupId);
+            var accessToken = AccessToken.FromString(_settings.VkKey);
+            _vkApi = new Vkontakte(_settings.VkAppId, new VkLibraryLogger(_vkFileLogger), _settings.VkAppSecret) { AccessToken = accessToken };
+            Task<GroupsLongPollServer> getSettingsTask = _vkApi.Groups.GetLongPollServer(_settings.VkGroupId);
 
             getSettingsTask.WaitSafe();
 
@@ -95,11 +97,16 @@ namespace Tef.BotFramework.VK
             LoggerHolder.Log.Information($"Response: {string.Join(' ',e.ToArray().Select(x=>x.ToString()))}");
         }
 
+        public void OnFail()
+        {
+            Client_OnFail(null, 2);
+        }
+        
         private void Client_OnFail(object sender, int e)
         {
             LoggerHolder.Log.Error($"VkBotApiProvider_Client_OnFail with {e}");
 
-            var settings = _vkApi.Groups.GetLongPollServer(_settings.GroupId).Result;
+            var settings = _vkApi.Groups.GetLongPollServer(_settings.VkGroupId).Result;
             var client = _vkApi.StartBotLongPollClient
             (
                 settings.Server,

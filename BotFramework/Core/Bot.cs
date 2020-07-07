@@ -1,36 +1,53 @@
 ﻿using System;
+using System.Linq;
 using Tef.BotFramework.Abstractions;
-using Tef.BotFramework.BotFramework.CommandControllers;
 using Tef.BotFramework.Common;
+using Tef.BotFramework.Core.CommandControllers;
 using Tef.BotFramework.Tools.Loggers;
 
-namespace Tef.BotFramework.BotFramework
+namespace Tef.BotFramework.Core
 {
     public class Bot : IDisposable
     {
         private readonly CommandHandler _commandHandler;
         private readonly IBotApiProvider _botProvider;
         private readonly ICommandParser _commandParser;
-        private readonly char _prefix = '!';
-
+        private char _prefix = '!';
+        
         public Bot(IBotApiProvider botProvider, ICommandParser commandParser, CommandsList commands)
         {
             _botProvider = botProvider;
             _commandParser = commandParser;
-
-            _commandHandler = new CommandHandler(new CommandsList());
+            
+            _commandHandler = new CommandHandler(commands);
         }
 
-        public void Process()
+        public void Start()
         {
             _botProvider.OnMessage += ApiProviderOnMessage;
         }
 
+        public Bot AddLogger()
+        {
+            LoggerHolder.Log.Verbose("Initialized");
+            return this;
+        }
+
+        public Bot SetPrefix(char prefix)
+        {
+            _prefix = prefix;
+            return this;
+        }
+        
         private void ApiProviderOnMessage(object sender, BotEventArgs e)
         {
             try
             {
                 var commandWithArgs = _commandParser.ParseCommand(e);
+                
+                if (commandWithArgs.CommandName.FirstOrDefault() != _prefix)
+                    return;
+                
                 var commandTaskResult = _commandHandler.IsCommandCorrect(commandWithArgs);
 
                 LoggerHolder.Log.Verbose(commandTaskResult.ExecuteMessage);
@@ -51,12 +68,7 @@ namespace Tef.BotFramework.BotFramework
             catch (Exception error)
             {
                 LoggerHolder.Log.Error(error.Message);
-                _botProvider.Dispose();
-                var result = _botProvider.Initialize();
-                if (result.Exception != null)
-                    LoggerHolder.Log.Verbose(result.ExecuteMessage);
-
-                LoggerHolder.Log.Verbose(result.ExecuteMessage);
+                _botProvider.OnFail();
             }
         }
 

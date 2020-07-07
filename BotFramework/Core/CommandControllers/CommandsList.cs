@@ -2,7 +2,7 @@
 using Tef.BotFramework.Abstractions;
 using Tef.BotFramework.Common;
 
-namespace Tef.BotFramework.BotFramework.CommandControllers
+namespace Tef.BotFramework.Core.CommandControllers
 {
     public class CommandsList
     {
@@ -10,12 +10,12 @@ namespace Tef.BotFramework.BotFramework.CommandControllers
 
         public void AddCommand(IBotCommand command)
         {
-            Commands.TryAdd(command.CommandName, command);
+            Commands.TryAdd(command.CommandName.ToLower(), command);
         }
 
         public Result<IBotCommand> GetCommand(string commandName)
         {
-            return Commands.TryGetValue(commandName, out IBotCommand command)
+            return Commands.TryGetValue(commandName.ToLower(), out IBotCommand command)
                 ? new Result<IBotCommand>(true, command)
                 : new Result<IBotCommand>(false, $"command {commandName} not founded", null);
         }

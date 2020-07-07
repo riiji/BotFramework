@@ -1,8 +1,9 @@
 ﻿using System.Linq;
+using System.Runtime.CompilerServices;
 using Tef.BotFramework.Abstractions;
 using Tef.BotFramework.Common;
 
-namespace Tef.BotFramework.BotFramework.CommandControllers
+namespace Tef.BotFramework.Core.CommandControllers
 {
     public class CommandHandler
     {
@@ -15,7 +16,7 @@ namespace Tef.BotFramework.BotFramework.CommandControllers
 
         public Result IsCommandCorrect(CommandArgumentContainer args)
         {
-            var commandTask = _commands.GetCommand(args.CommandName);
+            var commandTask = _commands.GetCommand(args.CommandName.ToLower().Remove(0, 1));
 
             if (!commandTask.IsSuccess)
                 return commandTask;
@@ -23,9 +24,11 @@ namespace Tef.BotFramework.BotFramework.CommandControllers
             var command = commandTask.Value;
 
             if (command.CanExecute(args))
-                return new Result(true, $"command {args.CommandName} can be executable with args {string.Join(' ', args.Arguments.Select(x => x))}");
+                return new Result(true,
+                    $"command {args.CommandName} can be executable with args {string.Join(' ', args.Arguments.Select(x => x))}");
 
-            var loggerMessage = $"command {command.CommandName} not executable with args {string.Join(' ', args.Arguments.Select(x=>x))}";
+            var loggerMessage =
+                $"command {command.CommandName} not executable with args {string.Join(' ', args.Arguments.Select(x => x))}";
             //loggerMessage = args.Arguments.Aggregate(loggerMessage, (current, t) => current + (t + " "));
 
             return new Result(false, loggerMessage);
@@ -38,7 +41,7 @@ namespace Tef.BotFramework.BotFramework.CommandControllers
 
         public Result ExecuteCommand(CommandArgumentContainer args)
         {
-            Result<IBotCommand> commandTask = _commands.GetCommand(args.CommandName);
+            Result<IBotCommand> commandTask = _commands.GetCommand(args.CommandName.ToLower().Remove(0, 1));
 
             if (!commandTask.IsSuccess)
                 return commandTask;
