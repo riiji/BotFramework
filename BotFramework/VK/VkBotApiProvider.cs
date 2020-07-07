@@ -7,6 +7,7 @@ using Serilog.Core;
 using Tef.BotFramework.Abstractions;
 using Tef.BotFramework.Common;
 using Tef.BotFramework.Core;
+using Tef.BotFramework.Settings;
 using Tef.BotFramework.Tools.Extensions;
 using Tef.BotFramework.Tools.Loggers;
 using VkApi.Wrapper;
@@ -25,9 +26,9 @@ namespace Tef.BotFramework.VK
         private readonly VkSettings _settings;
         private readonly Logger _vkFileLogger;
 
-        public VkBotApiProvider(VkSettings settings)
+        public VkBotApiProvider(IGetSettings<VkSettings> settings)
         {
-            _settings = settings;
+            _settings = settings.GetSettings();
             _vkFileLogger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
                 .WriteTo.File("vk-api.txt")

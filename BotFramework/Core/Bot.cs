@@ -14,11 +14,11 @@ namespace Tef.BotFramework.Core
         private readonly ICommandParser _commandParser;
         private char _prefix = '!';
         
-        public Bot(IBotApiProvider botProvider, ICommandParser commandParser, CommandsList commands)
+        public Bot(IBotApiProvider botProvider, CommandsList commands)
         {
             _botProvider = botProvider;
-            _commandParser = commandParser;
-            
+
+            _commandParser = new CommandParser();
             _commandHandler = new CommandHandler(commands);
         }
 
