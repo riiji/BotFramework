@@ -16,14 +16,19 @@ namespace BotFrameworkConsoleTest
     {
         static async Task MainAsync()
         {
-            var settings = new SettingsFromDatabase<VkSettings>("MyDb.db", DatabaseType.Sqlite);
+            var settings = new SettingsFromSqlite<VkSettings>("filename");
+            
+            // создание провайдера вк для бота
+            var api = new VkBotApiProvider(settings);
 
-            var api = new VkBotApiProvider(settings.GetSettings());
-
+            // создание списка команд
             var commands = new CommandsList();
+            
+            // добавление команды
             commands.AddCommand(new PingCommand());
 
-            new Bot(api, new CommandParser(), commands)
+            // запуск бота с логированием и установленным префиксом (по умолчанию !)
+            new Bot(api, commands)
                 .AddLogger()
                 .SetPrefix('.')
                 .Start();
