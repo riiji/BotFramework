@@ -1,3 +1,5 @@
+[nuget](https://www.nuget.org/packages/Tef.BotFramework/0.9.2)
+
 BotFramework
 
 Простой фреймворк для ~~вк~~ любого бота
@@ -51,7 +53,7 @@ class Program
             
             var bot = new Bot(api);
 
-            запуск бота с командой пинг, логером и префиксом
+            // запуск бота с командой пинг, логером и префиксом
             bot.AddCommand(new PingCommand())
                 .AddLogger()
                 .SetPrefix('!')
