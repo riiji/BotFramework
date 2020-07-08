@@ -49,11 +49,12 @@ class Program
             // создание провайдера
             var api = new VkBotApiProvider(settings);
             
-            // запуск бота с командой ping, logger'ом и prefix'ом 
-            new Bot(api)
-                .AddCommand(new PingCommand())
+            var bot = new Bot(api);
+
+            запуск бота с командой пинг, логером и префиксом
+            bot.AddCommand(new PingCommand())
                 .AddLogger()
-                .SetPrefix('.')
+                .SetPrefix('!')
                 .Start();
                 
             await Task.Delay(-1);
