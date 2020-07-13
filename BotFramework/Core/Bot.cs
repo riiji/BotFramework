@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Tef.BotFramework.Abstractions;
 using Tef.BotFramework.Common;
@@ -10,16 +11,18 @@ namespace Tef.BotFramework.Core
     public class Bot : IDisposable
     {
         private readonly CommandHandler _commandHandler;
+        private readonly CommandsList _commands;
         private readonly IBotApiProvider _botProvider;
         private readonly ICommandParser _commandParser;
-        private char _prefix = '!';
-        
-        public Bot(IBotApiProvider botProvider, CommandsList commands)
+        private char _prefix = '\0';
+
+        public Bot(IBotApiProvider botProvider)
         {
             _botProvider = botProvider;
 
             _commandParser = new CommandParser();
-            _commandHandler = new CommandHandler(commands);
+            _commands = new CommandsList();
+            _commandHandler = new CommandHandler(_commands);
         }
 
         public void Start()
@@ -38,16 +41,38 @@ namespace Tef.BotFramework.Core
             _prefix = prefix;
             return this;
         }
-        
+
+        public Bot AddCommand(IBotCommand command)
+        {
+            _commands.AddCommand(command);
+            return this;
+        }
+
+        public Bot AddCommands(IEnumerable<IBotCommand> commands)
+        {
+            foreach (var command in commands)
+                _commands.AddCommand(command);
+
+            return this;
+        }
+
         private void ApiProviderOnMessage(object sender, BotEventArgs e)
         {
             try
             {
                 var commandWithArgs = _commandParser.ParseCommand(e);
-                
-                if (commandWithArgs.CommandName.FirstOrDefault() != _prefix)
+
+                var commandName = commandWithArgs.CommandName;
+
+                if (commandName.FirstOrDefault() != _prefix && _prefix != '\0')
                     return;
-                
+
+                if (commandName.FirstOrDefault() == _prefix)
+                    commandName = commandName.Remove(0, 1);
+
+                commandWithArgs =
+                    new CommandArgumentContainer(commandName, commandWithArgs.Sender, commandWithArgs.Arguments);
+
                 var commandTaskResult = _commandHandler.IsCommandCorrect(commandWithArgs);
 
                 LoggerHolder.Log.Verbose(commandTaskResult.ExecuteMessage);
