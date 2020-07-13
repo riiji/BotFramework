@@ -16,7 +16,7 @@ namespace Tef.BotFramework.Core.CommandControllers
 
         public Result IsCommandCorrect(CommandArgumentContainer args)
         {
-            var commandTask = _commands.GetCommand(args.CommandName.ToLower());
+            var commandTask = _commands.GetCommand(args.CommandName);
 
             if (!commandTask.IsSuccess)
                 return commandTask;
@@ -41,7 +41,7 @@ namespace Tef.BotFramework.Core.CommandControllers
 
         public Result ExecuteCommand(CommandArgumentContainer args)
         {
-            var commandTask = _commands.GetCommand(args.CommandName.ToLower());
+            var commandTask = _commands.GetCommand(args.CommandName);
 
             if (!commandTask.IsSuccess)
                 return commandTask;

@@ -25,6 +25,7 @@ namespace BotFrameworkConsoleTest
             new Bot(api)
                 .AddLogger()
                 .SetPrefix('.')
+                .WithoutCaseSensitiveCommands()
                 .AddCommand(new PingCommand())
                 .Start();
                 

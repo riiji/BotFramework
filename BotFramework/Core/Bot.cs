@@ -42,6 +42,12 @@ namespace Tef.BotFramework.Core
             return this;
         }
 
+        public Bot WithoutCaseSensitiveCommands()
+        {
+            _commands.WithoutCaseSensitive();
+            return this;
+        }
+
         public Bot AddCommand(IBotCommand command)
         {
             _commands.AddCommand(command);
@@ -61,7 +67,6 @@ namespace Tef.BotFramework.Core
             try
             {
                 var commandWithArgs = _commandParser.ParseCommand(e);
-
                 var commandName = commandWithArgs.CommandName;
 
                 if (commandName.FirstOrDefault() != _prefix && _prefix != '\0')
@@ -74,14 +79,12 @@ namespace Tef.BotFramework.Core
                     new CommandArgumentContainer(commandName, commandWithArgs.Sender, commandWithArgs.Arguments);
 
                 var commandTaskResult = _commandHandler.IsCommandCorrect(commandWithArgs);
-
                 LoggerHolder.Log.Verbose(commandTaskResult.ExecuteMessage);
 
                 if (!commandTaskResult.IsSuccess)
                     return;
 
                 var commandExecuteResult = _commandHandler.ExecuteCommand(commandWithArgs);
-
                 if (!commandExecuteResult.IsSuccess)
                     LoggerHolder.Log.Warning(commandExecuteResult.ExecuteMessage);
 
