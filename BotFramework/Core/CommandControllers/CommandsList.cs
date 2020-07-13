@@ -6,10 +6,12 @@ namespace Tef.BotFramework.Core.CommandControllers
 {
     public class CommandsList
     {
+        private bool _caseSensitive = true;
         private Dictionary<string, IBotCommand> _commands = new Dictionary<string, IBotCommand>();
 
         public CommandsList WithoutCaseSensitive()
         {
+            _caseSensitive = false;
             var newCommandList = new Dictionary<string, IBotCommand>();
 
             foreach (var command in _commands)
@@ -21,7 +23,7 @@ namespace Tef.BotFramework.Core.CommandControllers
 
         public void AddCommand(IBotCommand command)
         {
-            _commands.TryAdd(command.CommandName, command);
+            _commands.TryAdd(_caseSensitive ? command.CommandName : command.CommandName.ToLower(), command);
         }
 
         public Result<IBotCommand> GetCommand(string commandName)

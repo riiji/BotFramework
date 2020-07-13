@@ -15,6 +15,7 @@ namespace Tef.BotFramework.Core
         private readonly IBotApiProvider _botProvider;
         private readonly ICommandParser _commandParser;
         private char _prefix = '\0';
+        private bool _caseSensitive = true;
 
         public Bot(IBotApiProvider botProvider)
         {
@@ -44,6 +45,7 @@ namespace Tef.BotFramework.Core
 
         public Bot WithoutCaseSensitiveCommands()
         {
+            _caseSensitive = false;
             _commands.WithoutCaseSensitive();
             return this;
         }
@@ -74,6 +76,9 @@ namespace Tef.BotFramework.Core
 
                 if (commandName.FirstOrDefault() == _prefix)
                     commandName = commandName.Remove(0, 1);
+
+                if (!_caseSensitive)
+                    commandName = commandName.ToLower();
 
                 commandWithArgs =
                     new CommandArgumentContainer(commandName, commandWithArgs.Sender, commandWithArgs.Arguments);

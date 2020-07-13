@@ -7,6 +7,7 @@ using Tef.BotFramework.Core;
 using Tef.BotFramework.Core.CommandControllers;
 using Tef.BotFramework.Database;
 using Tef.BotFramework.Settings;
+using Tef.BotFramework.Telegram;
 using Tef.BotFramework.Tools.Loggers;
 using Tef.BotFramework.VK;
 
@@ -16,13 +17,11 @@ namespace BotFrameworkConsoleTest
     {
         static async Task MainAsync()
         {
-            var settings = new SettingsFromSqlite<VkSettings>("MyDb.db");
+            var telegramSettings = new SettingsFromConfig<TelegramSettings>("TelegramConfig.json");
             
-            // создание провайдера вк для бота
-            var api = new VkBotApiProvider(settings);
+            var telegramApi = new TelegramApiProvider(telegramSettings);
 
-            // запуск бота с логированием и установленным префиксом
-            new Bot(api)
+            new Bot(telegramApi)
                 .AddLogger()
                 .SetPrefix('.')
                 .WithoutCaseSensitiveCommands()
