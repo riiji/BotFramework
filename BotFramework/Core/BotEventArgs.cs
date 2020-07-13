@@ -4,7 +4,7 @@ namespace Tef.BotFramework.Core
 {
     public class BotEventArgs : EventArgs
     {
-        public BotEventArgs(string text, int groupId, int userSenderId)
+        public BotEventArgs(string text, long groupId, int userSenderId)
         {
             Text = text;
             GroupId = groupId;
@@ -13,7 +13,7 @@ namespace Tef.BotFramework.Core
 
         public string Text { get; }
 
-        public int GroupId { get; }
+        public long GroupId { get; }
 
         public int UserSenderId { get; }
     }

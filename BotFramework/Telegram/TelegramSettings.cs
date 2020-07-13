@@ -1,10 +1,19 @@
-﻿using MihaZupan;
+﻿using Tef.BotFramework.Settings;
 
 namespace Tef.BotFramework.Telegram
 {
-    public static class TelegramSettings
+    public class TelegramSettings
     {
-        public static string Key { get; }
-        public static HttpToSocks5Proxy Proxy { get; }
+        public TelegramSettings(string accessToken)
+        {
+            AccessToken = accessToken;
+        }
+
+        public TelegramSettings()
+        {
+            
+        }
+
+        public string AccessToken { get; set; }
     }
 }

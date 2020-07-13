@@ -2,11 +2,11 @@
 {
     public class SenderData
     {
-        public SenderData(int groupId)
+        public SenderData(long groupId)
         {
             GroupId = groupId;
         }
 
-        public int GroupId { get; }
+        public long GroupId { get; }
     }
 }

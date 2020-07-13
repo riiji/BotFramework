@@ -41,7 +41,7 @@ namespace Tef.BotFramework.VK
         {
             var sendMessageTask = _vkApi.Messages.Send(
                 randomId: Utilities.GetRandom(),
-                peerId: sender.GroupId,
+                peerId: (int)sender.GroupId,
                 message: message);
 
             sendMessageTask.WaitSafe();
