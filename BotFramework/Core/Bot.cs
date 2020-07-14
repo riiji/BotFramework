@@ -94,7 +94,7 @@ namespace Tef.BotFramework.Core
                     LoggerHolder.Log.Warning(commandExecuteResult.ExecuteMessage);
 
                 var writeMessageResult =
-                    _botProvider.WriteMessage(new SenderData(e.GroupId), commandExecuteResult.ExecuteMessage);
+                    _botProvider.WriteMessage(e, commandExecuteResult.ExecuteMessage);
 
                 LoggerHolder.Log.Verbose(writeMessageResult.ExecuteMessage);
             }

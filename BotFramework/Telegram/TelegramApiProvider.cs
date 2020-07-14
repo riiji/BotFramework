@@ -40,7 +40,7 @@ namespace Tef.BotFramework.Telegram
                 new BotEventArgs(e.Message.Text, e.Message.Chat.Id, e.Message.ForwardFromMessageId, e.Message.ForwardSenderName));
         }
 
-        public Result WriteMessage(SenderData sender, string message)
+        public Result WriteMessage(BotEventArgs sender, string message)
         {
             var result = _client.SendTextMessageAsync(sender.GroupId, message);
             result.WaitSafe();

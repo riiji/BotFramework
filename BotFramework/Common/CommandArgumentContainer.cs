@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Tef.BotFramework.Core;
 
 namespace Tef.BotFramework.Common
 {
@@ -6,11 +7,11 @@ namespace Tef.BotFramework.Common
     {
         public string CommandName { get; }
 
-        public SenderData Sender { get; }
+        public BotEventArgs Sender { get; }
 
         public List<string> Arguments { get; }
 
-        public CommandArgumentContainer(string commandName, SenderData sender, List<string> arguments)
+        public CommandArgumentContainer(string commandName, BotEventArgs sender, List<string> arguments)
         {
             CommandName = commandName;
             Sender = sender;

@@ -37,7 +37,7 @@ namespace Tef.BotFramework.VK
             Initialize();
         }
         
-        public Result WriteMessage(SenderData sender, string message)
+        public Result WriteMessage(BotEventArgs sender, string message)
         {
             var sendMessageTask = _vkApi.Messages.Send(
                 randomId: Utilities.GetRandom(),

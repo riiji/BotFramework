@@ -15,7 +15,7 @@ namespace Tef.BotFramework.Core
             //skip command name
             IEnumerable<string> args = commands.Skip(1);
 
-            return new CommandArgumentContainer(commandName, new SenderData(botArguments.GroupId), args.ToList());
+            return new CommandArgumentContainer(commandName, botArguments, args.ToList());
         }
     }
 }
