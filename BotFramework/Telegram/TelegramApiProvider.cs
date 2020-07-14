@@ -37,7 +37,7 @@ namespace Tef.BotFramework.Telegram
         {
             _telegramLogger.Debug("New message event: {@e}", e);
             OnMessage?.Invoke(sender,
-                new BotEventArgs(e.Message.Text, e.Message.Chat.Id, e.Message.ForwardFromMessageId));
+                new BotEventArgs(e.Message.Text, e.Message.Chat.Id, e.Message.ForwardFromMessageId, e.Message.ForwardSenderName));
         }
 
         public Result WriteMessage(SenderData sender, string message)

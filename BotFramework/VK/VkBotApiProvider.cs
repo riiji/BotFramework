@@ -89,7 +89,14 @@ namespace Tef.BotFramework.VK
         private void Client_OnMessageNew(object sender, MessagesMessage e)
         {
             _vkFileLogger.Debug("New message event: {@e}", e);
-            OnMessage?.Invoke(sender, new BotEventArgs(e.Text, e.PeerId, e.FromId));
+            
+            var userTask = _vkApi.Users.Get(new[] {e.FromId.ToString()});
+            userTask.WaitSafe();
+            if (!userTask.IsCompletedSuccessfully)
+                return;
+            var user = userTask.Result.FirstOrDefault();
+
+            OnMessage?.Invoke(sender, new BotEventArgs(e.Text, e.PeerId, e.FromId, user?.Nickname));
         }
 
         private void Client_OnResponse(object sender, JArray e)
