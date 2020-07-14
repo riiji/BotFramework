@@ -107,6 +107,8 @@ namespace Tef.BotFramework.VK
         {
             LoggerHolder.Log.Error($"VkBotApiProvider_Client_OnFail with {e}");
 
+            var accessToken = AccessToken.FromString(_settings.VkKey);
+            _vkApi = new Vkontakte(_settings.VkAppId, new VkLibraryLogger(_vkFileLogger), _settings.VkAppSecret) { AccessToken = accessToken };
             var settings = _vkApi.Groups.GetLongPollServer(_settings.VkGroupId).Result;
             var client = _vkApi.StartBotLongPollClient
             (
