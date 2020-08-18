@@ -7,12 +7,7 @@ namespace Tef.BotFramework.Core.CommandControllers
 {
     public class CommandHandler
     {
-        private readonly CommandsList _commands;
-
-        public CommandHandler(CommandsList commands)
-        {
-            _commands = commands;
-        }
+        private readonly CommandsList _commands = new CommandsList();
 
         public Result IsCommandCorrect(CommandArgumentContainer args)
         {
@@ -29,9 +24,14 @@ namespace Tef.BotFramework.Core.CommandControllers
 
             var loggerMessage =
                 $"command {command.CommandName} not executable with args {string.Join(' ', args.Arguments.Select(x => x))}";
-            //loggerMessage = args.Arguments.Aggregate(loggerMessage, (current, t) => current + (t + " "));
-
+            
             return new Result(false, loggerMessage);
+        }
+
+        public CommandHandler WithoutCaseSensitiveCommands()
+        {
+            _commands.WithoutCaseSensitive();
+            return this;
         }
 
         public void RegisterCommand(IBotCommand command)

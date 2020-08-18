@@ -16,7 +16,7 @@ namespace Tef.BotFramework.BotCommands
 
         public Result Execute(CommandArgumentContainer args)
         {
-            return new Result(true, "Pong");
+            return new Result(true, $"Pong {args.Sender.Username}");
         }
     }
 }

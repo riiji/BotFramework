@@ -11,7 +11,6 @@ namespace Tef.BotFramework.Core
             UserSenderId = userSenderId;
             Username = username;
         }
-
         public string Text { get; }
         public long GroupId { get; }
         public int UserSenderId { get; }

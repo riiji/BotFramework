@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BotFramework\BotFramework.csproj" />
-    <ProjectReference Include="..\ITMOSchedule\BotFramework.csproj" />
   </ItemGroup>
 
 </Project>

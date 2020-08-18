@@ -15,21 +15,22 @@ namespace BotFrameworkConsoleTest
 {
     class Program
     {
-        static async Task MainAsync()
+        private static async Task MainAsync()
         {
-            var telegramSettings = new SettingsFromConfig<TelegramSettings>("TelegramConfig.json");
-            
-            var telegramApi = new TelegramApiProvider(telegramSettings);
+            var vkSettings = new SettingsFromConfig<VkSettings>("TelegramConfig.json");
+            var telegramApi = new VkFixedApiProvider(vkSettings);
 
             new Bot(telegramApi)
                 .AddLogger()
-                .SetPrefix('.')
+                .SetPrefix('!')
                 .WithoutCaseSensitiveCommands()
                 .AddCommand(new PingCommand())
                 .Start();
-                
+
             await Task.Delay(-1);
         }
+
+        
 
         private static void Main() => MainAsync().GetAwaiter().GetResult();
     }

@@ -4,9 +4,10 @@ using Tef.BotFramework.Core;
 
 namespace Tef.BotFramework.Abstractions
 {
-    public interface IBotApiProvider : IWriteMessage
+    public interface IBotApiProvider
     {
         public event EventHandler<BotEventArgs> OnMessage;
-        public void OnFail();
+        public void Restart();
+        public Result WriteMessage(BotEventArgs sender);
     }
 }

@@ -11,9 +11,9 @@ namespace Tef.BotFramework.Core
     public class Bot : IDisposable
     {
         private readonly CommandHandler _commandHandler;
-        private readonly CommandsList _commands;
         private readonly IBotApiProvider _botProvider;
         private readonly ICommandParser _commandParser;
+
         private char _prefix = '\0';
         private bool _caseSensitive = true;
 
@@ -22,8 +22,7 @@ namespace Tef.BotFramework.Core
             _botProvider = botProvider;
 
             _commandParser = new CommandParser();
-            _commands = new CommandsList();
-            _commandHandler = new CommandHandler(_commands);
+            _commandHandler = new CommandHandler();
         }
 
         public void Start()
@@ -46,21 +45,20 @@ namespace Tef.BotFramework.Core
         public Bot WithoutCaseSensitiveCommands()
         {
             _caseSensitive = false;
-            _commands.WithoutCaseSensitive();
+            _commandHandler.WithoutCaseSensitiveCommands();
             return this;
         }
 
         public Bot AddCommand(IBotCommand command)
         {
-            _commands.AddCommand(command);
+            _commandHandler.RegisterCommand(command);
             return this;
         }
 
         public Bot AddCommands(IEnumerable<IBotCommand> commands)
         {
             foreach (var command in commands)
-                _commands.AddCommand(command);
-
+                _commandHandler.RegisterCommand(command);
             return this;
         }
 
@@ -94,14 +92,14 @@ namespace Tef.BotFramework.Core
                     LoggerHolder.Log.Warning(commandExecuteResult.ExecuteMessage);
 
                 var writeMessageResult =
-                    _botProvider.WriteMessage(e, commandExecuteResult.ExecuteMessage);
+                    _botProvider.WriteMessage(new BotEventArgs(commandExecuteResult.ExecuteMessage, commandWithArgs.Sender.GroupId, commandWithArgs.Sender.UserSenderId, commandWithArgs.Sender.Username));
 
                 LoggerHolder.Log.Verbose(writeMessageResult.ExecuteMessage);
             }
             catch (Exception error)
             {
                 LoggerHolder.Log.Error(error.Message);
-                _botProvider.OnFail();
+                _botProvider.Restart();
             }
         }
 
