@@ -5,17 +5,22 @@ namespace Tef.BotFramework.Tools.Loggers
 {
     public static class LoggerHolder
     {
-        public static Logger Log;
+        public static ILogger Instance => _log ??= Create();
 
-        static LoggerHolder()
+        private static ILogger _log;
+
+        public static ILogger Init(ILogger logger) => _log = logger;
+
+        private static ILogger Create()
         {
-            Log = new LoggerConfiguration()
+            Logger log = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
                 .WriteTo.Console()
                 .WriteTo.File("bot-framework-log.txt")
                 .CreateLogger();
-
-            Log.Information("[SYS] Start new session");
+            
+            log.Information("[SYS] Start new session");
+            return log;
         }
     }
 }

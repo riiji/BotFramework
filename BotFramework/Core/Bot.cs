@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Serilog;
 using Tef.BotFramework.Abstractions;
 using Tef.BotFramework.Common;
 using Tef.BotFramework.Core.CommandControllers;
@@ -30,9 +31,16 @@ namespace Tef.BotFramework.Core
             _botProvider.OnMessage += ApiProviderOnMessage;
         }
 
-        public Bot AddLogger()
+        public Bot AddDefaultLogger()
         {
-            LoggerHolder.Log.Verbose("Initialized");
+            LoggerHolder.Instance.Verbose("Initialized");
+            return this;
+        }
+
+        public Bot AddLogger(ILogger logger)
+        {
+            LoggerHolder.Init(logger);
+            LoggerHolder.Instance.Verbose("Initialized");
             return this;
         }
 
@@ -82,23 +90,23 @@ namespace Tef.BotFramework.Core
                     new CommandArgumentContainer(commandName, commandWithArgs.Sender, commandWithArgs.Arguments);
 
                 var commandTaskResult = _commandHandler.IsCommandCorrect(commandWithArgs);
-                LoggerHolder.Log.Verbose(commandTaskResult.ExecuteMessage);
+                LoggerHolder.Instance.Verbose(commandTaskResult.ExecuteMessage);
 
                 if (!commandTaskResult.IsSuccess)
                     return;
 
                 var commandExecuteResult = _commandHandler.ExecuteCommand(commandWithArgs);
                 if (!commandExecuteResult.IsSuccess)
-                    LoggerHolder.Log.Warning(commandExecuteResult.ExecuteMessage);
+                    LoggerHolder.Instance.Warning(commandExecuteResult.ExecuteMessage);
 
                 var writeMessageResult =
                     _botProvider.WriteMessage(new BotEventArgs(commandExecuteResult.ExecuteMessage, commandWithArgs.Sender.GroupId, commandWithArgs.Sender.UserSenderId, commandWithArgs.Sender.Username));
 
-                LoggerHolder.Log.Verbose(writeMessageResult.ExecuteMessage);
+                LoggerHolder.Instance.Verbose(writeMessageResult.ExecuteMessage);
             }
             catch (Exception error)
             {
-                LoggerHolder.Log.Error(error.Message);
+                LoggerHolder.Instance.Error(error.Message);
                 _botProvider.Restart();
             }
         }
