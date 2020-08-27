@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Serilog;
 using Serilog.Core;
 using Tef.BotFramework.Abstractions;
@@ -8,6 +9,7 @@ using Tef.BotFramework.Settings;
 using Tef.BotFramework.Tools.Extensions;
 using Telegram.Bot;
 using Telegram.Bot.Args;
+using Telegram.Bot.Types;
 
 namespace Tef.BotFramework.Telegram
 {
@@ -42,11 +44,17 @@ namespace Tef.BotFramework.Telegram
 
         public Result WriteMessage(BotEventArgs sender)
         {
-            var result = _client.SendTextMessageAsync(sender.GroupId, sender.Text);
-            result.WaitSafe();
-            if (result.IsCompletedSuccessfully)
-                return new Result(true, "ok");
-            return new Result(false, result.Result.Text);
+            Task<Message> task = _client.SendTextMessageAsync(sender.GroupId, sender.Text);
+
+            try
+            {
+                task.Wait();
+                return Result.Ok("Message send");
+            }
+            catch (Exception e)
+            {
+                return Result.Fail("Error while sending message", e);
+            }
         }
 
         public void Restart()

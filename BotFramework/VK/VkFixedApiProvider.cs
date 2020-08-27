@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Tef.BotFramework.Abstractions;
 using Tef.BotFramework.Common;
 using Tef.BotFramework.Core;
@@ -75,7 +76,7 @@ namespace Tef.BotFramework.VK
 
         public Result WriteMessage(BotEventArgs args)
         {
-            var sendMessageTask = _api.Messages.Send
+            Task<int> sendMessageTask = _api.Messages.Send
             (
                 randomId: Utilities.GetRandom(),
                 peerId: (int)args.GroupId,
@@ -84,9 +85,9 @@ namespace Tef.BotFramework.VK
 
             sendMessageTask.WaitSafe();
 
-            if (sendMessageTask.IsFaulted)
-                return new Result(false, $"Vk write message failed from {args.GroupId} with message {args.Text}").WithException(sendMessageTask.Exception);
-            return new Result(true, $"Vk write {args.Text} to {args.GroupId} ok");
+            return sendMessageTask.IsFaulted
+                ? Result.Fail($"Vk write message failed from {args.GroupId} with message {args.Text}", sendMessageTask.Exception)
+                : Result.Ok($"Vk write {args.Text} to {args.GroupId} ok");
         }
 
         public void Dispose()

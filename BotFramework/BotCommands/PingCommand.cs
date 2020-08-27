@@ -17,7 +17,7 @@ namespace Tef.BotFramework.BotCommands
 
         public Task<Result<string>> ExecuteAsync(CommandArgumentContainer args)
         {
-            return Task.FromResult(new Result<string>(true, $"Pong {args.Sender.Username}"));
+            return Task.FromResult(Result<string>.Ok($"Pong {args.Sender.Username}"));
         }
     }
 }

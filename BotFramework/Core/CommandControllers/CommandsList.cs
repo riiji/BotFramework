@@ -29,8 +29,8 @@ namespace Tef.BotFramework.Core.CommandControllers
         public Result<IBotCommand> GetCommand(string commandName)
         {
             return _commands.TryGetValue(commandName, out IBotCommand command)
-                ? new Result<IBotCommand>(true, command)
-                : new Result<IBotCommand>(false, $"command {commandName} not founded", null);
+                ? Result<IBotCommand>.Ok(command)
+                : Result<IBotCommand>.Fail($"command {commandName} not founded", null);
         }
     }
 }
