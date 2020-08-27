@@ -19,12 +19,17 @@ namespace Tef.BotFramework.Common
 
     public class Result
     {
-        public Result(bool isSuccess) : this(isSuccess, null)
+        public static Result Ok(string executeMessage = null)
         {
-            IsSuccess = isSuccess;
+            return new Result(true, executeMessage);
         }
 
-        public Result(bool isSuccess, string executeMessage)
+        public static Result Fail(string message, Exception exception = null)
+        {
+            return new Result(false, message).WithException(exception);
+        }
+
+        public Result(bool isSuccess, string executeMessage = null)
         {
             IsSuccess = isSuccess;
             _executeMessage = executeMessage;
