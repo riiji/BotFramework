@@ -20,7 +20,7 @@ namespace Tef.BotFramework.Common
 
         public new static Result<T> Fail(string executeMessage, Exception exception)
         {
-            return new Result<T>(true, default, exception, executeMessage);
+            return new Result<T>(false, default, exception, executeMessage);
         }
 
         public T Value => IsSuccess ? _value : throw new AggregateException(Exception);

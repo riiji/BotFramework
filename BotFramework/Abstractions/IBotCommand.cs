@@ -21,7 +21,6 @@ namespace Tef.BotFramework.Abstractions
         public static Result<string> Execute(this IBotCommand command, CommandArgumentContainer args)
         {
             Task<Result<string>> task = command.ExecuteAsync(args);
-            task.RunSynchronously();
             return task.Result;
         }
     }

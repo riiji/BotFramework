@@ -28,9 +28,11 @@ namespace Tef.BotFramework.Core.CommandControllers
 
         public Result<IBotCommand> GetCommand(string commandName)
         {
+            var message = $"Command {commandName} not founded";
+
             return _commands.TryGetValue(commandName, out IBotCommand command)
                 ? Result<IBotCommand>.Ok(command)
-                : Result<IBotCommand>.Fail($"command {commandName} not founded", null);
+                : Result<IBotCommand>.Fail(message, new KeyNotFoundException(message));
         }
     }
 }
