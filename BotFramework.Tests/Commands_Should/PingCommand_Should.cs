@@ -1,6 +1,7 @@
 ﻿using FakeItEasy;
 using FluentAssertions;
 using NUnit.Framework;
+using Tef.BotFramework.Abstractions;
 using Tef.BotFramework.BotCommands;
 using Tef.BotFramework.Common;
 

@@ -4,41 +4,49 @@ namespace Tef.BotFramework.Common
 {
     public class Result<T> : Result
     {
-        public Result(bool isSuccess, T result) : base(isSuccess)
+        private readonly T _value;
+
+        private Result(bool isSuccess, T result, Exception exception = null, string executeMessage = null)
+            : base(isSuccess, executeMessage)
         {
-            Value = result;
+            _value = result;
+            Exception = exception;
         }
 
-        public Result(bool isSuccess, string executeMessage, T result) : base(isSuccess, executeMessage)
+        public static Result<T> Ok(T value, string executeMessage = null)
         {
-            Value = result;
+            return new Result<T>(true, value, null, executeMessage);
         }
 
-        public readonly T Value;
+        public new static Result<T> Fail(string executeMessage, Exception exception)
+        {
+            return new Result<T>(false, default, exception, executeMessage);
+        }
+
+        public T Value => IsSuccess ? _value : throw new AggregateException(Exception);
     }
 
     public class Result
     {
-        public Result(bool isSuccess) : this(isSuccess, null)
-        {
-            IsSuccess = isSuccess;
-        }
-
-        public Result(bool isSuccess, string executeMessage)
+        protected Result(bool isSuccess, string executeMessage = null)
         {
             IsSuccess = isSuccess;
             _executeMessage = executeMessage;
         }
 
-        public Result WithException<T>(T exception) where T : Exception
+        public static Result Ok(string executeMessage = null)
         {
-            Exception = exception;
-            return this;
+            return new Result(true, executeMessage);
+        }
+
+        public static Result Fail(string message, Exception exception = null)
+        {
+            return new Result(false, message) { Exception = exception };
         }
 
         private readonly string _executeMessage;
 
-        public Exception Exception { get; set; }
+        public Exception Exception { get; protected set; }
         public bool IsSuccess { get; }
 
         public string ExecuteMessage

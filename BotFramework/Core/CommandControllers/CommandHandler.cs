@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Runtime.CompilerServices;
 using Tef.BotFramework.Abstractions;
 using Tef.BotFramework.Common;
 
@@ -19,13 +18,13 @@ namespace Tef.BotFramework.Core.CommandControllers
             var command = commandTask.Value;
 
             if (command.CanExecute(args))
-                return new Result(true,
+                return Result.Ok(
                     $"command {args.CommandName} can be executable with args {string.Join(' ', args.Arguments.Select(x => x))}");
 
             var loggerMessage =
                 $"command {command.CommandName} not executable with args {string.Join(' ', args.Arguments.Select(x => x))}";
             
-            return new Result(false, loggerMessage);
+            return Result.Fail(loggerMessage);
         }
 
         public CommandHandler WithoutCaseSensitiveCommands()

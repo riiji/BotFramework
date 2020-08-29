@@ -1,3 +1,4 @@
+using System;
 using FakeItEasy;
 using FluentAssertions;
 using NUnit.Framework;
@@ -61,8 +62,13 @@ namespace Tef.BotFramework.Tests
         [Test]
         public void RegisterCommand_ReturnsNull_WhenGetInvalidCommand()
         {
+            Action action = () =>
+            {
+                IBotCommand botCommand = _commands.GetCommand("someCommand").Value;
+            };
+
             _commands.GetCommand("someCommand").IsSuccess.Should().Be(false);
-            _commands.GetCommand("someCommand").Value.Should().BeNull();
+            action.Should().Throw<AggregateException>();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Tef.BotFramework.Common;
+﻿using System.Threading.Tasks;
+using Tef.BotFramework.Common;
 
 namespace Tef.BotFramework.Abstractions
 {
@@ -12,6 +13,15 @@ namespace Tef.BotFramework.Abstractions
 
         bool CanExecute(CommandArgumentContainer args);
 
-        Result Execute(CommandArgumentContainer args);
+        Task<Result<string>> ExecuteAsync(CommandArgumentContainer args);
+    }
+
+    public static class BotCommandExtensions
+    {
+        public static Result<string> Execute(this IBotCommand command, CommandArgumentContainer args)
+        {
+            Task<Result<string>> task = command.ExecuteAsync(args);
+            return task.Result;
+        }
     }
 }
