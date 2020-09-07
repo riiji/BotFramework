@@ -1,5 +1,5 @@
 ﻿using System;
-using Tef.BotFramework.Common;
+using FluentResults;
 using Tef.BotFramework.Core;
 
 namespace Tef.BotFramework.Abstractions
@@ -8,6 +8,6 @@ namespace Tef.BotFramework.Abstractions
     {
         public event EventHandler<BotEventArgs> OnMessage;
         public void Restart();
-        public Result WriteMessage(BotEventArgs sender);
+        public Result<string> WriteMessage(BotEventArgs sender);
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+using System.Linq;
+using FluentResults;
 using Tef.BotFramework.Abstractions;
 using Tef.BotFramework.Common;
 

@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using FluentResults;
 using Tef.BotFramework.Abstractions;
 using Tef.BotFramework.Common;
 
@@ -17,7 +18,7 @@ namespace Tef.BotFramework.BotCommands
 
         public Task<Result<string>> ExecuteAsync(CommandArgumentContainer args)
         {
-            return Task.FromResult(Result<string>.Ok($"Pong {args.Sender.Username}"));
+            return Task.FromResult(Result.Ok($"Pong {args.Sender.Username}"));
         }
     }
 }

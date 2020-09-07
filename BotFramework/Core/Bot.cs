@@ -90,19 +90,19 @@ namespace Tef.BotFramework.Core
                     new CommandArgumentContainer(commandName, commandWithArgs.Sender, commandWithArgs.Arguments);
 
                 var commandTaskResult = _commandHandler.IsCommandCorrect(commandWithArgs);
-                LoggerHolder.Instance.Verbose(commandTaskResult.ExecuteMessage);
+                LoggerHolder.Instance.Verbose(commandTaskResult.ToString());
 
                 if (!commandTaskResult.IsSuccess)
                     return;
 
                 var commandExecuteResult = _commandHandler.ExecuteCommand(commandWithArgs);
                 if (!commandExecuteResult.IsSuccess)
-                    LoggerHolder.Instance.Warning(commandExecuteResult.ExecuteMessage);
+                    LoggerHolder.Instance.Warning(commandExecuteResult.ToString());
 
                 var writeMessageResult =
-                    _botProvider.WriteMessage(new BotEventArgs(commandExecuteResult.ExecuteMessage, commandWithArgs.Sender.GroupId, commandWithArgs.Sender.UserSenderId, commandWithArgs.Sender.Username));
+                    _botProvider.WriteMessage(new BotEventArgs(commandExecuteResult.ToString(), commandWithArgs.Sender.GroupId, commandWithArgs.Sender.UserSenderId, commandWithArgs.Sender.Username));
 
-                LoggerHolder.Instance.Verbose(writeMessageResult.ExecuteMessage);
+                LoggerHolder.Instance.Verbose(writeMessageResult.ToString());
             }
             catch (Exception error)
             {

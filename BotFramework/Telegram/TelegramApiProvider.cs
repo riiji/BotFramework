@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
+using FluentResults;
 using Serilog;
 using Serilog.Core;
 using Tef.BotFramework.Abstractions;
-using Tef.BotFramework.Common;
 using Tef.BotFramework.Core;
 using Tef.BotFramework.Settings;
-using Tef.BotFramework.Tools.Extensions;
 using Telegram.Bot;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types;
@@ -42,7 +41,7 @@ namespace Tef.BotFramework.Telegram
                 new BotEventArgs(e.Message.Text, e.Message.Chat.Id, e.Message.ForwardFromMessageId, e.Message.From.FirstName));
         }
 
-        public Result WriteMessage(BotEventArgs sender)
+        public Result<string> WriteMessage(BotEventArgs sender)
         {
             Task<Message> task = _client.SendTextMessageAsync(sender.GroupId, sender.Text);
 
@@ -53,7 +52,7 @@ namespace Tef.BotFramework.Telegram
             }
             catch (Exception e)
             {
-                return Result.Fail("Error while sending message", e);
+                return Result.Fail(new Error("Error while sending message").CausedBy(e));
             }
         }
 

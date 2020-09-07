@@ -1,4 +1,4 @@
-﻿using Tef.BotFramework.Common;
+﻿using FluentResults;
 using Tef.BotFramework.Core;
 
 namespace Tef.BotFramework.Abstractions

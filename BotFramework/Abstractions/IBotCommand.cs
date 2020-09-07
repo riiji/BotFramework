@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using FluentResults;
 using Tef.BotFramework.Common;
 
 namespace Tef.BotFramework.Abstractions
