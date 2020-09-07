@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentResults;
 using Serilog;
 using Tef.BotFramework.Abstractions;
 using Tef.BotFramework.Common;
@@ -89,17 +90,17 @@ namespace Tef.BotFramework.Core
                 commandWithArgs =
                     new CommandArgumentContainer(commandName, commandWithArgs.Sender, commandWithArgs.Arguments);
 
-                var commandTaskResult = _commandHandler.IsCommandCorrect(commandWithArgs);
+                Result commandTaskResult = _commandHandler.IsCommandCorrect(commandWithArgs);
                 LoggerHolder.Instance.Verbose(commandTaskResult.ToString());
 
                 if (!commandTaskResult.IsSuccess)
                     return;
 
-                var commandExecuteResult = _commandHandler.ExecuteCommand(commandWithArgs);
+                Result commandExecuteResult = _commandHandler.ExecuteCommand(commandWithArgs).Result;
                 if (!commandExecuteResult.IsSuccess)
                     LoggerHolder.Instance.Warning(commandExecuteResult.ToString());
 
-                var writeMessageResult =
+                Result<string> writeMessageResult =
                     _botProvider.WriteMessage(new BotEventArgs(commandExecuteResult.ToString(), commandWithArgs.Sender.GroupId, commandWithArgs.Sender.UserSenderId, commandWithArgs.Sender.Username));
 
                 LoggerHolder.Instance.Verbose(writeMessageResult.ToString());

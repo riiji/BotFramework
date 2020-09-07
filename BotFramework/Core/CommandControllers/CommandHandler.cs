@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using FluentResults;
 using Tef.BotFramework.Abstractions;
 using Tef.BotFramework.Common;
@@ -39,15 +40,15 @@ namespace Tef.BotFramework.Core.CommandControllers
             _commands.AddCommand(command);
         }
 
-        public Result ExecuteCommand(CommandArgumentContainer args)
+        public async Task<Result> ExecuteCommand(CommandArgumentContainer args)
         {
-            var commandTask = _commands.GetCommand(args.CommandName);
+            Result<IBotCommand> commandTask = _commands.GetCommand(args.CommandName);
 
             if (!commandTask.IsSuccess)
                 return commandTask;
 
-            var command = commandTask.Value;
-            var commandExecuteResult = command.Execute(args);
+            IBotCommand command = commandTask.Value;
+            Result<string> commandExecuteResult = await command.ExecuteAsync(args);
 
             return commandExecuteResult;
         }
