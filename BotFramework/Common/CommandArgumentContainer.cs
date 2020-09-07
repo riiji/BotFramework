@@ -17,5 +17,10 @@ namespace Tef.BotFramework.Common
             Sender = sender;
             Arguments = arguments;
         }
+
+        public override string ToString()
+        {
+            return $"[CommandArgumentContainer CommandName:{CommandName}; Arguments:{string.Join(",", Arguments)}]";
+        }
     }
 }

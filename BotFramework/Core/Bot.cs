@@ -75,7 +75,7 @@ namespace Tef.BotFramework.Core
         {
             try
             {
-                var commandWithArgs = _commandParser.ParseCommand(e);
+                CommandArgumentContainer commandWithArgs = _commandParser.ParseCommand(e);
                 var commandName = commandWithArgs.CommandName;
 
                 if (commandName.FirstOrDefault() != _prefix && _prefix != '\0')
@@ -91,23 +91,23 @@ namespace Tef.BotFramework.Core
                     new CommandArgumentContainer(commandName, commandWithArgs.Sender, commandWithArgs.Arguments);
 
                 Result commandTaskResult = _commandHandler.IsCommandCorrect(commandWithArgs);
-                LoggerHolder.Instance.Verbose(commandTaskResult.ToString());
+                LoggerHolder.Instance.Verbose($"IsCommandCorrect: [Args: {commandWithArgs}] [Result: {commandTaskResult}]");
 
                 if (!commandTaskResult.IsSuccess)
                     return;
 
                 Result commandExecuteResult = _commandHandler.ExecuteCommand(commandWithArgs).Result;
                 if (!commandExecuteResult.IsSuccess)
-                    LoggerHolder.Instance.Warning(commandExecuteResult.ToString());
+                    LoggerHolder.Instance.Warning($"Execute result: [Result: {commandExecuteResult}]");
 
                 Result<string> writeMessageResult =
                     _botProvider.WriteMessage(new BotEventArgs(commandExecuteResult.ToString(), commandWithArgs.Sender.GroupId, commandWithArgs.Sender.UserSenderId, commandWithArgs.Sender.Username));
 
-                LoggerHolder.Instance.Verbose(writeMessageResult.ToString());
+                LoggerHolder.Instance.Verbose($"Send message result: [Result {writeMessageResult}]");
             }
-            catch (Exception error)
+            catch (Exception exception)
             {
-                LoggerHolder.Instance.Error(error.Message);
+                LoggerHolder.Instance.Error(exception, "Message handling failed");
                 _botProvider.Restart();
             }
         }
