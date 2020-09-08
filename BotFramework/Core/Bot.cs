@@ -96,12 +96,12 @@ namespace Tef.BotFramework.Core
                 if (!commandTaskResult.IsSuccess)
                     return;
 
-                Result commandExecuteResult = _commandHandler.ExecuteCommand(commandWithArgs).Result;
+                Result<string> commandExecuteResult = _commandHandler.ExecuteCommand(commandWithArgs).Result;
                 if (!commandExecuteResult.IsSuccess)
                     LoggerHolder.Instance.Warning($"Execute result: [Result: {commandExecuteResult}]");
 
                 Result<string> writeMessageResult =
-                    _botProvider.WriteMessage(new BotEventArgs(commandExecuteResult.ToString(), commandWithArgs.Sender.GroupId, commandWithArgs.Sender.UserSenderId, commandWithArgs.Sender.Username));
+                    _botProvider.WriteMessage(new BotEventArgs(commandExecuteResult.Value, commandWithArgs.Sender.GroupId, commandWithArgs.Sender.UserSenderId, commandWithArgs.Sender.Username));
 
                 LoggerHolder.Instance.Verbose($"Send message result: [Result {writeMessageResult}]");
             }

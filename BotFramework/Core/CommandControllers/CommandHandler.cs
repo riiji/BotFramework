@@ -40,16 +40,14 @@ namespace Tef.BotFramework.Core.CommandControllers
             _commands.AddCommand(command);
         }
 
-        public async Task<Result> ExecuteCommand(CommandArgumentContainer args)
+        public async Task<Result<string>> ExecuteCommand(CommandArgumentContainer args)
         {
-            Result<IBotCommand> commandTask = _commands.GetCommand(args.CommandName);
+            Result<IBotCommand> command = _commands.GetCommand(args.CommandName);
 
-            if (!commandTask.IsSuccess)
-                return commandTask;
+            if (!command.IsSuccess)
+                return command.ToResult<string>();
 
-            IBotCommand command = commandTask.Value;
-            Result<string> commandExecuteResult = await command.ExecuteAsync(args);
-
+            Result<string> commandExecuteResult = await command.Value.ExecuteAsync(args);
             return commandExecuteResult;
         }
 
