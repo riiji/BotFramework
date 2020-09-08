@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using Tef.BotFramework.Core;
 
-namespace Tef.BotFramework.Common
+namespace Tef.BotFramework.Core
 {
     public class CommandArgumentContainer
     {

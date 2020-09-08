@@ -2,7 +2,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentResults;
 using Tef.BotFramework.Abstractions;
-using Tef.BotFramework.Common;
 
 namespace Tef.BotFramework.Core.CommandControllers
 {

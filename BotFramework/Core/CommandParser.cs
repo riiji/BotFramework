@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Tef.BotFramework.Common;
 using Tef.BotFramework.Core.Exceptions;
 
 namespace Tef.BotFramework.Core

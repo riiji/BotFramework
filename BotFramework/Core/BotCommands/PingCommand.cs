@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using FluentResults;
 using Tef.BotFramework.Abstractions;
-using Tef.BotFramework.Common;
+using Tef.BotFramework.Core;
 
 namespace Tef.BotFramework.BotCommands
 {

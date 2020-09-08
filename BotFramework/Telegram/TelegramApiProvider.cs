@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using FluentResults;
-using Serilog;
-using Serilog.Core;
 using Tef.BotFramework.Abstractions;
 using Tef.BotFramework.Core;
 using Tef.BotFramework.Settings;
+using Tef.BotFramework.Tools.Loggers;
 using Telegram.Bot;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types;
@@ -16,17 +15,11 @@ namespace Tef.BotFramework.Telegram
     {
         private TelegramBotClient _client;
         private readonly TelegramSettings _settings;
-        private readonly Logger _telegramLogger;
 
         public event EventHandler<BotEventArgs> OnMessage;
 
         public TelegramApiProvider(IGetSettings<TelegramSettings> settings)
         {
-            _telegramLogger = new LoggerConfiguration()
-                .MinimumLevel.Verbose()
-                .WriteTo.File("telegram-api.txt")
-                .CreateLogger();
-
             _settings = settings.GetSettings();
             _client = new TelegramBotClient(_settings.AccessToken);
 
@@ -36,7 +29,7 @@ namespace Tef.BotFramework.Telegram
 
         private void ClientOnMessage(object sender, MessageEventArgs e)
         {
-            _telegramLogger.Debug("New message event: {@e}", e);
+            LoggerHolder.Instance.Debug("New message event: {@e}", e);
             OnMessage?.Invoke(sender,
                 new BotEventArgs(e.Message.Text, e.Message.Chat.Id, e.Message.ForwardFromMessageId, e.Message.From.FirstName));
         }
@@ -52,7 +45,9 @@ namespace Tef.BotFramework.Telegram
             }
             catch (Exception e)
             {
-                return Result.Fail(new Error("Error while sending message").CausedBy(e));
+                const string message = "Error while sending message";
+                LoggerHolder.Instance.Error(e, message);
+                return Result.Fail(new Error(message).CausedBy(e));
             }
         }
 

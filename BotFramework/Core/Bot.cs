@@ -4,7 +4,6 @@ using System.Linq;
 using FluentResults;
 using Serilog;
 using Tef.BotFramework.Abstractions;
-using Tef.BotFramework.Common;
 using Tef.BotFramework.Core.CommandControllers;
 using Tef.BotFramework.Tools.Loggers;
 

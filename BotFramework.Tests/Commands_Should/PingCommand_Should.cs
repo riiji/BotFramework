@@ -2,7 +2,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using Tef.BotFramework.BotCommands;
-using Tef.BotFramework.Common;
+using Tef.BotFramework.Core;
 
 namespace Tef.BotFramework.Tests.Commands_Should
 {
