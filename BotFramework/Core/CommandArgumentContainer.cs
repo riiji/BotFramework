@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using Tef.BotFramework.Core;
 
-namespace Tef.BotFramework.Common
+namespace Tef.BotFramework.Core
 {
     public class CommandArgumentContainer
     {
@@ -16,6 +15,11 @@ namespace Tef.BotFramework.Common
             CommandName = commandName;
             Sender = sender;
             Arguments = arguments;
+        }
+
+        public override string ToString()
+        {
+            return $"[CommandArgumentContainer CommandName:{CommandName}; Arguments:{string.Join(",", Arguments)}]";
         }
     }
 }

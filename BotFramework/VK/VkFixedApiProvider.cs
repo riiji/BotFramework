@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentResults;
 using Tef.BotFramework.Abstractions;
-using Tef.BotFramework.Common;
 using Tef.BotFramework.Core;
 using Tef.BotFramework.Settings;
 using Tef.BotFramework.Tools.Extensions;
@@ -74,7 +74,7 @@ namespace Tef.BotFramework.VK
             OnMessage?.Invoke(sender, new BotEventArgs(e.Text, e.PeerId, e.FromId, user?.FirstName));
         }
 
-        public Result WriteMessage(BotEventArgs args)
+        public Result<string> WriteMessage(BotEventArgs args)
         {
             Task<int> sendMessageTask = _api.Messages.Send
             (
@@ -86,7 +86,7 @@ namespace Tef.BotFramework.VK
             sendMessageTask.WaitSafe();
 
             return sendMessageTask.IsFaulted
-                ? Result.Fail($"Vk write message failed from {args.GroupId} with message {args.Text}", sendMessageTask.Exception)
+                ? Result.Fail<string>(new Error($"Vk write message failed from {args.GroupId} with message {args.Text}").CausedBy(sendMessageTask.Exception))
                 : Result.Ok($"Vk write {args.Text} to {args.GroupId} ok");
         }
 

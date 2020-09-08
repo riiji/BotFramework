@@ -68,7 +68,7 @@ namespace Tef.BotFramework.Tests
             };
 
             _commands.GetCommand("someCommand").IsSuccess.Should().Be(false);
-            action.Should().Throw<AggregateException>();
+            action.Should().Throw<InvalidOperationException>();
         }
     }
 }

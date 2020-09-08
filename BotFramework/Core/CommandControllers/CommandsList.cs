@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using FluentResults;
 using Tef.BotFramework.Abstractions;
-using Tef.BotFramework.Common;
 
 namespace Tef.BotFramework.Core.CommandControllers
 {
@@ -31,8 +31,8 @@ namespace Tef.BotFramework.Core.CommandControllers
             var message = $"Command {commandName} not founded";
 
             return _commands.TryGetValue(commandName, out IBotCommand command)
-                ? Result<IBotCommand>.Ok(command)
-                : Result<IBotCommand>.Fail(message, new KeyNotFoundException(message));
+                ? Result.Ok(command)
+                : Result.Fail<IBotCommand>(message);
         }
     }
 }

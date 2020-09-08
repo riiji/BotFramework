@@ -1,9 +1,8 @@
 ﻿using FakeItEasy;
 using FluentAssertions;
 using NUnit.Framework;
-using Tef.BotFramework.Abstractions;
 using Tef.BotFramework.BotCommands;
-using Tef.BotFramework.Common;
+using Tef.BotFramework.Core;
 
 namespace Tef.BotFramework.Tests.Commands_Should
 {
@@ -14,7 +13,7 @@ namespace Tef.BotFramework.Tests.Commands_Should
         {
             PingCommand pingCommand = new PingCommand();
             CommandArgumentContainer fakeContainer = A.Fake<CommandArgumentContainer>();
-            pingCommand.Execute(fakeContainer).IsSuccess.Should().Be(true);
+            pingCommand.ExecuteAsync(fakeContainer).Result.IsSuccess.Should().Be(true);
         }
 
     }

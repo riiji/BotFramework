@@ -1,6 +1,4 @@
-﻿using Tef.BotFramework.Settings;
-
-namespace Tef.BotFramework.Telegram
+﻿namespace Tef.BotFramework.Telegram
 {
     public class TelegramSettings
     {
