@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using FluentResults;
 using Tef.BotFramework.Abstractions;
@@ -9,23 +8,20 @@ namespace Tef.BotFramework.Core.CommandControllers
     {
         private readonly CommandsList _commands = new CommandsList();
 
-        public Result IsCommandCorrect(CommandArgumentContainer args)
+        public Result<bool> IsCommandCorrect(CommandArgumentContainer args)
         {
-            var commandTask = _commands.GetCommand(args.CommandName);
+            Result<IBotCommand> commandTask = _commands.GetCommand(args.CommandName);
 
             if (!commandTask.IsSuccess)
-                return commandTask;
+                return commandTask.ToResult<bool>();
 
-            var command = commandTask.Value;
+            IBotCommand command = commandTask.Value;
 
-            if (command.CanExecute(args))
-                return Result.Ok(
-                    $"command {args.CommandName} can be executable with args {string.Join(' ', args.Arguments.Select(x => x))}");
+            Result<bool> canExecute = command.CanExecute(args);
 
-            var loggerMessage =
-                $"command {command.CommandName} not executable with args {string.Join(' ', args.Arguments.Select(x => x))}";
-            
-            return Result.Fail(loggerMessage);
+            return canExecute.Value
+                ? canExecute
+                : Result.Fail<bool>($"Command [{command.CommandName}] can be executed: {canExecute}");
         }
 
         public CommandHandler WithoutCaseSensitiveCommands()

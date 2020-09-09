@@ -1,8 +1,8 @@
 ﻿using FakeItEasy;
 using FluentAssertions;
 using NUnit.Framework;
-using Tef.BotFramework.BotCommands;
 using Tef.BotFramework.Core;
+using Tef.BotFramework.Core.BotCommands;
 
 namespace Tef.BotFramework.Tests.Commands_Should
 {
