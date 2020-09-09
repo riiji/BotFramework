@@ -1,9 +1,8 @@
 ﻿using System.Threading.Tasks;
 using FluentResults;
 using Tef.BotFramework.Abstractions;
-using Tef.BotFramework.Core;
 
-namespace Tef.BotFramework.BotCommands
+namespace Tef.BotFramework.Core.BotCommands
 {
     public class PingCommand : IBotCommand
     {
@@ -11,9 +10,9 @@ namespace Tef.BotFramework.BotCommands
         public string Description { get; } = "Answer pong on ping message";
         public string[] Args { get; } = new string[0];
 
-        public bool CanExecute(CommandArgumentContainer args)
+        public Result<bool> CanExecute(CommandArgumentContainer args)
         {
-            return true;
+            return Result.Ok();
         }
 
         public Task<Result<string>> ExecuteAsync(CommandArgumentContainer args)

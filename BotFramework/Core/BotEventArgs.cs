@@ -11,6 +11,12 @@ namespace Tef.BotFramework.Core
             UserSenderId = userSenderId;
             Username = username;
         }
+
+        public BotEventArgs(string text, CommandArgumentContainer commandWithArgs)
+            : this(text, commandWithArgs.Sender.GroupId, commandWithArgs.Sender.UserSenderId, commandWithArgs.Sender.Username)
+        {
+        }
+
         public string Text { get; }
         public long GroupId { get; }
         public int UserSenderId { get; }

@@ -89,18 +89,22 @@ namespace Tef.BotFramework.Core
                 commandWithArgs =
                     new CommandArgumentContainer(commandName, commandWithArgs.Sender, commandWithArgs.Arguments);
 
-                Result commandTaskResult = _commandHandler.IsCommandCorrect(commandWithArgs);
-                LoggerHolder.Instance.Verbose($"IsCommandCorrect: [Args: {commandWithArgs}] [Result: {commandTaskResult}]");
+                Result<bool> isCommandCorrectResult = _commandHandler.IsCommandCorrect(commandWithArgs);
+                LoggerHolder.Instance.Verbose($"IsCommandCorrect: [Args: {commandWithArgs}] [Result: {isCommandCorrectResult}]");
 
-                if (!commandTaskResult.IsSuccess)
-                    return;
+                Result<string> writeMessageResult;
+                if (!isCommandCorrectResult.IsSuccess)
+                {
+                    writeMessageResult = _botProvider.WriteMessage(new BotEventArgs(isCommandCorrectResult.ToString(), commandWithArgs));
+                }
+                else
+                {
+                    Result<string> commandExecuteResult = _commandHandler.ExecuteCommand(commandWithArgs).Result;
+                    if (!commandExecuteResult.IsSuccess)
+                        LoggerHolder.Instance.Warning($"Execute result: [Result: {commandExecuteResult}]");
 
-                Result<string> commandExecuteResult = _commandHandler.ExecuteCommand(commandWithArgs).Result;
-                if (!commandExecuteResult.IsSuccess)
-                    LoggerHolder.Instance.Warning($"Execute result: [Result: {commandExecuteResult}]");
-
-                Result<string> writeMessageResult =
-                    _botProvider.WriteMessage(new BotEventArgs(commandExecuteResult.Value, commandWithArgs.Sender.GroupId, commandWithArgs.Sender.UserSenderId, commandWithArgs.Sender.Username));
+                    writeMessageResult = _botProvider.WriteMessage(new BotEventArgs(commandExecuteResult.Value, commandWithArgs));
+                }
 
                 LoggerHolder.Instance.Verbose($"Send message result: [Result {writeMessageResult}]");
             }
