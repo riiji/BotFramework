@@ -12,7 +12,7 @@ namespace Tef.BotFramework.Abstractions
 
         string[] Args { get; }
 
-        Result<bool> CanExecute(CommandArgumentContainer args);
+        Result CanExecute(CommandArgumentContainer args);
 
         Task<Result<string>> ExecuteAsync(CommandArgumentContainer args);
     }

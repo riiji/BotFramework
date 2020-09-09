@@ -10,7 +10,7 @@ namespace Tef.BotFramework.Core.BotCommands
         public string Description { get; } = "Answer pong on ping message";
         public string[] Args { get; } = new string[0];
 
-        public Result<bool> CanExecute(CommandArgumentContainer args)
+        public Result CanExecute(CommandArgumentContainer args)
         {
             return Result.Ok();
         }
