@@ -8,7 +8,7 @@ namespace Tef.BotFramework.Core.CommandControllers
     {
         private readonly CommandsList _commands = new CommandsList();
 
-        public Result<bool> IsCommandCorrect(CommandArgumentContainer args)
+        public Result IsCommandCorrect(CommandArgumentContainer args)
         {
             Result<IBotCommand> commandTask = _commands.GetCommand(args.CommandName);
 
@@ -19,7 +19,7 @@ namespace Tef.BotFramework.Core.CommandControllers
 
             Result<bool> canExecute = command.CanExecute(args);
 
-            return canExecute.Value
+            return canExecute.IsSuccess
                 ? canExecute
                 : Result.Fail<bool>($"Command [{command.CommandName}] can be executed: {canExecute}");
         }
