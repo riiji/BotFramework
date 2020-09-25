@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Tef.BotFramework.Core
 {
     public class CommandArgumentContainer
     {
-        public string CommandName { get; }
+        public string CommandName { get; private set; }
 
         public BotEventArgs Sender { get; }
 
@@ -15,6 +16,20 @@ namespace Tef.BotFramework.Core
             CommandName = commandName;
             Sender = sender;
             Arguments = arguments;
+        }
+
+        public bool StartWithPrefix(char prefix)
+        {
+            return prefix == '\0' || CommandName.FirstOrDefault() != prefix;
+        }
+
+        public void ApplySettings(char prefix, bool caseSensitive)
+        {
+            if (!caseSensitive)
+                CommandName = CommandName.ToLower();
+
+            if (CommandName.FirstOrDefault() != prefix)
+                CommandName = CommandName.Remove(0, 1);
         }
 
         public override string ToString()

@@ -1,8 +1,7 @@
 ﻿using System.Threading.Tasks;
 using FluentResults;
-using Tef.BotFramework.Core;
 
-namespace Tef.BotFramework.Abstractions
+namespace Tef.BotFramework.Core.Abstractions
 {
     public interface IBotCommand
     {

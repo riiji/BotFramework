@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using FluentResults;
-using Tef.BotFramework.Abstractions;
 using Tef.BotFramework.Core;
+using Tef.BotFramework.Core.Abstractions;
 using Tef.BotFramework.Settings;
 using Tef.BotFramework.Tools.Loggers;
 using Telegram.Bot;

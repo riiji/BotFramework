@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using FluentResults;
 using Serilog;
-using Tef.BotFramework.Abstractions;
+using Tef.BotFramework.Core.Abstractions;
 using Tef.BotFramework.Core.CommandControllers;
 using Tef.BotFramework.Tools.Extensions;
 using Tef.BotFramework.Tools.Loggers;
@@ -84,20 +83,11 @@ namespace Tef.BotFramework.Core
                     return;
                 }
 
-                var commandWithArgs = commandWithArgsResult.Value;
-                var commandName = commandWithArgs.CommandName;
-
-                //TODO: encapsulate logic in CommandArgumentContainer
-                if (commandName.FirstOrDefault() != _prefix && _prefix != '\0')
+                CommandArgumentContainer commandWithArgs = commandWithArgsResult.Value;
+                if (!commandWithArgs.StartWithPrefix(_prefix))
                     return;
 
-                if (commandName.FirstOrDefault() == _prefix)
-                    commandName = commandName.Remove(0, 1);
-
-                if (!_caseSensitive)
-                    commandName = commandName.ToLower();
-
-                commandWithArgs = new CommandArgumentContainer(commandName, commandWithArgs.Sender, commandWithArgs.Arguments);
+                commandWithArgs.ApplySettings(_prefix, _caseSensitive);
 
                 Result<bool> isCommandCorrectResult = _commandHandler.IsCommandCorrect(commandWithArgs);
                 LoggerHolder.Instance.Verbose($"IsCommandCorrect: [Args: {commandWithArgs}] [Result: {isCommandCorrectResult}]");
@@ -116,11 +106,17 @@ namespace Tef.BotFramework.Core
                     var message = $"Command execute failed. [Exception: {executeTask.Exception}]";
                     LoggerHolder.Instance.Error(message);
                     _botProvider.WriteMessage(new BotEventArgs(message, commandWithArgs));
+                    return;
                 }
 
                 Result<string> commandExecuteResult = executeTask.Result;
                 if (commandExecuteResult.IsFailed)
-                    LoggerHolder.Instance.Warning($"Execute result: [Result: {commandExecuteResult}]");
+                {
+                    var message = $"Execute result: [Result: {commandExecuteResult}]";
+                    LoggerHolder.Instance.Error(message);
+                    _botProvider.WriteMessage(new BotEventArgs(message, commandWithArgs));
+                    return;
+                }
 
                 Result<string> writeMessageResult = _botProvider.WriteMessage(new BotEventArgs(commandExecuteResult.Value, commandWithArgs));
                 LoggerHolder.Instance.Verbose($"Send message result: [Result {writeMessageResult}]");

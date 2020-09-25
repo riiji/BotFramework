@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using FluentResults;
-using Tef.BotFramework.Abstractions;
+using Tef.BotFramework.Core.Abstractions;
 
 namespace Tef.BotFramework.Core.CommandControllers
 {

@@ -2,7 +2,7 @@ using System;
 using FakeItEasy;
 using FluentAssertions;
 using NUnit.Framework;
-using Tef.BotFramework.Abstractions;
+using Tef.BotFramework.Core.Abstractions;
 using Tef.BotFramework.Core.CommandControllers;
 
 namespace Tef.BotFramework.Tests

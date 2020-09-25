@@ -1,7 +1,6 @@
 ﻿using FluentResults;
-using Tef.BotFramework.Core;
 
-namespace Tef.BotFramework.Abstractions
+namespace Tef.BotFramework.Core.Abstractions
 {
     public interface IWriteMessage
     {
