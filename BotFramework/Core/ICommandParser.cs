@@ -1,7 +1,9 @@
-﻿namespace Tef.BotFramework.Core
+﻿using FluentResults;
+
+namespace Tef.BotFramework.Core
 {
     public interface ICommandParser
     {
-        CommandArgumentContainer ParseCommand(BotEventArgs botArguments);
+        Result<CommandArgumentContainer> ParseCommand(BotEventArgs botArguments);
     }
 }
