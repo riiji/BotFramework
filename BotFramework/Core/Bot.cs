@@ -89,6 +89,14 @@ namespace Tef.BotFramework.Core
 
                 commandWithArgs.ApplySettings(_prefix, _caseSensitive);
 
+                Result isCorrectArgumentCount = _commandHandler.IsCorrectArgumentCount(commandWithArgs);
+                if (isCorrectArgumentCount.IsFailed)
+                {
+                    LoggerHolder.Instance.Error(isCorrectArgumentCount.ToString());
+                    _botProvider.WriteMessage(new BotEventArgs(isCorrectArgumentCount.ToString(), commandWithArgs));
+                    return;
+                }
+
                 Result<bool> isCommandCorrectResult = _commandHandler.IsCommandCorrect(commandWithArgs);
                 LoggerHolder.Instance.Verbose($"IsCommandCorrect: [Args: {commandWithArgs}] [Result: {isCommandCorrectResult}]");
                 if (isCommandCorrectResult.IsFailed)

@@ -8,20 +8,32 @@ namespace Tef.BotFramework.Core.CommandControllers
     {
         private readonly CommandsList _commands = new CommandsList();
 
+        public Result IsCorrectArgumentCount(CommandArgumentContainer args)
+        {
+            Result<IBotCommand> commandTask = _commands.GetCommand(args.CommandName);
+            if (!commandTask.IsSuccess)
+                return commandTask.ToResult<bool>();
+
+            return commandTask.Value.Args.Length == args.Arguments.Count
+                ? Result.Ok()
+                : Result.Fail("Cannot execute command. Argument count miss matched with command signature");
+        }
+
+
         public Result IsCommandCorrect(CommandArgumentContainer args)
         {
             Result<IBotCommand> commandTask = _commands.GetCommand(args.CommandName);
 
             if (!commandTask.IsSuccess)
-                return commandTask.ToResult<bool>();
+                return commandTask;
 
             IBotCommand command = commandTask.Value;
 
-            Result<bool> canExecute = command.CanExecute(args);
+            Result canExecute = command.CanExecute(args);
 
             return canExecute.IsSuccess
                 ? canExecute
-                : Result.Fail<bool>($"Command [{command.CommandName}] can be executed: {canExecute}");
+                : Result.Fail($"Command [{command.CommandName}] can be executed: {canExecute}");
         }
 
         public CommandHandler WithoutCaseSensitiveCommands()
