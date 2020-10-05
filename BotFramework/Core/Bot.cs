@@ -124,7 +124,8 @@ namespace Tef.BotFramework.Core
             catch (Exception exception)
             {
                 LoggerHolder.Instance.Error(exception, "Message handling failed");
-                _botProvider.Restart();
+                //FYI: we do not need to restart on each exception, but probably we have case were restart must be.
+                //_botProvider.Restart();
             }
         }
 

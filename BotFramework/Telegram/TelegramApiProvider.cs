@@ -13,6 +13,7 @@ namespace Tef.BotFramework.Telegram
 {
     public class TelegramApiProvider : IBotApiProvider, IDisposable
     {
+        private readonly object _lock = new object();
         private TelegramBotClient _client;
         private readonly TelegramSettings _settings;
 
@@ -53,10 +54,16 @@ namespace Tef.BotFramework.Telegram
 
         public void Restart()
         {
-            _client = new TelegramBotClient(_settings.AccessToken);
+            lock (_lock)
+            {
+                if (_client != null)
+                    Dispose();
 
-            _client.OnMessage += ClientOnMessage;
-            _client.StartReceiving();
+                _client = new TelegramBotClient(_settings.AccessToken);
+
+                _client.OnMessage += ClientOnMessage;
+                _client.StartReceiving();
+            }
         }
 
         public void Dispose()
