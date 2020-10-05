@@ -76,59 +76,7 @@ namespace Tef.BotFramework.Core
         {
             try
             {
-                Result<CommandArgumentContainer> commandWithArgsResult = _commandParser.ParseCommand(e);
-                if (commandWithArgsResult.IsFailed)
-                {
-                    var message = $"Command parse error. [Result: {commandWithArgsResult}]";
-                    LoggerHolder.Instance.Error(message);
-                    return;
-                }
-
-                CommandArgumentContainer commandWithArgs = commandWithArgsResult.Value;
-                if (!commandWithArgs.StartWithPrefix(_prefix))
-                    return;
-
-                commandWithArgs.ApplySettings(_prefix, _caseSensitive);
-
-                Result isCorrectArgumentCount = _commandHandler.IsCorrectArgumentCount(commandWithArgs);
-                if (isCorrectArgumentCount.IsFailed)
-                {
-                    LoggerHolder.Instance.Error(isCorrectArgumentCount.ToString());
-                    _botProvider.WriteMessage(new BotEventArgs(isCorrectArgumentCount.ToString(), commandWithArgs));
-                    return;
-                }
-
-                Result isCommandCorrectResult = _commandHandler.IsCommandCorrect(commandWithArgs);
-                LoggerHolder.Instance.Verbose($"IsCommandCorrect: [Args: {commandWithArgs}] [Result: {isCommandCorrectResult}]");
-                if (isCommandCorrectResult.IsFailed)
-                {
-                    var message = $"Command correct check error. [Result: {isCommandCorrectResult}]";
-                    LoggerHolder.Instance.Error(message);
-                    _botProvider.WriteMessage(new BotEventArgs(message, commandWithArgs));
-                    return;
-                }
-
-                Task<Result<string>> executeTask = _commandHandler.ExecuteCommand(commandWithArgs);
-                executeTask.WaitSafe();
-                if (executeTask.IsFaulted)
-                {
-                    var message = $"Command execute failed. [Exception: {executeTask.Exception}]";
-                    LoggerHolder.Instance.Error(message);
-                    _botProvider.WriteMessage(new BotEventArgs(message, commandWithArgs));
-                    return;
-                }
-
-                Result<string> commandExecuteResult = executeTask.Result;
-                if (commandExecuteResult.IsFailed)
-                {
-                    var message = $"Execute result: [Result: {commandExecuteResult}]";
-                    LoggerHolder.Instance.Error(message);
-                    _botProvider.WriteMessage(new BotEventArgs(message, commandWithArgs));
-                    return;
-                }
-
-                Result<string> writeMessageResult = _botProvider.WriteMessage(new BotEventArgs(commandExecuteResult.Value, commandWithArgs));
-                LoggerHolder.Instance.Verbose($"Send message result: [Result {writeMessageResult}]");
+                ProcessMessage(e);
             }
             catch (Exception exception)
             {
@@ -137,46 +85,34 @@ namespace Tef.BotFramework.Core
             }
         }
 
-        private void Fluent(object sender, BotEventArgs e)
+        private void ProcessMessage(BotEventArgs e)
         {
-            try
-            {
-                Result<string> result = FluentValidator
-                    .Init(_commandParser.ParseCommand(e))
-                    .Continue(commandWithArgs =>
-                    {
-                        if (!commandWithArgs.StartWithPrefix(_prefix))
-                            return Result.Fail<CommandArgumentContainer>("Command must start with correct prefix.");
-
-                        commandWithArgs.ApplySettings(_prefix, _caseSensitive);
-                        return _commandHandler.IsCorrectArgumentCount(commandWithArgs);
-                    })
-                    .Continue(arg => _commandHandler.IsCommandCorrect(arg))
-                    .Continue(arg =>
-                    {
-                        Task<Result<string>> executeTask = _commandHandler.ExecuteCommand(arg);
-                        executeTask.WaitSafe();
-                        if (executeTask.Result.IsSuccess)
-                            return Result.Ok((executeTask.Result.Value, arg));
-                        return executeTask.Result.ToResult<(string, CommandArgumentContainer)>();
-                    })
-                    .Continue(tuple =>
-                    {
-                        (string value, CommandArgumentContainer commandArgumentContainer) = tuple;
-                        return _botProvider.WriteMessage(new BotEventArgs(value, commandArgumentContainer));
-                    })
-                    .Value;
-
-                if (result.IsFailed)
+            Result<string> result = FluentValidator
+                .Init(_commandParser.ParseCommand(e))
+                .Continue(arguments => arguments.EnsureStartWithPrefix(_prefix))
+                .Continue(commandWithArgs => _commandHandler.IsCorrectArgumentCount(commandWithArgs.ApplySettings(_prefix, _caseSensitive)))
+                .Continue(arg => _commandHandler.IsCommandCorrect(arg))
+                .Continue(arg =>
                 {
-                    LoggerHolder.Instance.Error(result.ToString());
-                    _botProvider.WriteMessage(new BotEventArgs(result.ToString(), e));
-                }
-            }
-            catch (Exception exception)
+                    Task<Result<string>> executeTask = _commandHandler.ExecuteCommand(arg);
+                    executeTask.WaitSafe();
+                    if (executeTask.IsFaulted)
+                        return Result.Fail<(string, CommandArgumentContainer)>(executeTask.Exception?.ToString());
+                    if (executeTask.Result.IsSuccess)
+                        return Result.Ok((executeTask.Result.Value, arg));
+                    return executeTask.Result.ToResult<(string, CommandArgumentContainer)>();
+                })
+                .Continue(tuple =>
+                {
+                    (string value, CommandArgumentContainer commandArgumentContainer) = tuple;
+                    return _botProvider.WriteMessage(new BotEventArgs(value, commandArgumentContainer));
+                })
+                .Value;
+
+            if (result.IsFailed)
             {
-                LoggerHolder.Instance.Error(exception, "Message handling failed");
-                _botProvider.Restart();
+                LoggerHolder.Instance.Error(result.ToString());
+                _botProvider.WriteMessage(new BotEventArgs(result.ToString(), e));
             }
         }
 

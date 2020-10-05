@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using FluentResults;
 
 namespace Tef.BotFramework.Core
 {
@@ -18,18 +19,22 @@ namespace Tef.BotFramework.Core
             Arguments = arguments;
         }
 
-        public bool StartWithPrefix(char prefix)
+        public Result<CommandArgumentContainer> EnsureStartWithPrefix(char prefix)
         {
-            return prefix == '\0' || CommandName.FirstOrDefault() != prefix;
+            return prefix == '\0' || CommandName.FirstOrDefault() != prefix
+                ? Result.Ok(this)
+                : Result.Fail< CommandArgumentContainer>("Command must start with correct prefix.");
         }
 
-        public void ApplySettings(char prefix, bool caseSensitive)
+        public CommandArgumentContainer ApplySettings(char prefix, bool caseSensitive)
         {
             if (!caseSensitive)
                 CommandName = CommandName.ToLower();
 
             if (CommandName.FirstOrDefault() != prefix)
                 CommandName = CommandName.Remove(0, 1);
+
+            return this;
         }
 
         public override string ToString()
