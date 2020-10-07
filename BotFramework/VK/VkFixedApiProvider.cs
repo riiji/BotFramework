@@ -15,6 +15,7 @@ namespace Tef.BotFramework.VK
     {
         public event EventHandler<BotEventArgs> OnMessage;
 
+        private readonly object _lock = new object();
         private readonly VkSettings _settings;
         private Vkontakte _api;
         private BotLongPollClient _client;
@@ -37,23 +38,25 @@ namespace Tef.BotFramework.VK
 
         public void Restart()
         {
-            if (_client != null)
+            lock (_lock)
             {
-                _client.OnMessageNew -= Client_OnMessageNew;
-                _client.LongPollFailureReceived -= Client_LongPollFailureReceived;
-            }
+                if (_client != null)
+                {
+                    Dispose();
+                }
 
-            _api = new Vkontakte(_settings.VkAppId, _settings.VkAppSecret);
-            var serverTask = _api.Groups.GetLongPollServer();
-            if (!serverTask.IsCompletedSuccessfully)
-                throw new ArgumentException("internal error");
-            var server = serverTask.Result;
-            var clientTask = _api.StartBotLongPollClient(server.Server, server.Key, int.Parse(server.Ts));
-            if (!clientTask.IsCompletedSuccessfully)
-                throw new ArgumentException("internal error");
-            _client = clientTask.Result;
-            _client.OnMessageNew += Client_OnMessageNew;
-            _client.LongPollFailureReceived += Client_LongPollFailureReceived;
+                _api = new Vkontakte(_settings.VkAppId, _settings.VkAppSecret);
+                var serverTask = _api.Groups.GetLongPollServer();
+                if (!serverTask.IsCompletedSuccessfully)
+                    throw new ArgumentException("internal error");
+                var server = serverTask.Result;
+                var clientTask = _api.StartBotLongPollClient(server.Server, server.Key, int.Parse(server.Ts));
+                if (!clientTask.IsCompletedSuccessfully)
+                    throw new ArgumentException("internal error");
+                _client = clientTask.Result;
+                _client.OnMessageNew += Client_OnMessageNew;
+                _client.LongPollFailureReceived += Client_LongPollFailureReceived;
+            }
         }
 
         private void Client_LongPollFailureReceived(object sender, int e)
@@ -92,7 +95,9 @@ namespace Tef.BotFramework.VK
 
         public void Dispose()
         {
-
+            _client.OnMessageNew -= Client_OnMessageNew;
+            _client.LongPollFailureReceived -= Client_LongPollFailureReceived;
+            _client.Stop();
         }
     }
 }
