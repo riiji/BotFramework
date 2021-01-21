@@ -21,9 +21,9 @@ namespace Tef.BotFramework.Core
 
         public Result<CommandArgumentContainer> EnsureStartWithPrefix(char prefix)
         {
-            return prefix == '\0' || CommandName.FirstOrDefault() != prefix
+            return prefix == '\0' || CommandName.FirstOrDefault() == prefix
                 ? Result.Ok(this)
-                : Result.Fail< CommandArgumentContainer>("Command must start with correct prefix.");
+                : Result.Fail<CommandArgumentContainer>("Command must start with correct prefix.");
         }
 
         public CommandArgumentContainer ApplySettings(char prefix, bool caseSensitive)
@@ -31,7 +31,7 @@ namespace Tef.BotFramework.Core
             if (!caseSensitive)
                 CommandName = CommandName.ToLower();
 
-            if (CommandName.FirstOrDefault() != prefix)
+            if (CommandName.FirstOrDefault() == prefix)
                 CommandName = CommandName.Remove(0, 1);
 
             return this;
