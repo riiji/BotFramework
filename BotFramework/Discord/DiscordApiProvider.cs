@@ -34,6 +34,7 @@ namespace Tef.BotFramework.Discord
         private Task ClientOnMessage(SocketMessage arg)
         {
             var message = arg as SocketUserMessage;
+            if (message is null) return Task.CompletedTask;
             var context = new SocketCommandContext(_client, message);
             if (context.User.IsBot || context.Guild is null) return Task.CompletedTask;
             OnMessage?.Invoke(context.Client,
