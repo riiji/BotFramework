@@ -3,6 +3,7 @@ using VkApi.Wrapper.Services;
 
 namespace Tef.BotFramework.VK
 {
+    //TODO: remove?
     public class VkLibraryLogger : ILogger
     {
         private readonly Logger _vkFileLogger;

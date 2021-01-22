@@ -2,6 +2,7 @@
 
 namespace Tef.BotFramework.Tools.Extensions
 {
+    //TODO: rename?
     public static class ItmoScheduleBotExtensions
     {
         public static void WaitSafe(this Task task)
