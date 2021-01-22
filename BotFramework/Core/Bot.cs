@@ -19,6 +19,7 @@ namespace Tef.BotFramework.Core
 
         private char _prefix = '\0';
         private bool _caseSensitive = true;
+        private bool _errorLogToUser = false;
 
         public Bot(IBotApiProvider botProvider)
         {
@@ -56,6 +57,12 @@ namespace Tef.BotFramework.Core
         {
             _caseSensitive = false;
             _commandHandler.WithoutCaseSensitiveCommands();
+            return this;
+        }
+
+        public Bot EnableErrorLogToUser()
+        {
+            _errorLogToUser = true;
             return this;
         }
 
@@ -113,7 +120,9 @@ namespace Tef.BotFramework.Core
             if (result.IsFailed)
             {
                 LoggerHolder.Instance.Error(result.ToString());
-                _botProvider.WriteMessage(new BotEventArgs(result.ToString(), e));
+                if (_errorLogToUser)
+                    _botProvider.WriteMessage(new BotEventArgs(result.ToString(), e));
+
             }
         }
 
