@@ -120,7 +120,9 @@ namespace Tef.BotFramework.Core
             if (result.IsFailed)
             {
                 LoggerHolder.Instance.Error(result.ToString());
-                if (_errorLogToUser) _botProvider.WriteMessage(new BotEventArgs(result.ToString(), e));
+                if (_errorLogToUser)
+                    _botProvider.WriteMessage(new BotEventArgs(result.ToString(), e));
+
             }
         }
 
