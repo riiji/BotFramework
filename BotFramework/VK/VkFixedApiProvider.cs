@@ -8,6 +8,7 @@ using Tef.BotFramework.Settings;
 using Tef.BotFramework.Tools.Extensions;
 using VkApi.Wrapper;
 using VkApi.Wrapper.LongPolling.Bot;
+using VkApi.Wrapper.Objects;
 
 namespace Tef.BotFramework.VK
 {
@@ -23,21 +24,24 @@ namespace Tef.BotFramework.VK
         public VkFixedApiProvider(IGetSettings<VkSettings> settings)
         {
             _settings = settings.GetSettings();
+            //TODO: code duplicate. Move to method Start or smth like that, reuse in Restart
             _api = new Vkontakte(_settings.VkAppId, _settings.VkAppSecret);
-            var serverTask = _api.Groups.GetLongPollServer();
+            Task<GroupsLongPollServer> serverTask = _api.Groups.GetLongPollServer();
             if (!serverTask.IsCompletedSuccessfully)
                 throw new ArgumentException("internal error");
-            var server = serverTask.Result;
-            var clientTask = _api.StartBotLongPollClient(server.Server, server.Key, int.Parse(server.Ts));
+            GroupsLongPollServer server = serverTask.Result;
+            Task<BotLongPollClient> clientTask = _api.StartBotLongPollClient(server.Server, server.Key, int.Parse(server.Ts));
             if (!clientTask.IsCompletedSuccessfully)
                 throw new ArgumentException("internal error");
-            var client = clientTask.Result;
+            BotLongPollClient client = clientTask.Result;
             client.OnMessageNew += Client_OnMessageNew;
             client.LongPollFailureReceived += Client_LongPollFailureReceived;
         }
 
         public void Restart()
         {
+            //TODO: looks like this method must be `public async Task RestartSafe`
+            //fyi: *Safe means that method never throw exception. Probably, we need to use await + try/catch
             lock (_lock)
             {
                 if (_client != null)
@@ -45,12 +49,16 @@ namespace Tef.BotFramework.VK
                     Dispose();
                 }
 
+                //TODO: _api is not disposed
                 _api = new Vkontakte(_settings.VkAppId, _settings.VkAppSecret);
-                var serverTask = _api.Groups.GetLongPollServer();
+                Task<GroupsLongPollServer> serverTask = _api.Groups.GetLongPollServer();
+                //TODO: log inner error?
+                //TODO: Add inner error message to ArgumentException?
+                //TODO: Replace ArgumentException with custom exception (BorFrameworkException?)
                 if (!serverTask.IsCompletedSuccessfully)
                     throw new ArgumentException("internal error");
-                var server = serverTask.Result;
-                var clientTask = _api.StartBotLongPollClient(server.Server, server.Key, int.Parse(server.Ts));
+                GroupsLongPollServer server = serverTask.Result;
+                Task<BotLongPollClient> clientTask = _api.StartBotLongPollClient(server.Server, server.Key, int.Parse(server.Ts));
                 if (!clientTask.IsCompletedSuccessfully)
                     throw new ArgumentException("internal error");
                 _client = clientTask.Result;
@@ -66,13 +74,17 @@ namespace Tef.BotFramework.VK
 
         private void Client_OnMessageNew(object sender, VkApi.Wrapper.Objects.MessagesMessage e)
         {
-            var userTask = _api.Users.Get(new[] { e.FromId.ToString() });
+            //TODO: add some logs with Debug level?
+            Task<UsersUserXtrCounters[]> userTask = _api.Users.Get(new[] { e.FromId.ToString() });
             userTask.WaitSafe();
 
+            //TODO: log error?
             if (!userTask.IsCompletedSuccessfully)
                 return;
-            var users = userTask.Result;
-            var user = users.FirstOrDefault();
+            
+            UsersUserXtrCounters[] users = userTask.Result;
+            //TODO: single? Ensure is not null?
+            UsersUserXtrCounters user = users.FirstOrDefault();
 
             OnMessage?.Invoke(sender, new BotEventArgs(e.Text, e.PeerId, e.FromId, user?.FirstName));
         }
@@ -95,6 +107,7 @@ namespace Tef.BotFramework.VK
 
         public void Dispose()
         {
+            //TODO: add flag _isDisposed
             _client.OnMessageNew -= Client_OnMessageNew;
             _client.LongPollFailureReceived -= Client_LongPollFailureReceived;
             _client.Stop();

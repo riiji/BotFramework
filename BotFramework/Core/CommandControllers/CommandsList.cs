@@ -14,8 +14,8 @@ namespace Tef.BotFramework.Core.CommandControllers
             _caseSensitive = false;
             var newCommandList = new Dictionary<string, IBotCommand>();
 
-            foreach (var command in _commands)
-                newCommandList.TryAdd(command.Key.ToLower(), command.Value);
+            foreach ((var key, IBotCommand value) in _commands)
+                newCommandList.TryAdd(key.ToLower(), value);
             
             _commands = newCommandList;
             return this;
