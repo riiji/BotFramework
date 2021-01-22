@@ -32,9 +32,13 @@ namespace Tef.BotFramework.Telegram
         {
             //TODO: Hm. Do we need to use try/catch here?
             LoggerHolder.Instance.Debug("New message event: {@e}", e);
-            //TODO: line to long, wrap creating: new T(\n value,\n value2, \n...)
             OnMessage?.Invoke(sender,
-                new BotEventArgs(e.Message.Text, e.Message.Chat.Id, e.Message.ForwardFromMessageId, e.Message.From.FirstName));
+                new BotEventArgs(
+                    e.Message.Text, 
+                    e.Message.Chat.Id, 
+                    e.Message.ForwardFromMessageId,
+                    e.Message.From.FirstName
+                ));
         }
 
         public Result<string> WriteMessage(BotEventArgs sender)

@@ -38,13 +38,20 @@ namespace Tef.BotFramework.Discord
             var context = new SocketCommandContext(_client, message);
             if (context.User.IsBot || context.Guild is null) return Task.CompletedTask;
             OnMessage?.Invoke(context.Client,
-                new BotEventArgs(context.Message.ToString(), (long) (context.Guild?.Id ?? 0), (long) context.Channel.Id, context.User.Username));
+                new BotEventArgs(
+                    context.Message.ToString(),
+                    (long) (context.Guild?.Id ?? 0),
+                    (long) context.Channel.Id,
+                    context.User.Username
+                ));
             return Task.CompletedTask;
         }
 
         public Result<string> WriteMessage(BotEventArgs sender)
         {
-            Task<RestUserMessage> task = _client.GetGuild((ulong) sender.GroupId).GetTextChannel((ulong) sender.UserSenderId).SendMessageAsync(sender.Text);
+            Task<RestUserMessage> task = _client.GetGuild((ulong) sender.GroupId)
+                .GetTextChannel((ulong) sender.UserSenderId)
+                .SendMessageAsync(sender.Text);
             try
             {
                 task.Wait();
