@@ -1,4 +1,4 @@
-﻿namespace Tef.BotFramework.Discord
+﻿namespace Tef.BotFramework.ApiProviders.Discord
 {
     public class DiscordSettings
     {

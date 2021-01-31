@@ -45,7 +45,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Telegram\" />
+    <Folder Include="ApiProviders\Telegram\" />
   </ItemGroup>
 
   <ItemGroup>
