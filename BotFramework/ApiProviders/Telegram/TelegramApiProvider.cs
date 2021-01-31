@@ -9,7 +9,7 @@ using Telegram.Bot;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types;
 
-namespace Tef.BotFramework.Telegram
+namespace Tef.BotFramework.ApiProviders.Telegram
 {
     public class TelegramApiProvider : IBotApiProvider, IDisposable
     {

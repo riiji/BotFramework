@@ -10,7 +10,7 @@ using VkApi.Wrapper;
 using VkApi.Wrapper.LongPolling.Bot;
 using VkApi.Wrapper.Objects;
 
-namespace Tef.BotFramework.VK
+namespace Tef.BotFramework.ApiProviders.VK
 {
     public class VkFixedApiProvider : IBotApiProvider, IDisposable
     {

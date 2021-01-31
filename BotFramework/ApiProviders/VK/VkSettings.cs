@@ -1,4 +1,4 @@
-﻿namespace Tef.BotFramework.VK
+﻿namespace Tef.BotFramework.ApiProviders.VK
 {
     public class VkSettings
     {
@@ -12,7 +12,6 @@
 
         public VkSettings()
         {
-            
         }
 
         public string VkKey { get; set; }

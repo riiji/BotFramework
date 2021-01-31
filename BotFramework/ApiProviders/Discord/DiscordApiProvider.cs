@@ -10,7 +10,7 @@ using Tef.BotFramework.Core.Abstractions;
 using Tef.BotFramework.Settings;
 using Tef.BotFramework.Tools.Loggers;
 
-namespace Tef.BotFramework.Discord
+namespace Tef.BotFramework.ApiProviders.Discord
 {
     public class DiscordApiProvider : IBotApiProvider, IDisposable
     {

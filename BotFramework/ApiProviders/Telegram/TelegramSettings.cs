@@ -1,4 +1,4 @@
-﻿namespace Tef.BotFramework.Telegram
+﻿namespace Tef.BotFramework.ApiProviders.Telegram
 {
     public class TelegramSettings
     {
@@ -9,7 +9,6 @@
 
         public TelegramSettings()
         {
-            
         }
 
         public string AccessToken { get; set; }
