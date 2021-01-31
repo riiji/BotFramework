@@ -25,6 +25,14 @@ namespace Tef.BotFramework.ApiProviders.VK
         {
             _settings = settings.GetSettings();
             //TODO: code duplicate. Move to method Start or smth like that, reuse in Restart
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            //TODO: log inner error?
+            //TODO: Add inner error message to ArgumentException?
+            //TODO: Replace ArgumentException with custom exception (BorFrameworkException?)
             _api = new Vkontakte(_settings.VkAppId, _settings.VkAppSecret);
             Task<GroupsLongPollServer> serverTask = _api.Groups.GetLongPollServer();
             if (!serverTask.IsCompletedSuccessfully)
@@ -49,21 +57,7 @@ namespace Tef.BotFramework.ApiProviders.VK
                     Dispose();
                 }
 
-                //TODO: _api is not disposed
-                _api = new Vkontakte(_settings.VkAppId, _settings.VkAppSecret);
-                Task<GroupsLongPollServer> serverTask = _api.Groups.GetLongPollServer();
-                //TODO: log inner error?
-                //TODO: Add inner error message to ArgumentException?
-                //TODO: Replace ArgumentException with custom exception (BorFrameworkException?)
-                if (!serverTask.IsCompletedSuccessfully)
-                    throw new ArgumentException("internal error");
-                GroupsLongPollServer server = serverTask.Result;
-                Task<BotLongPollClient> clientTask = _api.StartBotLongPollClient(server.Server, server.Key, int.Parse(server.Ts));
-                if (!clientTask.IsCompletedSuccessfully)
-                    throw new ArgumentException("internal error");
-                _client = clientTask.Result;
-                _client.OnMessageNew += Client_OnMessageNew;
-                _client.LongPollFailureReceived += Client_LongPollFailureReceived;
+                Initialize();
             }
         }
 

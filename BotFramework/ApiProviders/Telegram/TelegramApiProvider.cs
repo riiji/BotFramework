@@ -22,6 +22,11 @@ namespace Tef.BotFramework.ApiProviders.Telegram
         public TelegramApiProvider(IGetSettings<TelegramSettings> settings)
         {
             _settings = settings.GetSettings();
+            Initialize();
+        }
+
+        private void Initialize()
+        {
             _client = new TelegramBotClient(_settings.AccessToken);
 
             _client.OnMessage += ClientOnMessage;
@@ -65,10 +70,7 @@ namespace Tef.BotFramework.ApiProviders.Telegram
                 if (_client != null)
                     Dispose();
 
-                _client = new TelegramBotClient(_settings.AccessToken);
-
-                _client.OnMessage += ClientOnMessage;
-                _client.StartReceiving();
+                Initialize();
             }
         }
 

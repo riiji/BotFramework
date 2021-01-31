@@ -23,12 +23,7 @@ namespace Tef.BotFramework.ApiProviders.Discord
         public DiscordApiProvider(IGetSettings<DiscordSettings> settings)
         {
             _settings = settings.GetSettings();
-            _client = new DiscordSocketClient();
-
-            _client.LoginAsync(TokenType.Bot, _settings.AccessToken);
-
-            _client.MessageReceived += ClientOnMessage;
-            _client.StartAsync();
+            Initialize();
         }
 
         private Task ClientOnMessage(SocketMessage arg)
@@ -73,13 +68,18 @@ namespace Tef.BotFramework.ApiProviders.Discord
                 if (_client != null)
                     Dispose();
 
-                _client = new DiscordSocketClient();
-
-                _client.LoginAsync(TokenType.Bot, _settings.AccessToken);
-
-                _client.MessageReceived += ClientOnMessage;
-                _client.StartAsync();
+                Initialize();
             }
+        }
+
+        private void Initialize()
+        {
+            _client = new DiscordSocketClient();
+
+            _client.LoginAsync(TokenType.Bot, _settings.AccessToken);
+
+            _client.MessageReceived += ClientOnMessage;
+            _client.StartAsync();
         }
 
         public void Dispose()
