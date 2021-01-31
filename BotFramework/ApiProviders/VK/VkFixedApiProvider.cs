@@ -24,7 +24,6 @@ namespace Tef.BotFramework.ApiProviders.VK
         public VkFixedApiProvider(IGetSettings<VkSettings> settings)
         {
             _settings = settings.GetSettings();
-            //TODO: code duplicate. Move to method Start or smth like that, reuse in Restart
             Initialize();
         }
 
@@ -105,6 +104,7 @@ namespace Tef.BotFramework.ApiProviders.VK
             _client.OnMessageNew -= Client_OnMessageNew;
             _client.LongPollFailureReceived -= Client_LongPollFailureReceived;
             _client.Stop();
+            _api.Dispose();
         }
     }
 }
