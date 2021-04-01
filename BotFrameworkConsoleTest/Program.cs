@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
+using Tef.BotFramework.ApiProviders.VK;
 using Tef.BotFramework.Core;
 using Tef.BotFramework.Core.BotCommands;
 using Tef.BotFramework.Settings;
-using Tef.BotFramework.VK;
 
 namespace BotFrameworkConsoleTest
 {
