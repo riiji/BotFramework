@@ -19,9 +19,9 @@ namespace Tef.BotFramework.ApiProviders.Telegram
 
         public event EventHandler<BotEventArgs> OnMessage;
 
-        public TelegramApiProvider(IGetSettings<TelegramSettings> settings)
+        public TelegramApiProvider(ISettingsProvider<TelegramSettings> settingsProvider)
         {
-            _settings = settings.GetSettings();
+            _settings = settingsProvider.GetSettings();
             Initialize();
         }
 

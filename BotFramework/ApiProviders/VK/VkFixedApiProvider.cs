@@ -21,9 +21,9 @@ namespace Tef.BotFramework.ApiProviders.VK
         private Vkontakte _api;
         private BotLongPollClient _client;
 
-        public VkFixedApiProvider(IGetSettings<VkSettings> settings)
+        public VkFixedApiProvider(ISettingsProvider<VkSettings> settingsProvider)
         {
-            _settings = settings.GetSettings();
+            _settings = settingsProvider.GetSettings();
             Initialize();
         }
 

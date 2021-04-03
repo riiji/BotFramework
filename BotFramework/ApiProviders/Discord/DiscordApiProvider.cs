@@ -20,9 +20,9 @@ namespace Tef.BotFramework.ApiProviders.Discord
 
         public event EventHandler<BotEventArgs> OnMessage;
 
-        public DiscordApiProvider(IGetSettings<DiscordSettings> settings)
+        public DiscordApiProvider(ISettingsProvider<DiscordSettings> settingsProvider)
         {
-            _settings = settings.GetSettings();
+            _settings = settingsProvider.GetSettings();
             Initialize();
         }
 

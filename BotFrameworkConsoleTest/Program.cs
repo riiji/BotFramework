@@ -10,7 +10,8 @@ namespace BotFrameworkConsoleTest
     {
         private static async Task MainAsync()
         {
-            var vkSettings = new SettingsFromConfig<VkSettings>("TelegramConfig.json");
+
+            var vkSettings = new ConfigSettingsProvider<VkSettings>("TelegramConfig.json");
             var telegramApi = new VkFixedApiProvider(vkSettings);
 
             new Bot(telegramApi)
