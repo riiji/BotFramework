@@ -1,18 +1,19 @@
+# BotFramework
+
 [nuget](https://www.nuget.org/packages/Tef.BotFramework/0.9.2)
 
-BotFramework
+BotFramework - фреймворк, который упрощает процедуру создания ботов за счет абстрагирования над API конкретных месенджеров.
 
-Простой фреймворк для ~~вк~~ любого бота
+## Startup
+
+> Outdated. Need to update
 
 Начало работы:
 
 1. Получение настроек:
-
-* [Через конфиг](https://github.com/TEF-Dev/BotFramework/blob/master/SettingsFromConfig.md)
-
-* [Через Sqlite](https://github.com/TEF-Dev/BotFramework/blob/master/SettingsFromSqlite.md)
-
-* [Через пользовательский метод](https://github.com/TEF-Dev/BotFramework/blob/master/SettingsFromUserMethod.md)
+    1. [Через конфиг](https://github.com/TEF-Dev/BotFramework/blob/master/SettingsFromConfig.md)
+    2. [Через Sqlite](https://github.com/TEF-Dev/BotFramework/blob/master/SettingsFromSqlite.md)
+    3. [Через пользовательский метод](https://github.com/TEF-Dev/BotFramework/blob/master/SettingsFromUserMethod.md)
 
 2. Добавление новых команд:
 
