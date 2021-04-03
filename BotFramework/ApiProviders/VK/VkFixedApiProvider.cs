@@ -40,9 +40,10 @@ namespace Tef.BotFramework.ApiProviders.VK
             Task<BotLongPollClient> clientTask = _api.StartBotLongPollClient(server.Server, server.Key, int.Parse(server.Ts));
             if (!clientTask.IsCompletedSuccessfully)
                 throw new ArgumentException("internal error");
-            BotLongPollClient client = clientTask.Result;
-            client.OnMessageNew += Client_OnMessageNew;
-            client.LongPollFailureReceived += Client_LongPollFailureReceived;
+
+            _client = clientTask.Result;
+            _client.OnMessageNew += Client_OnMessageNew;
+            _client.LongPollFailureReceived += Client_LongPollFailureReceived;
         }
 
         public void Restart()
