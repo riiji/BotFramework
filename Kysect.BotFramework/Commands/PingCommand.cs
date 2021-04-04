@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using FluentResults;
-using Kysect.BotFramework.Core.Abstractions;
+using Kysect.BotFramework.Core.CommandInvoking;
 
-namespace Kysect.BotFramework.Core.BotCommands
+namespace Kysect.BotFramework.Commands
 {
     public class PingCommand : IBotCommand
     {

@@ -1,12 +1,11 @@
 using System.Threading.Tasks;
 using FluentResults;
-using Kysect.BotFramework.Core.Abstractions;
 
-namespace Kysect.BotFramework.Core.CommandControllers
+namespace Kysect.BotFramework.Core.CommandInvoking
 {
     public class CommandHandler
     {
-        private readonly CommandsList _commands = new CommandsList();
+        private readonly CommandHolder _commands = new CommandHolder();
 
         public Result<CommandArgumentContainer> IsCorrectArgumentCount(CommandArgumentContainer args)
         {
@@ -58,7 +57,7 @@ namespace Kysect.BotFramework.Core.CommandControllers
             return commandExecuteResult;
         }
 
-        public CommandsList GetCommands()
+        public CommandHolder GetCommands()
         {
             return _commands;
         }

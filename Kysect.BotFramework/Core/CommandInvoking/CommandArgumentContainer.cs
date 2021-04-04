@@ -2,7 +2,7 @@
 using System.Linq;
 using FluentResults;
 
-namespace Kysect.BotFramework.Core
+namespace Kysect.BotFramework.Core.CommandInvoking
 {
     public class CommandArgumentContainer
     {

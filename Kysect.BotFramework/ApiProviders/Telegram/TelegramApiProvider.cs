@@ -2,9 +2,8 @@
 using System.Threading.Tasks;
 using FluentResults;
 using Kysect.BotFramework.Core;
-using Kysect.BotFramework.Core.Abstractions;
+using Kysect.BotFramework.Core.Tools.Loggers;
 using Kysect.BotFramework.Settings;
-using Kysect.BotFramework.Tools.Loggers;
 using Telegram.Bot;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types;

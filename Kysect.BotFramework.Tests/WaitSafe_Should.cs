@@ -3,8 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
+using Kysect.BotFramework.Core.Tools.Extensions;
 using NUnit.Framework;
-using Kysect.BotFramework.Tools.Extensions;
 
 namespace Kysect.BotFramework.Tests
 {

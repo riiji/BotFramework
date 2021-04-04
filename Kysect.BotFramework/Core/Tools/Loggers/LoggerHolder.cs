@@ -1,7 +1,7 @@
 ﻿using Serilog;
 using Serilog.Core;
 
-namespace Kysect.BotFramework.Tools.Loggers
+namespace Kysect.BotFramework.Core.Tools.Loggers
 {
     public static class LoggerHolder
     {

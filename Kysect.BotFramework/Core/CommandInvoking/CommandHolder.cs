@@ -1,15 +1,14 @@
 ﻿using System.Collections.Generic;
 using FluentResults;
-using Kysect.BotFramework.Core.Abstractions;
 
-namespace Kysect.BotFramework.Core.CommandControllers
+namespace Kysect.BotFramework.Core.CommandInvoking
 {
-    public class CommandsList
+    public class CommandHolder
     {
         private bool _caseSensitive = true;
         private Dictionary<string, IBotCommand> _commands = new Dictionary<string, IBotCommand>();
 
-        public CommandsList WithoutCaseSensitive()
+        public CommandHolder WithoutCaseSensitive()
         {
             _caseSensitive = false;
             var newCommandList = new Dictionary<string, IBotCommand>();

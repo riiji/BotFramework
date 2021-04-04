@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentResults;
 using Kysect.BotFramework.Core;
-using Kysect.BotFramework.Core.Abstractions;
+using Kysect.BotFramework.Core.Tools;
+using Kysect.BotFramework.Core.Tools.Extensions;
 using Kysect.BotFramework.Settings;
-using Kysect.BotFramework.Tools.Extensions;
 using VkApi.Wrapper;
 using VkApi.Wrapper.LongPolling.Bot;
 using VkApi.Wrapper.Objects;
@@ -87,7 +87,7 @@ namespace Kysect.BotFramework.ApiProviders.VK
         {
             Task<int> sendMessageTask = _api.Messages.Send
             (
-                randomId: Utilities.GetRandom(),
+                randomId: RandomUtilities.GetRandom(),
                 peerId: (int)args.GroupId,
                 message: args.Text
             );

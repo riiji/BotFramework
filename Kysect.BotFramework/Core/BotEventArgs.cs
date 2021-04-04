@@ -1,4 +1,5 @@
 ﻿using System;
+using Kysect.BotFramework.Core.CommandInvoking;
 
 namespace Kysect.BotFramework.Core
 {

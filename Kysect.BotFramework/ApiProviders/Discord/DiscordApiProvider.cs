@@ -6,9 +6,8 @@ using Discord.Rest;
 using Discord.WebSocket;
 using FluentResults;
 using Kysect.BotFramework.Core;
-using Kysect.BotFramework.Core.Abstractions;
+using Kysect.BotFramework.Core.Tools.Loggers;
 using Kysect.BotFramework.Settings;
-using Kysect.BotFramework.Tools.Loggers;
 
 namespace Kysect.BotFramework.ApiProviders.Discord
 {

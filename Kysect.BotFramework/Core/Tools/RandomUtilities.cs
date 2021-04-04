@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace Kysect.BotFramework.Core
+namespace Kysect.BotFramework.Core.Tools
 {
     //TODO: move to tools?
-    public static class Utilities
+    public static class RandomUtilities
     {
         private static readonly Random Random = new Random();
 

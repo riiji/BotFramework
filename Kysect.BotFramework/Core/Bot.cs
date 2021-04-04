@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentResults;
+using Kysect.BotFramework.ApiProviders;
+using Kysect.BotFramework.Core.CommandInvoking;
+using Kysect.BotFramework.Core.Tools;
+using Kysect.BotFramework.Core.Tools.Extensions;
+using Kysect.BotFramework.Core.Tools.Loggers;
 using Serilog;
-using Kysect.BotFramework.Core.Abstractions;
-using Kysect.BotFramework.Core.CommandControllers;
-using Kysect.BotFramework.Tools;
-using Kysect.BotFramework.Tools.Extensions;
-using Kysect.BotFramework.Tools.Loggers;
 
 namespace Kysect.BotFramework.Core
 {

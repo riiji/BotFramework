@@ -1,7 +1,8 @@
 ﻿using System;
 using FluentResults;
+using Kysect.BotFramework.Core;
 
-namespace Kysect.BotFramework.Core.Abstractions
+namespace Kysect.BotFramework.ApiProviders
 {
     public interface IBotApiProvider
     {

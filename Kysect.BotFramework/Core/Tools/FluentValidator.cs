@@ -1,7 +1,7 @@
 ﻿using System;
 using FluentResults;
 
-namespace Kysect.BotFramework.Tools
+namespace Kysect.BotFramework.Core.Tools
 {
     public class FluentValidatorContext
     {

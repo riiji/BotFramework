@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using FluentResults;
 
-namespace Kysect.BotFramework.Core.Abstractions
+namespace Kysect.BotFramework.Core.CommandInvoking
 {
     public interface IBotCommand
     {

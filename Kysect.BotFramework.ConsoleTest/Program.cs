@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Kysect.BotFramework.ApiProviders.Telegram;
+using Kysect.BotFramework.Commands;
 using Kysect.BotFramework.Core;
-using Kysect.BotFramework.Core.BotCommands;
 using Kysect.BotFramework.Settings;
 
 namespace BotFrameworkConsoleTest

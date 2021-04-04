@@ -1,9 +1,8 @@
 using System;
 using FakeItEasy;
 using FluentAssertions;
+using Kysect.BotFramework.Core.CommandInvoking;
 using NUnit.Framework;
-using Kysect.BotFramework.Core.Abstractions;
-using Kysect.BotFramework.Core.CommandControllers;
 
 namespace Kysect.BotFramework.Tests
 {
@@ -12,13 +11,13 @@ namespace Kysect.BotFramework.Tests
         [SetUp]
         public void Setup()
         {
-            _commands = new CommandsList();
+            _commands = new CommandHolder();
 
             _fakeCommand = A.Fake<IBotCommand>();
             A.CallTo(() => _fakeCommand.CommandName).Returns("someCommand");
         }
 
-        private CommandsList _commands;
+        private CommandHolder _commands;
         private IBotCommand _fakeCommand;
         
         [Test]

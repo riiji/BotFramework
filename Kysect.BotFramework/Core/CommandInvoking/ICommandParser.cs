@@ -1,6 +1,6 @@
 ﻿using FluentResults;
 
-namespace Kysect.BotFramework.Core
+namespace Kysect.BotFramework.Core.CommandInvoking
 {
     public interface ICommandParser
     {
