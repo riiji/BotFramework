@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+using System;
 using FluentResults;
 
 namespace Kysect.BotFramework.Core.CommandInvoking
@@ -10,7 +10,7 @@ namespace Kysect.BotFramework.Core.CommandInvoking
         public Result<CommandArgumentContainer> IsCorrectArgumentCount(CommandArgumentContainer args)
         {
             Result<IBotCommand> commandTask = _commands.GetCommand(args.CommandName);
-            if (!commandTask.IsSuccess)
+            if (commandTask.IsFailed)
                 return commandTask.ToResult<CommandArgumentContainer>();
 
             return commandTask.Value.Args.Length == args.Arguments.Count
@@ -19,11 +19,11 @@ namespace Kysect.BotFramework.Core.CommandInvoking
         }
 
 
-        public Result<CommandArgumentContainer> IsCommandCorrect(CommandArgumentContainer args)
+        public Result<CommandArgumentContainer> IsCommandCanBeExecuted(CommandArgumentContainer args)
         {
             Result<IBotCommand> commandTask = _commands.GetCommand(args.CommandName);
 
-            if (!commandTask.IsSuccess)
+            if (commandTask.IsFailed)
                 return commandTask.ToResult<CommandArgumentContainer>();
 
             IBotCommand command = commandTask.Value;
@@ -46,15 +46,21 @@ namespace Kysect.BotFramework.Core.CommandInvoking
             _commands.AddCommand(command);
         }
 
-        public async Task<Result<string>> ExecuteCommand(CommandArgumentContainer args)
+        public Result<string> ExecuteCommand(CommandArgumentContainer args)
         {
             Result<IBotCommand> command = _commands.GetCommand(args.CommandName);
 
             if (!command.IsSuccess)
                 return command.ToResult<string>();
 
-            Result<string> commandExecuteResult = await command.Value.ExecuteAsync(args);
-            return commandExecuteResult;
+            try
+            {
+                return command.Value.ExecuteAsync(args).Result;
+            }
+            catch (Exception e)
+            {
+                return Result.Fail(new Error($"Command execution failed. Command: {args.CommandName}; arguments: {string.Join(", ", args.Arguments)}").CausedBy(e));
+            }
         }
 
         public CommandHolder GetCommands()

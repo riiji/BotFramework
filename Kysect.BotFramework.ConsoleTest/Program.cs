@@ -4,7 +4,7 @@ using Kysect.BotFramework.Commands;
 using Kysect.BotFramework.Core;
 using Kysect.BotFramework.Settings;
 
-namespace BotFrameworkConsoleTest
+namespace Kysect.BotFramework.ConsoleTest
 {
     public static class Program
     {
@@ -15,7 +15,7 @@ namespace BotFrameworkConsoleTest
             var settings = new ConstSettingsProvider<TelegramSettings>(new TelegramSettings(telegramToken));
             var api = new TelegramApiProvider(settings);
 
-            new Bot(api)
+            new BotManager(api)
                 .AddDefaultLogger()
                 .SetPrefix('!')
                 .WithoutCaseSensitiveCommands()

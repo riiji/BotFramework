@@ -27,11 +27,9 @@ namespace Kysect.BotFramework.Core.CommandInvoking
 
         public Result<IBotCommand> GetCommand(string commandName)
         {
-            var message = $"Command {commandName} not founded";
-
             return _commands.TryGetValue(commandName, out IBotCommand command)
                 ? Result.Ok(command)
-                : Result.Fail<IBotCommand>(message);
+                : Result.Fail<IBotCommand>($"Command {commandName} not founded");
         }
     }
 }

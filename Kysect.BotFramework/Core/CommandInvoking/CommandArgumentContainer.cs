@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using FluentResults;
 
 namespace Kysect.BotFramework.Core.CommandInvoking
 {
@@ -19,11 +18,9 @@ namespace Kysect.BotFramework.Core.CommandInvoking
             Arguments = arguments;
         }
 
-        public Result<CommandArgumentContainer> EnsureStartWithPrefix(char prefix)
+        public bool EnsureStartWithPrefix(char prefix)
         {
-            return prefix == '\0' || CommandName.FirstOrDefault() == prefix
-                ? Result.Ok(this)
-                : Result.Fail<CommandArgumentContainer>("Command must start with correct prefix.");
+            return prefix == '\0' || CommandName.FirstOrDefault() == prefix;
         }
 
         public CommandArgumentContainer ApplySettings(char prefix, bool caseSensitive)

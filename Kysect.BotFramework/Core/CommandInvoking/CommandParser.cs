@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using FluentResults;
+﻿using FluentResults;
 
 namespace Kysect.BotFramework.Core.CommandInvoking
 {
@@ -8,16 +6,12 @@ namespace Kysect.BotFramework.Core.CommandInvoking
     {
         public Result<CommandArgumentContainer> ParseCommand(BotEventArgs botArguments)
         {
-            string[] commands = botArguments.Text.Split();
-            string commandName = commands.FirstOrDefault();
+            string commandName = botArguments.FindCommandName();
 
-            if (commandName is null)
-                return Result.Fail("ParseCommand: commandName was null");
+            if (string.IsNullOrWhiteSpace(commandName))
+                return Result.Fail($"[{nameof(CommandParser)}]: Message do not contains command name.");
 
-            //skip command name
-            IEnumerable<string> args = commands.Skip(1);
-
-            return Result.Ok(new CommandArgumentContainer(commandName, botArguments, args.ToList()));
+            return Result.Ok(new CommandArgumentContainer(commandName, botArguments, botArguments.GetCommandArguments()));
         }
     }
 }

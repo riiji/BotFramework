@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Kysect.BotFramework.Core.CommandInvoking;
 
 namespace Kysect.BotFramework.Core
@@ -26,5 +28,16 @@ namespace Kysect.BotFramework.Core
         public long GroupId { get; }
         public long UserSenderId { get; }
         public string Username { get; }
+
+        public string FindCommandName()
+        {
+            //TODO: add separator list
+            return Text.Split().FirstOrDefault();
+        }
+
+        public List<string> GetCommandArguments()
+        {
+            return Text.Split().Skip(1).ToList();
+        }
     }
 }

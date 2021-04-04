@@ -66,7 +66,7 @@ namespace Kysect.BotFramework.ApiProviders.VK
             Restart();
         }
 
-        private void Client_OnMessageNew(object sender, VkApi.Wrapper.Objects.MessagesMessage e)
+        private void Client_OnMessageNew(object sender, MessagesMessage e)
         {
             //TODO: add some logs with Debug level?
             Task<UsersUserXtrCounters[]> userTask = _api.Users.Get(new[] { e.FromId.ToString() });
