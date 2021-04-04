@@ -1,21 +1,58 @@
 # BotFramework
 
-[nuget](https://www.nuget.org/packages/Tef.BotFramework/0.9.2)
-
 BotFramework - фреймворк, который упрощает процедуру создания ботов за счет абстрагирования над API конкретных месенджеров.
 
 ## Startup
 
-> Outdated. Need to update
-
 Начало работы:
 
-1. Получение настроек:
-    1. [Через конфиг](https://github.com/TEF-Dev/BotFramework/blob/master/SettingsFromConfig.md)
-    2. [Через Sqlite](https://github.com/TEF-Dev/BotFramework/blob/master/SettingsFromSqlite.md)
-    3. [Через пользовательский метод](https://github.com/TEF-Dev/BotFramework/blob/master/SettingsFromUserMethod.md)
+### Получение настроек через конфигурационный файл
 
-2. Добавление новых команд:
+Задать настройки можно с помощью json файла.
+
+```csharp
+var settings = new ConfigSettingsProvider<TSettings>("filename");
+```
+
+TSettings - класс, в котором описаны настройки бота. Пример такого класса (данный класс доступен из коробки)
+
+```csharp
+public class VkSettings
+{
+        public VkSettings(string vkKey, int vkAppId, string vkAppSecret, int vkGroupId)
+        {
+            VkKey = vkKey;
+            VkAppId = vkAppId;
+            VkAppSecret = vkAppSecret;
+            VkGroupId = vkGroupId;
+        }
+
+        public VkSettings()
+        {
+        }
+
+        public string VkKey { get; set; }
+        public int VkAppId { get; set; }
+        public string VkAppSecret { get; set; }
+        public int VkGroupId { get; set; }
+}
+```
+
+```csharp
+var settings = new SettingsFromConfig<VkSettings>("filename");
+```
+
+Вид JSON конфига для VkSettings
+```json
+{
+"VkKey":"",
+"VkAppId":"",
+"VkAppSecret":"",
+"VkGroupId":""
+}
+```
+
+### Добавление новых команд:
 
 Чтобы добавить команду, ваш класс должен реализовывать интерфейс IBotCommand
 
@@ -27,14 +64,14 @@ public class PingCommand : IBotCommand
         public string Description { get; } = "Answer pong on ping message";
         public string[] Args { get; } = new string[0];
 
-        public bool CanExecute(CommandArgumentContainer args)
+        public Result CanExecute(CommandArgumentContainer args)
         {
-            return true;
+            return Result.Ok();
         }
 
-        public Result Execute(CommandArgumentContainer args)
+        public Task<Result<string>> ExecuteAsync(CommandArgumentContainer args)
         {
-            return new Result(isSuccess: true, executeMessage: "Pong");
+            return Task.FromResult(Result.Ok($"Pong {args.Sender.Username}"));
         }
 }
 ```
@@ -42,27 +79,15 @@ public class PingCommand : IBotCommand
 Пример создания бота с командой Ping
 
 ```csharp
-class Program
-{
-        static async Task MainAsync()
-        {
-            // получение настроек
-            var settings = new SettingsFromSqlite<VkSettings>("filename");
-            
-            // создание провайдера
-            var api = new VkBotApiProvider(settings);
-            
-            var bot = new Bot(api);
+var telegramToken = string.Empty;
 
-            // запуск бота с командой пинг, логером и префиксом
-            bot.AddCommand(new PingCommand())
-                .AddLogger()
-                .SetPrefix('!')
-                .Start();
-                
-            await Task.Delay(-1);
-        }
+var settings = new ConstSettingsProvider<TelegramSettings>(new TelegramSettings(telegramToken));
+var api = new TelegramApiProvider(settings);
 
-        private static void Main() => MainAsync().GetAwaiter().GetResult();
-}
+new BotManager(api)
+    .AddDefaultLogger()
+    .SetPrefix('!')
+    .WithoutCaseSensitiveCommands()
+    .AddCommand(new PingCommand())
+    .Start();
 ```
