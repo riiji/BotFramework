@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -6,6 +6,7 @@ using Discord.Rest;
 using Discord.WebSocket;
 using FluentResults;
 using Kysect.BotFramework.Core;
+using Kysect.BotFramework.Core.BotMessages;
 using Kysect.BotFramework.Core.Tools.Loggers;
 using Kysect.BotFramework.Settings;
 using Telegram.Bot.Types;
@@ -35,7 +36,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             //TODO: add message logging
             OnMessage?.Invoke(context.Client,
                 new BotEventArgs(
-                    new BotMessage(context.Message.ToString()),
+                    new BotTextMessage(context.Message.ToString()),
                     (long) (context.Guild?.Id ?? 0),
                     (long) context.Channel.Id,
                     context.User.Username

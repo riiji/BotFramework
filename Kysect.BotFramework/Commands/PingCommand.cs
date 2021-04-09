@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using FluentResults;
 using Kysect.BotFramework.Core;
+using Kysect.BotFramework.Core.BotMessages;
 using Kysect.BotFramework.Core.CommandInvoking;
 using Telegram.Bot.Types;
 
@@ -17,9 +18,9 @@ namespace Kysect.BotFramework.Commands
             return Result.Ok();
         }
 
-        public Task<Result<BotMessage>> ExecuteAsync(CommandArgumentContainer args)
+        public Task<Result<IBotMessage>> ExecuteAsync(CommandArgumentContainer args)
         {
-            return Task.FromResult(Result.Ok(new BotMessage($"Pong {args.Sender.Username}")));
+            return Task.FromResult(Result.Ok<IBotMessage>(new BotTextMessage($"Pong {args.Sender.Username}")));
         }
     }
 }

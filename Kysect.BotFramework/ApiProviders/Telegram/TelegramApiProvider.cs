@@ -1,12 +1,16 @@
-﻿using System;
+using System;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentResults;
 using Kysect.BotFramework.Core;
+using Kysect.BotFramework.Core.BotMessages;
 using Kysect.BotFramework.Core.Tools.Loggers;
 using Kysect.BotFramework.Settings;
 using Telegram.Bot;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types;
+using File = Telegram.Bot.Types.File;
 
 namespace Kysect.BotFramework.ApiProviders.Telegram
 {
@@ -38,7 +42,7 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             LoggerHolder.Instance.Debug("New message event: {@e}", e);
             OnMessage?.Invoke(sender,
                 new BotEventArgs(
-                    new BotMessage(e.Message.Text), 
+                    new BotTextMessage(e.Message.Text), 
                     e.Message.Chat.Id, 
                     e.Message.ForwardFromMessageId,
                     e.Message.From.FirstName

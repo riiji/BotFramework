@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentResults;
 using Kysect.BotFramework.ApiProviders;
+using Kysect.BotFramework.Core.BotMessages;
 using Kysect.BotFramework.Core.CommandInvoking;
 using Kysect.BotFramework.Core.Tools.Loggers;
 using Serilog;
@@ -131,7 +132,7 @@ namespace Kysect.BotFramework.Core
                 return;
             }
 
-            Result<BotMessage> executionResult = _commandHandler.ExecuteCommand(commandResult.Value);
+            Result<IBotMessage> executionResult = _commandHandler.ExecuteCommand(commandResult.Value);
             if (executionResult.IsFailed)
             {
                 HandlerError(commandResult, e);
@@ -145,9 +146,9 @@ namespace Kysect.BotFramework.Core
         {
             LoggerHolder.Instance.Error(result.ToString());
 
-            _apiProvider.WriteMessage(new BotEventArgs(new BotMessage("Something went wrong."), botEventArgs));
+            _apiProvider.WriteMessage(new BotEventArgs(new BotTextMessage("Something went wrong."), botEventArgs));
             if (_sendErrorLogToUser)
-                _apiProvider.WriteMessage(new BotEventArgs(new BotMessage(result.ToString()), botEventArgs));
+                _apiProvider.WriteMessage(new BotEventArgs(new BotTextMessage(result.ToString()), botEventArgs));
         }
 
         public void Dispose()

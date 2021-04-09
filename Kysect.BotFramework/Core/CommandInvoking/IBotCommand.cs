@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using FluentResults;
+using Kysect.BotFramework.Core.BotMessages;
 
 namespace Kysect.BotFramework.Core.CommandInvoking
 {
@@ -14,6 +15,6 @@ namespace Kysect.BotFramework.Core.CommandInvoking
         Result CanExecute(CommandArgumentContainer args);
 
         //TODO: make sync?
-        Task<Result<BotMessage>> ExecuteAsync(CommandArgumentContainer args);
+        Task<Result<IBotMessage>> ExecuteAsync(CommandArgumentContainer args);
     }
 }

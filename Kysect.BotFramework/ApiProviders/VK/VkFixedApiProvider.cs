@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentResults;
 using Kysect.BotFramework.Core;
+using Kysect.BotFramework.Core.BotMessages;
 using Kysect.BotFramework.Core.Tools;
 using Kysect.BotFramework.Core.Tools.Extensions;
 using Kysect.BotFramework.Settings;
@@ -83,7 +84,7 @@ namespace Kysect.BotFramework.ApiProviders.VK
             //TODO: single? Ensure is not null?
             UsersUserXtrCounters user = users.FirstOrDefault();
 
-            OnMessage?.Invoke(sender, new BotEventArgs(new BotMessage(e.Text), e.PeerId, e.FromId, user?.FirstName));
+            OnMessage?.Invoke(sender, new BotEventArgs(new BotTextMessage(e.Text), e.PeerId, e.FromId, user?.FirstName));
         }
 
         public Result<string> WriteMessage(BotEventArgs args)
