@@ -1,10 +1,10 @@
 ﻿namespace Kysect.BotFramework.Core
 {
-    public class Message
+    public class BotMessage
     {
         public string Text { get; }
 
-        public  Message(string text)
+        public  BotMessage(string text)
         {
             Text = text;
         }
