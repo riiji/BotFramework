@@ -13,8 +13,8 @@ namespace Kysect.BotFramework.Core.CommandInvoking
             _caseSensitive = false;
             var newCommandList = new Dictionary<string, IBotCommand>();
 
-            foreach ((var key, IBotCommand value) in _commands)
-                newCommandList.TryAdd(key.ToLower(), value);
+            foreach (KeyValuePair<string, IBotCommand> command in _commands)
+                newCommandList.Add(command.Key.ToLower(), command.Value);
             
             _commands = newCommandList;
             return this;
@@ -22,7 +22,7 @@ namespace Kysect.BotFramework.Core.CommandInvoking
 
         public void AddCommand(IBotCommand command)
         {
-            _commands.TryAdd(_caseSensitive ? command.CommandName : command.CommandName.ToLower(), command);
+            _commands.Add(_caseSensitive ? command.CommandName : command.CommandName.ToLower(), command);
         }
 
         public Result<IBotCommand> GetCommand(string commandName)

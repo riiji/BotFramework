@@ -34,11 +34,14 @@ namespace Kysect.BotFramework.ApiProviders.VK
             //TODO: Replace ArgumentException with custom exception (BorFrameworkException?)
             _api = new Vkontakte(_settings.VkAppId, _settings.VkAppSecret);
             Task<GroupsLongPollServer> serverTask = _api.Groups.GetLongPollServer();
-            if (!serverTask.IsCompletedSuccessfully)
+            serverTask.WaitSafe();
+            if (serverTask.IsFaulted)
                 throw new ArgumentException("internal error");
+            
             GroupsLongPollServer server = serverTask.Result;
             Task<BotLongPollClient> clientTask = _api.StartBotLongPollClient(server.Server, server.Key, int.Parse(server.Ts));
-            if (!clientTask.IsCompletedSuccessfully)
+            clientTask.WaitSafe();
+            if (clientTask.IsFaulted)
                 throw new ArgumentException("internal error");
 
             _client = clientTask.Result;
@@ -73,7 +76,7 @@ namespace Kysect.BotFramework.ApiProviders.VK
             userTask.WaitSafe();
 
             //TODO: log error?
-            if (!userTask.IsCompletedSuccessfully)
+            if (userTask.IsFaulted)
                 return;
             
             UsersUserXtrCounters[] users = userTask.Result;

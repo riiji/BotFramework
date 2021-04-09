@@ -2,15 +2,23 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.9.5</Version>
-    <Authors>riijii</Authors>
+    <Version>0.1.0</Version>
+    <Authors>Kysect</Authors>
     <RootNamespace>Kysect.BotFramework</RootNamespace>
     <AssemblyName>Kysect.BotFramework</AssemblyName>
     <PackageLicenseExpression></PackageLicenseExpression>
-    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageLicenseFile></PackageLicenseFile>
+    <LangVersion>latest</LangVersion>
+    <Company>Kysect</Company>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="LICENSE.txt" />
+    <None Remove="LICENSE.txt" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="2.2.0" />
@@ -35,13 +43,6 @@
 
   <ItemGroup>
     <Folder Include="ApiProviders\Telegram\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="LICENSE.txt">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
   </ItemGroup>
 
 </Project>
