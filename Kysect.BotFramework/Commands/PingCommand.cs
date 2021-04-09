@@ -7,7 +7,7 @@ using Telegram.Bot.Types;
 
 namespace Kysect.BotFramework.Commands
 {
-    public class PingCommand : IBotCommand
+    public class PingCommand : IBotAsyncCommand
     {
         public string CommandName { get; } = "Ping";
         public string Description { get; } = "Answer pong on ping message";
@@ -17,8 +17,8 @@ namespace Kysect.BotFramework.Commands
         {
             return Result.Ok();
         }
-
-        public Task<Result<IBotMessage>> ExecuteAsync(CommandArgumentContainer args)
+        
+        public Task<Result<IBotMessage>> Execute(CommandArgumentContainer args)
         {
             return Task.FromResult(Result.Ok<IBotMessage>(new BotTextMessage($"Pong {args.Sender.Username}")));
         }

@@ -56,7 +56,16 @@ namespace Kysect.BotFramework.Core.CommandInvoking
 
             try
             {
-                return command.Value.ExecuteAsync(args).Result;
+                if (command.Value is IBotAsyncCommand asyncCommand)
+                {
+                    return asyncCommand.Execute(args).Result;
+                }
+                if (command.Value is IBotSyncCommand syncCommand)
+                {
+                    return syncCommand.Execute(args);
+                }
+
+                return Result.Fail(new Error($"Command execution failed. Wrong command inheritance."));
             }
             catch (Exception e)
             {
