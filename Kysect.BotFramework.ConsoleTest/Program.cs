@@ -10,7 +10,7 @@ namespace Kysect.BotFramework.ConsoleTest
     {
         private static async Task MainAsync()
         {
-            var telegramToken = string.Empty;
+            var telegramToken = "1484135943:AAGM6JHSj-ER8ekwHQbaJPxHDxfCEz1hSHM";
 
             var settings = new ConstSettingsProvider<TelegramSettings>(new TelegramSettings(telegramToken));
             var api = new TelegramApiProvider(settings);

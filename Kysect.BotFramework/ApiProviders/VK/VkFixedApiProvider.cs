@@ -83,7 +83,7 @@ namespace Kysect.BotFramework.ApiProviders.VK
             //TODO: single? Ensure is not null?
             UsersUserXtrCounters user = users.FirstOrDefault();
 
-            OnMessage?.Invoke(sender, new BotEventArgs(e.Text, e.PeerId, e.FromId, user?.FirstName));
+            OnMessage?.Invoke(sender, new BotEventArgs(new BotMessage(e.Text), e.PeerId, e.FromId, user?.FirstName));
         }
 
         public Result<string> WriteMessage(BotEventArgs args)
@@ -92,14 +92,14 @@ namespace Kysect.BotFramework.ApiProviders.VK
             (
                 randomId: RandomUtilities.GetRandom(),
                 peerId: (int)args.GroupId,
-                message: args.Text
+                message: args.Message.Text
             );
 
             sendMessageTask.WaitSafe();
 
             return sendMessageTask.IsFaulted
-                ? Result.Fail<string>(new Error($"Vk write message failed from {args.GroupId} with message {args.Text}").CausedBy(sendMessageTask.Exception))
-                : Result.Ok($"Vk write {args.Text} to {args.GroupId} ok");
+                ? Result.Fail<string>(new Error($"Vk write message failed from {args.GroupId} with message {args.Message.Text}").CausedBy(sendMessageTask.Exception))
+                : Result.Ok($"Vk write {args.Message.Text} to {args.GroupId} ok");
         }
 
         public void Dispose()

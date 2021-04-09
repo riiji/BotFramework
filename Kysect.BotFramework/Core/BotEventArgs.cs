@@ -7,24 +7,24 @@ namespace Kysect.BotFramework.Core
 {
     public class BotEventArgs : EventArgs
     {
-        public BotEventArgs(string text, long groupId, long userSenderId, string username)
+        public BotEventArgs(BotMessage message, long groupId, long userSenderId, string username)
         {
-            Text = text;
+            Message = message;
             GroupId = groupId;
             UserSenderId = userSenderId;
             Username = username;
         }
 
-        public BotEventArgs(string text, CommandArgumentContainer commandWithArgs) : this(text, commandWithArgs.Sender)
+        public BotEventArgs(BotMessage message, CommandArgumentContainer commandWithArgs) : this(message, commandWithArgs.Sender)
         {
         }
 
-        public BotEventArgs(string text, BotEventArgs sender)
-            : this(text, sender.GroupId, sender.UserSenderId, sender.Username)
+        public BotEventArgs(BotMessage message, BotEventArgs sender)
+            : this(message, sender.GroupId, sender.UserSenderId, sender.Username)
         {
         }
 
-        public string Text { get; }
+        public BotMessage Message { get; }
         public long GroupId { get; }
         public long UserSenderId { get; }
         public string Username { get; }
@@ -32,12 +32,12 @@ namespace Kysect.BotFramework.Core
         public string FindCommandName()
         {
             //TODO: add separator list
-            return Text.Split().FirstOrDefault();
+            return Message.Text.Split().FirstOrDefault();
         }
 
         public List<string> GetCommandArguments()
         {
-            return Text.Split().Skip(1).ToList();
+            return Message.Text.Split().Skip(1).ToList();
         }
     }
 }

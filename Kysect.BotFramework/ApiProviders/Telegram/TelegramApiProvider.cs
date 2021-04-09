@@ -38,7 +38,7 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             LoggerHolder.Instance.Debug("New message event: {@e}", e);
             OnMessage?.Invoke(sender,
                 new BotEventArgs(
-                    e.Message.Text, 
+                    new BotMessage(e.Message.Text), 
                     e.Message.Chat.Id, 
                     e.Message.ForwardFromMessageId,
                     e.Message.From.FirstName
@@ -47,7 +47,7 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
 
         public Result<string> WriteMessage(BotEventArgs sender)
         {
-            Task<Message> task = _client.SendTextMessageAsync(sender.GroupId, sender.Text);
+            Task<Message> task = _client.SendTextMessageAsync(sender.GroupId, sender.Message.Text);
 
             try
             {

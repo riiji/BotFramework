@@ -6,6 +6,7 @@ using Kysect.BotFramework.ApiProviders;
 using Kysect.BotFramework.Core.CommandInvoking;
 using Kysect.BotFramework.Core.Tools.Loggers;
 using Serilog;
+using Telegram.Bot.Types;
 
 namespace Kysect.BotFramework.Core
 {
@@ -98,7 +99,7 @@ namespace Kysect.BotFramework.Core
             catch (Exception exception)
             {
                 LoggerHolder.Instance.Error(exception, $"Message handling from [{e.Username}] failed.");
-                LoggerHolder.Instance.Debug($"Failed message: {e.Text}");
+                LoggerHolder.Instance.Debug($"Failed message: {e.Message.Text}");
                 //FYI: we do not need to restart on each exception, but probably we have case were restart must be.
                 //_apiProvider.Restart();
             }
@@ -130,7 +131,7 @@ namespace Kysect.BotFramework.Core
                 return;
             }
 
-            Result<string> executionResult = _commandHandler.ExecuteCommand(commandResult.Value);
+            Result<BotMessage> executionResult = _commandHandler.ExecuteCommand(commandResult.Value);
             if (executionResult.IsFailed)
             {
                 HandlerError(commandResult, e);
@@ -144,9 +145,9 @@ namespace Kysect.BotFramework.Core
         {
             LoggerHolder.Instance.Error(result.ToString());
 
-            _apiProvider.WriteMessage(new BotEventArgs("Something went wrong.", botEventArgs));
+            _apiProvider.WriteMessage(new BotEventArgs(new BotMessage("Something went wrong."), botEventArgs));
             if (_sendErrorLogToUser)
-                _apiProvider.WriteMessage(new BotEventArgs(result.ToString(), botEventArgs));
+                _apiProvider.WriteMessage(new BotEventArgs(new BotMessage(result.ToString()), botEventArgs));
         }
 
         public void Dispose()

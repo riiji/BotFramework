@@ -46,12 +46,12 @@ namespace Kysect.BotFramework.Core.CommandInvoking
             _commands.AddCommand(command);
         }
 
-        public Result<string> ExecuteCommand(CommandArgumentContainer args)
+        public Result<BotMessage> ExecuteCommand(CommandArgumentContainer args)
         {
             Result<IBotCommand> command = _commands.GetCommand(args.CommandName);
 
             if (!command.IsSuccess)
-                return command.ToResult<string>();
+                return command.ToResult<BotMessage>();
 
             try
             {

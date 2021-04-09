@@ -14,6 +14,6 @@ namespace Kysect.BotFramework.Core.CommandInvoking
         Result CanExecute(CommandArgumentContainer args);
 
         //TODO: make sync?
-        Task<Result<string>> ExecuteAsync(CommandArgumentContainer args);
+        Task<Result<BotMessage>> ExecuteAsync(CommandArgumentContainer args);
     }
 }
