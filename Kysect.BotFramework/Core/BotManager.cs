@@ -139,7 +139,10 @@ namespace Kysect.BotFramework.Core
                 return;
             }
 
-            _apiProvider.WriteMessage(new BotEventArgs(executionResult.Value, commandResult.Value));
+            IBotMessage message = executionResult.Value;
+            BotEventArgs sender = commandResult.Value.Sender;
+            //_apiProvider.WriteMessage(new BotEventArgs(executionResult.Value, commandResult.Value));
+            message.Send(_apiProvider,sender);
         }
 
         private void HandlerError(Result result, BotEventArgs botEventArgs)
