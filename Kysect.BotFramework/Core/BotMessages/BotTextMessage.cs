@@ -5,9 +5,9 @@ namespace Kysect.BotFramework.Core.BotMessages
     public class BotTextMessage : IBotMessage
     {
         public string Text { get; }
-        public void Send(IBotApiProvider apiProvider, BotEventArgs sender)
+        public void Send(IBotApiProvider apiProvider, SenderInfo sender)
         {
-            throw new System.NotImplementedException();
+            apiProvider.SendText(Text, sender);
         }
 
         public  BotTextMessage(string text)

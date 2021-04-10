@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -37,18 +37,20 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             OnMessage?.Invoke(context.Client,
                 new BotEventArgs(
                     new BotTextMessage(context.Message.ToString()),
+                    new SenderInfo(
                     (long) (context.Guild?.Id ?? 0),
                     (long) context.Channel.Id,
                     context.User.Username
+                    )
                 ));
             return Task.CompletedTask;
         }
 
-        public Result<string> WriteMessage(BotEventArgs sender)
+        public Result<string> SendText(String text, SenderInfo sender)
         {
             Task<RestUserMessage> task = _client.GetGuild((ulong) sender.GroupId)
                 .GetTextChannel((ulong) sender.UserSenderId)
-                .SendMessageAsync(sender.Message.Text);
+                .SendMessageAsync(text);
             try
             {
                 task.Wait();

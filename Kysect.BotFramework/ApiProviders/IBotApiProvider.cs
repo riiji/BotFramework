@@ -9,6 +9,6 @@ namespace Kysect.BotFramework.ApiProviders
         event EventHandler<BotEventArgs> OnMessage;
 
         void Restart();
-        Result<string> WriteMessage(BotEventArgs sender);
+        Result<string> SendText(String text, SenderInfo sender);
     }
 }

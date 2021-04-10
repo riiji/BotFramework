@@ -99,7 +99,7 @@ namespace Kysect.BotFramework.Core
             }
             catch (Exception exception)
             {
-                LoggerHolder.Instance.Error(exception, $"Message handling from [{e.Username}] failed.");
+                LoggerHolder.Instance.Error(exception, $"Message handling from [{e.Sender.Username}] failed.");
                 LoggerHolder.Instance.Debug($"Failed message: {e.Message.Text}");
                 //FYI: we do not need to restart on each exception, but probably we have case were restart must be.
                 //_apiProvider.Restart();
@@ -140,7 +140,7 @@ namespace Kysect.BotFramework.Core
             }
 
             IBotMessage message = executionResult.Value;
-            BotEventArgs sender = commandResult.Value.Sender;
+            SenderInfo sender = commandResult.Value.Sender;
             //_apiProvider.WriteMessage(new BotEventArgs(executionResult.Value, commandResult.Value));
             message.Send(_apiProvider,sender);
         }
@@ -148,10 +148,13 @@ namespace Kysect.BotFramework.Core
         private void HandlerError(Result result, BotEventArgs botEventArgs)
         {
             LoggerHolder.Instance.Error(result.ToString());
-
-            _apiProvider.WriteMessage(new BotEventArgs(new BotTextMessage("Something went wrong."), botEventArgs));
+            BotTextMessage errorMessage = new BotTextMessage("Something went wrong.");
+            errorMessage.Send(_apiProvider,botEventArgs.Sender);
             if (_sendErrorLogToUser)
-                _apiProvider.WriteMessage(new BotEventArgs(new BotTextMessage(result.ToString()), botEventArgs));
+            {
+                BotTextMessage errorlogMessage = new BotTextMessage(result.ToString());
+                errorlogMessage.Send(_apiProvider,botEventArgs.Sender);
+            }
         }
 
         public void Dispose()

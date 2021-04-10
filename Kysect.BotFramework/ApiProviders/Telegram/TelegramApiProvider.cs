@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -43,15 +43,17 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             OnMessage?.Invoke(sender,
                 new BotEventArgs(
                     new BotTextMessage(e.Message.Text), 
+                    new SenderInfo(
                     e.Message.Chat.Id, 
                     e.Message.ForwardFromMessageId,
                     e.Message.From.FirstName
+                    )
                 ));
         }
 
-        public Result<string> WriteMessage(BotEventArgs sender)
+        public Result<string> SendText(String text, SenderInfo sender)
         {
-            Task<Message> task = _client.SendTextMessageAsync(sender.GroupId, sender.Message.Text);
+            Task<Message> task = _client.SendTextMessageAsync(sender.GroupId, text);
 
             try
             {

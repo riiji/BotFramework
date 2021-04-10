@@ -7,11 +7,11 @@ namespace Kysect.BotFramework.Core.CommandInvoking
     {
         public string CommandName { get; private set; }
 
-        public BotEventArgs Sender { get; }
+        public SenderInfo Sender { get; }
 
         public List<string> Arguments { get; }
 
-        public CommandArgumentContainer(string commandName, BotEventArgs sender, List<string> arguments)
+        public CommandArgumentContainer(string commandName, SenderInfo sender, List<string> arguments)
         {
             CommandName = commandName;
             Sender = sender;

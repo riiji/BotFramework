@@ -6,6 +6,6 @@ namespace Kysect.BotFramework.Core.BotMessages
     {
         string Text { get; }
 
-        void Send(IBotApiProvider apiProvider,BotEventArgs sender);
+        void Send(IBotApiProvider apiProvider, SenderInfo sender);
     }
 }

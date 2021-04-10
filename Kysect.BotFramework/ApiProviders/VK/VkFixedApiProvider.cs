@@ -84,23 +84,23 @@ namespace Kysect.BotFramework.ApiProviders.VK
             //TODO: single? Ensure is not null?
             UsersUserXtrCounters user = users.FirstOrDefault();
 
-            OnMessage?.Invoke(sender, new BotEventArgs(new BotTextMessage(e.Text), e.PeerId, e.FromId, user?.FirstName));
+            OnMessage?.Invoke(sender, new BotEventArgs(new BotTextMessage(e.Text), new SenderInfo(e.PeerId, e.FromId, user?.FirstName)));
         }
 
-        public Result<string> WriteMessage(BotEventArgs args)
+        public Result<string> SendText(String text, SenderInfo sender)
         {
             Task<int> sendMessageTask = _api.Messages.Send
             (
                 randomId: RandomUtilities.GetRandom(),
-                peerId: (int)args.GroupId,
-                message: args.Message.Text
+                peerId: (int)sender.GroupId,
+                message: text
             );
 
             sendMessageTask.WaitSafe();
 
             return sendMessageTask.IsFaulted
-                ? Result.Fail<string>(new Error($"Vk write message failed from {args.GroupId} with message {args.Message.Text}").CausedBy(sendMessageTask.Exception))
-                : Result.Ok($"Vk write {args.Message.Text} to {args.GroupId} ok");
+                ? Result.Fail<string>(new Error($"Vk write message failed from {sender.GroupId} with message {text}").CausedBy(sendMessageTask.Exception))
+                : Result.Ok($"Vk write {text} to {sender.GroupId} ok");
         }
 
         public void Dispose()
