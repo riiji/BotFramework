@@ -108,6 +108,11 @@ namespace Kysect.BotFramework.ApiProviders.VK
             throw new NotImplementedException();
         }
 
+        public Result<string> SendVideo(string videoPath, string text, SenderInfo sender)
+        {
+            throw new NotImplementedException();
+        }
+
 
         public void Dispose()
         {

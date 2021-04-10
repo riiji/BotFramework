@@ -11,5 +11,6 @@ namespace Kysect.BotFramework.ApiProviders
         void Restart();
         Result<string> SendText(String text, SenderInfo sender);
         public Result<string> SendImage(string imagePath, string text, SenderInfo sender);
+        public Result<string> SendVideo(string videoPath, string text, SenderInfo sender);
     }
 }

@@ -89,6 +89,27 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             }
         }
         
+        public Result<string> SendVideo(string videoPath, string text, SenderInfo sender)
+        {
+            Task<Message> task;
+            var stream = System.IO.File.Open(videoPath, FileMode.Open);
+            InputMedia fts = new InputMedia(stream,videoPath.Split("\\").Last());
+            task = _client.SendVideoAsync(sender.GroupId, fts, caption: text);
+            try
+            {
+                task.Wait();
+                stream.Close();
+                return Result.Ok("Message send");
+            }
+            catch (Exception e)
+            {
+                const string message = "Error while sending message";
+                LoggerHolder.Instance.Error(e, message);
+                stream.Close();
+                return Result.Fail(new Error(message).CausedBy(e));
+            }
+        }
+        
         public void Restart()
         {
             lock (_lock)

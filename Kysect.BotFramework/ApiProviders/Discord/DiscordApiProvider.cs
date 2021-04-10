@@ -64,11 +64,11 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             }
         }
 
-        public Result<string> SendImage(string imagePath,string text, SenderInfo sender)
+        public Result<string> SendFile(string filePath,string text, SenderInfo sender)
         {
             Task<RestUserMessage> task = _client.GetGuild((ulong) sender.GroupId)
                 .GetTextChannel((ulong) sender.UserSenderId)
-                .SendFileAsync(imagePath,text);
+                .SendFileAsync(filePath,text);
             try
             {
                 task.Wait();
@@ -80,6 +80,16 @@ namespace Kysect.BotFramework.ApiProviders.Discord
                 LoggerHolder.Instance.Error(e, message);
                 return Result.Fail(new Error(message).CausedBy(e));
             }
+        }
+
+        public Result<string> SendImage(string imagePath, string text, SenderInfo sender)
+        {
+            return SendFile(imagePath, text, sender);
+        }
+        
+        public Result<string> SendVideo(string videoPath, string text, SenderInfo sender)
+        {
+            return SendFile(videoPath, text, sender);
         }
         
         public void Restart()
