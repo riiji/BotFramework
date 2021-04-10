@@ -20,7 +20,7 @@ namespace Kysect.BotFramework.Commands
         
         public Task<Result<IBotMessage>> Execute(CommandArgumentContainer args)
         {
-            return Task.FromResult(Result.Ok<IBotMessage>(new BotTextMessage($"Pong {args.Sender.Username}")));
+            return Task.FromResult(Result.Ok<IBotMessage>(new BotImageMessage($"Pong {args.Sender.Username}",@"C:\Users\alex8\Pictures\spizdili.png")));
         }
     }
 }

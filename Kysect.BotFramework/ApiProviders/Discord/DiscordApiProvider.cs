@@ -46,7 +46,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             return Task.CompletedTask;
         }
 
-        public Result<string> SendText(String text, SenderInfo sender)
+        public Result<string> SendText(string text, SenderInfo sender)
         {
             Task<RestUserMessage> task = _client.GetGuild((ulong) sender.GroupId)
                 .GetTextChannel((ulong) sender.UserSenderId)
@@ -64,6 +64,24 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             }
         }
 
+        public Result<string> SendImage(string imagePath,string text, SenderInfo sender)
+        {
+            Task<RestUserMessage> task = _client.GetGuild((ulong) sender.GroupId)
+                .GetTextChannel((ulong) sender.UserSenderId)
+                .SendFileAsync(imagePath,text);
+            try
+            {
+                task.Wait();
+                return Result.Ok("Message send");
+            }
+            catch (Exception e)
+            {
+                const string message = "Error while sending message";
+                LoggerHolder.Instance.Error(e, message);
+                return Result.Fail(new Error(message).CausedBy(e));
+            }
+        }
+        
         public void Restart()
         {
             lock (_lock)

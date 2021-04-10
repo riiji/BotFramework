@@ -103,6 +103,12 @@ namespace Kysect.BotFramework.ApiProviders.VK
                 : Result.Ok($"Vk write {text} to {sender.GroupId} ok");
         }
 
+        public Result<string> SendImage(string imagePath, string text, SenderInfo sender)
+        {
+            throw new NotImplementedException();
+        }
+
+
         public void Dispose()
         {
             //TODO: add flag _isDisposed
