@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -52,8 +52,8 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             var fileToSend = new InputMedia(stream, mediaFile.Path.Split("\\").Last());
             var task = mediaFile.MediaType switch
             {
-                "photo" => _client.SendPhotoAsync(sender.GroupId, fileToSend, text),
-                "video" => _client.SendVideoAsync(sender.GroupId, fileToSend, caption: text)
+                MediaTypeEnum.Photo => _client.SendPhotoAsync(sender.GroupId, fileToSend, text),
+                MediaTypeEnum.Video => _client.SendVideoAsync(sender.GroupId, fileToSend, caption: text)
             };
 
             try
@@ -89,8 +89,8 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
                 mediaFiles.First().Path.Split(Path.DirectorySeparatorChar).Last());
             IAlbumInputMedia fileToSend = mediaFiles.First().MediaType switch
             {
-                "photo" => new InputMediaPhoto(inputMedia) {Caption = text},
-                "video" => new InputMediaVideo(inputMedia) {Caption = text}
+                MediaTypeEnum.Photo => new InputMediaPhoto(inputMedia) {Caption = text},
+                MediaTypeEnum.Video => new InputMediaVideo(inputMedia) {Caption = text}
             };
             filesToSend.Add(fileToSend);
 
@@ -100,8 +100,8 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
                 inputMedia = new InputMedia(streams.Last(), mediaFile.Path.Split(Path.DirectorySeparatorChar).Last());
                 fileToSend = mediaFile.MediaType switch
                 {
-                    "photo" => new InputMediaPhoto(inputMedia),
-                    "video" => new InputMediaVideo(inputMedia)
+                    MediaTypeEnum.Photo => new InputMediaPhoto(inputMedia),
+                    MediaTypeEnum.Video => new InputMediaVideo(inputMedia)
                 };
                 filesToSend.Add(fileToSend);
             }
@@ -151,6 +151,7 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
         private void ClientOnMessage(object sender, MessageEventArgs e)
         {
             //TODO: Hm. Do we need to use try/catch here?
+            Console.WriteLine("OLO");
             LoggerHolder.Instance.Debug("New message event: {@e}", e);
             OnMessage?.Invoke(sender,
                 new BotEventArgs(
