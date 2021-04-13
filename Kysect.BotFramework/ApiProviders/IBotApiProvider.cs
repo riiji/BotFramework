@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using FluentResults;
 using Kysect.BotFramework.Core;
+using Kysect.BotFramework.Core.BotMedia;
 
 namespace Kysect.BotFramework.ApiProviders
 {
@@ -9,8 +11,8 @@ namespace Kysect.BotFramework.ApiProviders
         event EventHandler<BotEventArgs> OnMessage;
 
         void Restart();
-        Result<string> SendText(String text, SenderInfo sender);
-        public Result<string> SendImage(string imagePath, string text, SenderInfo sender);
-        public Result<string> SendVideo(string videoPath, string text, SenderInfo sender);
+        Result<string> SendText(string text, SenderInfo sender);
+        public Result<string> SendMedia(IBotMediaFile mediaFile, string text, SenderInfo sender);
+        public Result<string> SendMultipleMedia(List<IBotMediaFile> mediaFiles, string text, SenderInfo sender);
     }
 }

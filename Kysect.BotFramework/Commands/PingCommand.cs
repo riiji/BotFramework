@@ -1,9 +1,7 @@
 ﻿using System.Threading.Tasks;
 using FluentResults;
-using Kysect.BotFramework.Core;
 using Kysect.BotFramework.Core.BotMessages;
 using Kysect.BotFramework.Core.CommandInvoking;
-using Telegram.Bot.Types;
 
 namespace Kysect.BotFramework.Commands
 {
@@ -17,10 +15,11 @@ namespace Kysect.BotFramework.Commands
         {
             return Result.Ok();
         }
-        
+
         public Task<Result<IBotMessage>> Execute(CommandArgumentContainer args)
         {
-            return Task.FromResult(Result.Ok<IBotMessage>(new BotImageMessage($"Pong {args.Sender.Username}",@"C:\Users\alex8\Pictures\spizdili.png")));
+            IBotMessage message = new BotTextMessage($@"Pong {args.Sender.Username}!");
+            return Task.FromResult(Result.Ok(message));
         }
     }
 }
