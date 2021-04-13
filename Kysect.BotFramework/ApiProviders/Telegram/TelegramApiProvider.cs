@@ -49,13 +49,13 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
         public Result<string> SendMedia(IBotMediaFile mediaFile, string text, SenderInfo sender)
         {
             var stream = File.Open(mediaFile.Path, FileMode.Open);
-            var fileToSend = new InputMedia(stream, mediaFile.Path.Split("\\").Last());
+            var fileToSend = new InputMedia(stream, mediaFile.Path.Split(Path.DirectorySeparatorChar).Last());
             var task = mediaFile.MediaType switch
             {
                 MediaTypeEnum.Photo => _client.SendPhotoAsync(sender.GroupId, fileToSend, text),
                 MediaTypeEnum.Video => _client.SendVideoAsync(sender.GroupId, fileToSend, caption: text)
             };
-
+            
             try
             {
                 task.Wait();
