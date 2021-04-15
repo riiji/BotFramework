@@ -1,43 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Kysect.BotFramework.Core.BotMessages;
 using Kysect.BotFramework.Core.CommandInvoking;
 
 namespace Kysect.BotFramework.Core
 {
     public class BotEventArgs : EventArgs
     {
-        public BotEventArgs(string text, long groupId, long userSenderId, string username)
+        public BotEventArgs(IBotMessage message, SenderInfo sender)
         {
-            Text = text;
-            GroupId = groupId;
-            UserSenderId = userSenderId;
-            Username = username;
+            Message = message;
+            Sender = sender;
         }
 
-        public BotEventArgs(string text, CommandArgumentContainer commandWithArgs) : this(text, commandWithArgs.Sender)
+        public BotEventArgs(IBotMessage message, CommandArgumentContainer commandWithArgs) : this(message, commandWithArgs.Sender)
         {
         }
 
-        public BotEventArgs(string text, BotEventArgs sender)
-            : this(text, sender.GroupId, sender.UserSenderId, sender.Username)
-        {
-        }
+        public IBotMessage Message { get; }
 
-        public string Text { get; }
-        public long GroupId { get; }
-        public long UserSenderId { get; }
-        public string Username { get; }
+        public SenderInfo Sender { get; }
 
         public string FindCommandName()
         {
             //TODO: add separator list
-            return Text.Split().FirstOrDefault();
+            return Message.Text.Split().FirstOrDefault();
         }
 
         public List<string> GetCommandArguments()
         {
-            return Text.Split().Skip(1).ToList();
+            return Message.Text.Split().Skip(1).ToList();
         }
     }
 }

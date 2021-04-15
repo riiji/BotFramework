@@ -1,5 +1,6 @@
 using System;
 using FluentResults;
+using Kysect.BotFramework.Core.BotMessages;
 
 namespace Kysect.BotFramework.Core.CommandInvoking
 {
@@ -46,16 +47,25 @@ namespace Kysect.BotFramework.Core.CommandInvoking
             _commands.AddCommand(command);
         }
 
-        public Result<string> ExecuteCommand(CommandArgumentContainer args)
+        public Result<IBotMessage> ExecuteCommand(CommandArgumentContainer args)
         {
             Result<IBotCommand> command = _commands.GetCommand(args.CommandName);
 
             if (!command.IsSuccess)
-                return command.ToResult<string>();
+                return command.ToResult<IBotMessage>();
 
             try
             {
-                return command.Value.ExecuteAsync(args).Result;
+                if (command.Value is IBotAsyncCommand asyncCommand)
+                {
+                    return asyncCommand.Execute(args).Result;
+                }
+                if (command.Value is IBotSyncCommand syncCommand)
+                {
+                    return syncCommand.Execute(args);
+                }
+
+                return Result.Fail(new Error($"Command execution failed. Wrong command inheritance."));
             }
             catch (Exception e)
             {

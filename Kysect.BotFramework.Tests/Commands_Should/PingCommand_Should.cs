@@ -14,7 +14,7 @@ namespace Kysect.BotFramework.Tests.Commands_Should
         {
             PingCommand pingCommand = new PingCommand();
             CommandArgumentContainer fakeContainer = A.Fake<CommandArgumentContainer>();
-            pingCommand.ExecuteAsync(fakeContainer).Result.IsSuccess.Should().Be(true);
+            pingCommand.Execute(fakeContainer).Result.IsSuccess.Should().Be(true);
         }
 
     }

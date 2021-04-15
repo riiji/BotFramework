@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentResults;
 using Kysect.BotFramework.ApiProviders;
+using Kysect.BotFramework.Core.BotMessages;
 using Kysect.BotFramework.Core.CommandInvoking;
 using Kysect.BotFramework.Core.Tools.Loggers;
 using Serilog;
+using Telegram.Bot.Types;
 
 namespace Kysect.BotFramework.Core
 {
@@ -97,8 +99,8 @@ namespace Kysect.BotFramework.Core
             }
             catch (Exception exception)
             {
-                LoggerHolder.Instance.Error(exception, $"Message handling from [{e.Username}] failed.");
-                LoggerHolder.Instance.Debug($"Failed message: {e.Text}");
+                LoggerHolder.Instance.Error(exception, $"Message handling from [{e.Sender.Username}] failed.");
+                LoggerHolder.Instance.Debug($"Failed message: {e.Message.Text}");
                 //FYI: we do not need to restart on each exception, but probably we have case were restart must be.
                 //_apiProvider.Restart();
             }
@@ -130,23 +132,29 @@ namespace Kysect.BotFramework.Core
                 return;
             }
 
-            Result<string> executionResult = _commandHandler.ExecuteCommand(commandResult.Value);
+            Result<IBotMessage> executionResult = _commandHandler.ExecuteCommand(commandResult.Value);
             if (executionResult.IsFailed)
             {
                 HandlerError(commandResult, e);
                 return;
             }
 
-            _apiProvider.WriteMessage(new BotEventArgs(executionResult.Value, commandResult.Value));
+            IBotMessage message = executionResult.Value;
+            SenderInfo sender = commandResult.Value.Sender;
+            //_apiProvider.WriteMessage(new BotEventArgs(executionResult.Value, commandResult.Value));
+            message.Send(_apiProvider,sender);
         }
 
         private void HandlerError(Result result, BotEventArgs botEventArgs)
         {
             LoggerHolder.Instance.Error(result.ToString());
-
-            _apiProvider.WriteMessage(new BotEventArgs("Something went wrong.", botEventArgs));
+            BotTextMessage errorMessage = new BotTextMessage("Something went wrong.");
+            errorMessage.Send(_apiProvider,botEventArgs.Sender);
             if (_sendErrorLogToUser)
-                _apiProvider.WriteMessage(new BotEventArgs(result.ToString(), botEventArgs));
+            {
+                BotTextMessage errorlogMessage = new BotTextMessage(result.ToString());
+                errorlogMessage.Send(_apiProvider,botEventArgs.Sender);
+            }
         }
 
         public void Dispose()
