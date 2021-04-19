@@ -19,7 +19,7 @@ namespace Kysect.BotFramework.ConsoleTest
                 .AddDefaultLogger()
                 .SetPrefix('!')
                 .WithoutCaseSensitiveCommands()
-                .AddCommand(new PingCommand())
+                .AddCommand(new PingCommand(), PingCommand.Descriptor)
                 .Start();
 
             await Task.Delay(-1);

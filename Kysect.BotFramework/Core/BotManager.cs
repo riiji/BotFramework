@@ -64,6 +64,7 @@ namespace Kysect.BotFramework.Core
             return this;
         }
 
+
         public BotManager EnableErrorLogToUser()
         {
             _sendErrorLogToUser = true;
@@ -72,20 +73,11 @@ namespace Kysect.BotFramework.Core
             return this;
         }
 
-        public BotManager AddCommand(IBotCommand command)
+        public BotManager AddCommand<T>(T command, BotCommandDescriptor<T> descriptor) where T : IBotCommand
         {
-            _commandHandler.RegisterCommand(command);
-            LoggerHolder.Instance.Information($"New command added: {command.CommandName}");
 
-            return this;
-        }
-
-        public BotManager AddCommands(ICollection<IBotCommand> commands)
-        {
-            foreach (IBotCommand command in commands)
-                _commandHandler.RegisterCommand(command);
-
-            LoggerHolder.Instance.Information($"New commands added: {string.Join(", ", commands.Select(c => c.CommandName))}");
+            _commandHandler.RegisterCommand(command, descriptor);
+            LoggerHolder.Instance.Information($"New command added: {descriptor.CommandName}");
 
             return this;
         }

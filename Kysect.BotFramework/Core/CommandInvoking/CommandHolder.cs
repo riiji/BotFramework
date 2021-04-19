@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FluentResults;
 
 namespace Kysect.BotFramework.Core.CommandInvoking
@@ -6,30 +7,31 @@ namespace Kysect.BotFramework.Core.CommandInvoking
     public class CommandHolder
     {
         private bool _caseSensitive = true;
-        private Dictionary<string, IBotCommand> _commands = new Dictionary<string, IBotCommand>();
+        private readonly List<(BotCommandDescriptor, IBotCommand)> _commands = new List<(BotCommandDescriptor, IBotCommand)>();
 
         public CommandHolder WithoutCaseSensitive()
         {
             _caseSensitive = false;
-            var newCommandList = new Dictionary<string, IBotCommand>();
-
-            foreach (KeyValuePair<string, IBotCommand> command in _commands)
-                newCommandList.Add(command.Key.ToLower(), command.Value);
-            
-            _commands = newCommandList;
             return this;
         }
 
-        public void AddCommand(IBotCommand command)
+        public void AddCommand<T>(T command, BotCommandDescriptor<T> descriptor) where T : IBotCommand
         {
-            _commands.Add(_caseSensitive ? command.CommandName : command.CommandName.ToLower(), command);
+            _commands.Add((descriptor, command));
         }
 
-        public Result<IBotCommand> GetCommand(string commandName)
+        public Result<(BotCommandDescriptor, IBotCommand)> GetCommand(string commandName)
         {
-            return _commands.TryGetValue(commandName, out IBotCommand command)
-                ? Result.Ok(command)
-                : Result.Fail<IBotCommand>($"Command {commandName} not founded");
+            foreach ((BotCommandDescriptor, IBotCommand) tuple in _commands)
+            {
+                if (_caseSensitive && string.Equals(tuple.Item1.CommandName, commandName, StringComparison.InvariantCultureIgnoreCase))
+                    return Result.Ok(tuple);
+
+                if (string.Equals(tuple.Item1.CommandName, commandName))
+                    return Result.Ok(tuple);
+            }
+
+            return Result.Fail<(BotCommandDescriptor, IBotCommand)>($"Command {commandName} not founded");
         }
     }
 }
