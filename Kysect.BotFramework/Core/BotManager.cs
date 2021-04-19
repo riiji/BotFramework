@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using FluentResults;
 using Kysect.BotFramework.ApiProviders;
 using Kysect.BotFramework.Core.BotMessages;
 using Kysect.BotFramework.Core.CommandInvoking;
 using Kysect.BotFramework.Core.Tools.Loggers;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using Telegram.Bot.Types;
 
 namespace Kysect.BotFramework.Core
 {
@@ -21,12 +19,11 @@ namespace Kysect.BotFramework.Core
         private bool _caseSensitive = true;
         private bool _sendErrorLogToUser;
 
-        public BotManager(IBotApiProvider apiProvider)
+        public BotManager(IBotApiProvider apiProvider, ServiceProvider serviceProvider)
         {
             _apiProvider = apiProvider;
-
             _commandParser = new CommandParser();
-            _commandHandler = new CommandHandler();
+            _commandHandler = new CommandHandler(serviceProvider);
         }
 
         public void Start()
@@ -73,10 +70,10 @@ namespace Kysect.BotFramework.Core
             return this;
         }
 
-        public BotManager AddCommand<T>(T command, BotCommandDescriptor<T> descriptor) where T : IBotCommand
+        public BotManager AddCommand<T>(BotCommandDescriptor<T> descriptor) where T : IBotCommand
         {
 
-            _commandHandler.RegisterCommand(command, descriptor);
+            _commandHandler.RegisterCommand(descriptor);
             LoggerHolder.Instance.Information($"New command added: {descriptor.CommandName}");
 
             return this;

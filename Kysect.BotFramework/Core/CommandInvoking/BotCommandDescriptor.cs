@@ -1,6 +1,8 @@
-﻿namespace Kysect.BotFramework.Core.CommandInvoking
+﻿using Microsoft.Extensions.DependencyInjection;
+
+namespace Kysect.BotFramework.Core.CommandInvoking
 {
-    public class BotCommandDescriptor
+    public abstract class BotCommandDescriptor
     {
         public BotCommandDescriptor(string commandName, string description, string[] args)
         {
@@ -12,12 +14,19 @@
         public string CommandName { get; }
         public string Description { get; }
         public string[] Args { get; }
+
+        public abstract IBotCommand ResolveCommand(ServiceProvider serviceProvider);
     }
 
     public class BotCommandDescriptor<T> : BotCommandDescriptor where T : IBotCommand
     {
         public BotCommandDescriptor(string commandName, string description, string[] args) : base(commandName, description, args)
         {
+        }
+
+        public override IBotCommand ResolveCommand(ServiceProvider serviceProvider)
+        {
+            return serviceProvider.GetService<T>();
         }
     }
 }

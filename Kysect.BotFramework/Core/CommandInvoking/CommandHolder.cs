@@ -7,7 +7,7 @@ namespace Kysect.BotFramework.Core.CommandInvoking
     public class CommandHolder
     {
         private bool _caseSensitive = true;
-        private readonly List<(BotCommandDescriptor, IBotCommand)> _commands = new List<(BotCommandDescriptor, IBotCommand)>();
+        private readonly List<BotCommandDescriptor> _commands = new List<BotCommandDescriptor>();
 
         public CommandHolder WithoutCaseSensitive()
         {
@@ -15,23 +15,23 @@ namespace Kysect.BotFramework.Core.CommandInvoking
             return this;
         }
 
-        public void AddCommand<T>(T command, BotCommandDescriptor<T> descriptor) where T : IBotCommand
+        public void AddCommand<T>(BotCommandDescriptor<T> descriptor) where T : IBotCommand
         {
-            _commands.Add((descriptor, command));
+            _commands.Add(descriptor);
         }
 
-        public Result<(BotCommandDescriptor, IBotCommand)> GetCommand(string commandName)
+        public Result<BotCommandDescriptor> GetCommand(string commandName)
         {
-            foreach ((BotCommandDescriptor, IBotCommand) tuple in _commands)
+            foreach (BotCommandDescriptor command in _commands)
             {
-                if (_caseSensitive && string.Equals(tuple.Item1.CommandName, commandName, StringComparison.InvariantCultureIgnoreCase))
-                    return Result.Ok(tuple);
+                if (_caseSensitive && string.Equals(command.CommandName, commandName, StringComparison.InvariantCultureIgnoreCase))
+                    return Result.Ok(command);
 
-                if (string.Equals(tuple.Item1.CommandName, commandName))
-                    return Result.Ok(tuple);
+                if (string.Equals(command.CommandName, commandName))
+                    return Result.Ok(command);
             }
 
-            return Result.Fail<(BotCommandDescriptor, IBotCommand)>($"Command {commandName} not founded");
+            return Result.Fail<BotCommandDescriptor>($"Command {commandName} not founded");
         }
     }
 }

@@ -1,20 +1,27 @@
 using System;
 using FluentResults;
 using Kysect.BotFramework.Core.BotMessages;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Kysect.BotFramework.Core.CommandInvoking
 {
     public class CommandHandler
     {
         private readonly CommandHolder _commands = new CommandHolder();
+        private readonly ServiceProvider _serviceProvider;
+
+        public CommandHandler(ServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
 
         public Result<CommandArgumentContainer> IsCorrectArgumentCount(CommandArgumentContainer args)
         {
-            var commandTask = _commands.GetCommand(args.CommandName);
+            Result<BotCommandDescriptor> commandTask = _commands.GetCommand(args.CommandName);
             if (commandTask.IsFailed)
                 return commandTask.ToResult<CommandArgumentContainer>();
 
-            return commandTask.Value.Item1.Args.Length == args.Arguments.Count
+            return commandTask.Value.Args.Length == args.Arguments.Count
                 ? Result.Ok(args)
                 : Result.Fail<CommandArgumentContainer>("Cannot execute command. Argument count miss matched with command signature");
         }
@@ -22,18 +29,18 @@ namespace Kysect.BotFramework.Core.CommandInvoking
 
         public Result<CommandArgumentContainer> IsCommandCanBeExecuted(CommandArgumentContainer args)
         {
-            var commandTask = _commands.GetCommand(args.CommandName);
+            Result<BotCommandDescriptor> commandTask = _commands.GetCommand(args.CommandName);
 
             if (commandTask.IsFailed)
                 return commandTask.ToResult<CommandArgumentContainer>();
 
-            IBotCommand command = commandTask.Value.Item2;
+            IBotCommand command = commandTask.Value.ResolveCommand(_serviceProvider);
 
             Result canExecute = command.CanExecute(args);
 
             return canExecute.IsSuccess
                 ? Result.Ok(args)
-                : Result.Fail<CommandArgumentContainer>($"Command [{commandTask.Value.Item1.CommandName}] cannot be executed: {canExecute}");
+                : Result.Fail<CommandArgumentContainer>($"Command [{commandTask.Value.CommandName}] cannot be executed: {canExecute}");
         }
 
         public CommandHandler WithoutCaseSensitiveCommands()
@@ -42,25 +49,28 @@ namespace Kysect.BotFramework.Core.CommandInvoking
             return this;
         }
 
-        public void RegisterCommand<T>(T command, BotCommandDescriptor<T> descriptor) where T : IBotCommand
+        public void RegisterCommand<T>(BotCommandDescriptor<T> descriptor) where T : IBotCommand
         {
-            _commands.AddCommand(command, descriptor);
+            _commands.AddCommand(descriptor);
         }
 
         public Result<IBotMessage> ExecuteCommand(CommandArgumentContainer args)
         {
-            var command = _commands.GetCommand(args.CommandName);
+            Result<BotCommandDescriptor> commandDescriptor = _commands.GetCommand(args.CommandName);
 
-            if (!command.IsSuccess)
-                return command.ToResult<IBotMessage>();
+            if (!commandDescriptor.IsSuccess)
+                return commandDescriptor.ToResult<IBotMessage>();
 
             try
             {
-                if (command.Value.Item2 is IBotAsyncCommand asyncCommand)
+                IBotCommand command = commandDescriptor.Value.ResolveCommand(_serviceProvider);
+
+
+                if (command is IBotAsyncCommand asyncCommand)
                 {
                     return asyncCommand.Execute(args).Result;
                 }
-                if (command.Value.Item2 is IBotSyncCommand syncCommand)
+                if (command is IBotSyncCommand syncCommand)
                 {
                     return syncCommand.Execute(args);
                 }
