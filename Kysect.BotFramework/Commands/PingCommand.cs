@@ -9,8 +9,7 @@ namespace Kysect.BotFramework.Commands
     {
         public static readonly BotCommandDescriptor<PingCommand> Descriptor = new BotCommandDescriptor<PingCommand>(
             "Ping",
-            "Answer pong on ping message",
-            new string[0]);
+            "Answer pong on ping message");
 
         public Result CanExecute(CommandArgumentContainer args)
         {

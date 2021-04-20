@@ -24,7 +24,7 @@ namespace Kysect.BotFramework.Core.CommandInvoking
         {
             foreach (BotCommandDescriptor command in _commands)
             {
-                if (_caseSensitive && string.Equals(command.CommandName, commandName, StringComparison.InvariantCultureIgnoreCase))
+                if (!_caseSensitive && string.Equals(command.CommandName, commandName, StringComparison.InvariantCultureIgnoreCase))
                     return Result.Ok(command);
 
                 if (string.Equals(command.CommandName, commandName))
