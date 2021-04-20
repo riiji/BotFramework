@@ -9,7 +9,7 @@ namespace Kysect.BotFramework.Core
 {
     public class BotManagerBuilder
     {
-        public  ServiceCollection ServiceCollection { get; } = new ServiceCollection();
+        public ServiceCollection ServiceCollection { get; } = new ServiceCollection();
 
         private char _prefix = '\0';
         private bool _caseSensitive = true;
