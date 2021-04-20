@@ -1,11 +1,9 @@
-using System;
+﻿using System;
 using FluentResults;
 using Kysect.BotFramework.ApiProviders;
 using Kysect.BotFramework.Core.BotMessages;
 using Kysect.BotFramework.Core.CommandInvoking;
 using Kysect.BotFramework.Core.Tools.Loggers;
-using Microsoft.Extensions.DependencyInjection;
-using Serilog;
 
 namespace Kysect.BotFramework.Core
 {
@@ -14,69 +12,21 @@ namespace Kysect.BotFramework.Core
         private readonly CommandHandler _commandHandler;
         private readonly IBotApiProvider _apiProvider;
         private readonly ICommandParser _commandParser;
+        private readonly char _prefix;
+        private readonly bool _sendErrorLogToUser;
 
-        private char _prefix = '\0';
-        private bool _caseSensitive = true;
-        private bool _sendErrorLogToUser;
-
-        public BotManager(IBotApiProvider apiProvider, ServiceProvider serviceProvider)
+        public BotManager(IBotApiProvider apiProvider, CommandHandler commandHandler, char prefix, bool sendErrorLogToUser)
         {
             _apiProvider = apiProvider;
+            _prefix = prefix;
+            _sendErrorLogToUser = sendErrorLogToUser;
             _commandParser = new CommandParser();
-            _commandHandler = new CommandHandler(serviceProvider);
+            _commandHandler = commandHandler;
         }
 
         public void Start()
         {
             _apiProvider.OnMessage += ApiProviderOnMessage;
-        }
-
-        public BotManager AddDefaultLogger()
-        {
-            LoggerHolder.Instance.Information("Default logger was initalized");
-            return this;
-        }
-
-        public BotManager AddLogger(ILogger logger)
-        {
-            LoggerHolder.Init(logger);
-            LoggerHolder.Instance.Information("Logger was initalized");
-
-            return this;
-        }
-
-        public BotManager SetPrefix(char prefix)
-        {
-            _prefix = prefix;
-            LoggerHolder.Instance.Debug($"New prefix set: {prefix}");
-            return this;
-        }
-
-        public BotManager WithoutCaseSensitiveCommands()
-        {
-            _caseSensitive = false;
-            _commandHandler.WithoutCaseSensitiveCommands();
-            LoggerHolder.Instance.Debug("Case sensitive was disabled");
-
-            return this;
-        }
-
-
-        public BotManager EnableErrorLogToUser()
-        {
-            _sendErrorLogToUser = true;
-            LoggerHolder.Instance.Information("Enable log redirection to user");
-
-            return this;
-        }
-
-        public BotManager AddCommand<T>(BotCommandDescriptor<T> descriptor) where T : IBotCommand
-        {
-
-            _commandHandler.RegisterCommand(descriptor);
-            LoggerHolder.Instance.Information($"New command added: {descriptor.CommandName}");
-
-            return this;
         }
 
         private void ApiProviderOnMessage(object sender, BotEventArgs e)

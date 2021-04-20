@@ -9,13 +9,13 @@ namespace Kysect.BotFramework.Core.CommandInvoking
         private bool _caseSensitive = true;
         private readonly List<BotCommandDescriptor> _commands = new List<BotCommandDescriptor>();
 
-        public CommandHolder WithoutCaseSensitive()
+        public CommandHolder SetCaseSensitive(bool caseSensitive)
         {
-            _caseSensitive = false;
+            _caseSensitive = caseSensitive;
             return this;
         }
 
-        public void AddCommand<T>(BotCommandDescriptor<T> descriptor) where T : IBotCommand
+        public void AddCommand(BotCommandDescriptor descriptor)
         {
             _commands.Add(descriptor);
         }

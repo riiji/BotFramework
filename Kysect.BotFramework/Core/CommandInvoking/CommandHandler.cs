@@ -43,13 +43,13 @@ namespace Kysect.BotFramework.Core.CommandInvoking
                 : Result.Fail<CommandArgumentContainer>($"Command [{commandTask.Value.CommandName}] cannot be executed: {canExecute}");
         }
 
-        public CommandHandler WithoutCaseSensitiveCommands()
+        public CommandHandler SetCaseSensitive(bool caseSensitive)
         {
-            _commands.WithoutCaseSensitive();
+            _commands.SetCaseSensitive(caseSensitive);
             return this;
         }
 
-        public void RegisterCommand<T>(BotCommandDescriptor<T> descriptor) where T : IBotCommand
+        public void RegisterCommand(BotCommandDescriptor descriptor)
         {
             _commands.AddCommand(descriptor);
         }

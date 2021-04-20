@@ -1,9 +1,8 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Kysect.BotFramework.ApiProviders.Telegram;
 using Kysect.BotFramework.Commands;
 using Kysect.BotFramework.Core;
 using Kysect.BotFramework.Settings;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Kysect.BotFramework.ConsoleTest
 {
@@ -15,14 +14,14 @@ namespace Kysect.BotFramework.ConsoleTest
 
             var settings = new ConstSettingsProvider<TelegramSettings>(new TelegramSettings(telegramToken));
             var api = new TelegramApiProvider(settings);
-            var serviceCollection = new ServiceCollection();
 
-            new BotManager(api, serviceCollection.BuildServiceProvider())
-                .AddDefaultLogger()
+            BotManager botManager = new BotManagerBuilder()
                 .SetPrefix('!')
-                .WithoutCaseSensitiveCommands()
+                .SetCaseSensitive(false)
                 .AddCommand(PingCommand.Descriptor)
-                .Start();
+                .Build(api);
+
+            botManager.Start();
 
             await Task.Delay(-1);
         }
