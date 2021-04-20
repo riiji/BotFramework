@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FluentResults;
 
 namespace Kysect.BotFramework.Core.CommandInvoking
@@ -6,30 +7,31 @@ namespace Kysect.BotFramework.Core.CommandInvoking
     public class CommandHolder
     {
         private bool _caseSensitive = true;
-        private Dictionary<string, IBotCommand> _commands = new Dictionary<string, IBotCommand>();
+        private readonly List<BotCommandDescriptor> _commands = new List<BotCommandDescriptor>();
 
-        public CommandHolder WithoutCaseSensitive()
+        public CommandHolder SetCaseSensitive(bool caseSensitive)
         {
-            _caseSensitive = false;
-            var newCommandList = new Dictionary<string, IBotCommand>();
-
-            foreach (KeyValuePair<string, IBotCommand> command in _commands)
-                newCommandList.Add(command.Key.ToLower(), command.Value);
-            
-            _commands = newCommandList;
+            _caseSensitive = caseSensitive;
             return this;
         }
 
-        public void AddCommand(IBotCommand command)
+        public void AddCommand(BotCommandDescriptor descriptor)
         {
-            _commands.Add(_caseSensitive ? command.CommandName : command.CommandName.ToLower(), command);
+            _commands.Add(descriptor);
         }
 
-        public Result<IBotCommand> GetCommand(string commandName)
+        public Result<BotCommandDescriptor> GetCommand(string commandName)
         {
-            return _commands.TryGetValue(commandName, out IBotCommand command)
-                ? Result.Ok(command)
-                : Result.Fail<IBotCommand>($"Command {commandName} not founded");
+            foreach (BotCommandDescriptor command in _commands)
+            {
+                if (!_caseSensitive && string.Equals(command.CommandName, commandName, StringComparison.InvariantCultureIgnoreCase))
+                    return Result.Ok(command);
+
+                if (string.Equals(command.CommandName, commandName))
+                    return Result.Ok(command);
+            }
+
+            return Result.Fail<BotCommandDescriptor>($"Command {commandName} not founded");
         }
     }
 }

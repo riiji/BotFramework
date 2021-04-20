@@ -7,9 +7,9 @@ namespace Kysect.BotFramework.Commands
 {
     public class PingCommand : IBotAsyncCommand
     {
-        public string CommandName { get; } = "Ping";
-        public string Description { get; } = "Answer pong on ping message";
-        public string[] Args { get; } = new string[0];
+        public static readonly BotCommandDescriptor<PingCommand> Descriptor = new BotCommandDescriptor<PingCommand>(
+            "Ping",
+            "Answer pong on ping message");
 
         public Result CanExecute(CommandArgumentContainer args)
         {

@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using FluentResults;
 using Kysect.BotFramework.ApiProviders;
 using Kysect.BotFramework.Core.BotMessages;
 using Kysect.BotFramework.Core.CommandInvoking;
 using Kysect.BotFramework.Core.Tools.Loggers;
-using Serilog;
-using Telegram.Bot.Types;
 
 namespace Kysect.BotFramework.Core
 {
@@ -16,78 +12,21 @@ namespace Kysect.BotFramework.Core
         private readonly CommandHandler _commandHandler;
         private readonly IBotApiProvider _apiProvider;
         private readonly ICommandParser _commandParser;
+        private readonly char _prefix;
+        private readonly bool _sendErrorLogToUser;
 
-        private char _prefix = '\0';
-        private bool _caseSensitive = true;
-        private bool _sendErrorLogToUser;
-
-        public BotManager(IBotApiProvider apiProvider)
+        public BotManager(IBotApiProvider apiProvider, CommandHandler commandHandler, char prefix, bool sendErrorLogToUser)
         {
             _apiProvider = apiProvider;
-
+            _prefix = prefix;
+            _sendErrorLogToUser = sendErrorLogToUser;
             _commandParser = new CommandParser();
-            _commandHandler = new CommandHandler();
+            _commandHandler = commandHandler;
         }
 
         public void Start()
         {
             _apiProvider.OnMessage += ApiProviderOnMessage;
-        }
-
-        public BotManager AddDefaultLogger()
-        {
-            LoggerHolder.Instance.Information("Default logger was initalized");
-            return this;
-        }
-
-        public BotManager AddLogger(ILogger logger)
-        {
-            LoggerHolder.Init(logger);
-            LoggerHolder.Instance.Information("Logger was initalized");
-
-            return this;
-        }
-
-        public BotManager SetPrefix(char prefix)
-        {
-            _prefix = prefix;
-            LoggerHolder.Instance.Debug($"New prefix set: {prefix}");
-            return this;
-        }
-
-        public BotManager WithoutCaseSensitiveCommands()
-        {
-            _caseSensitive = false;
-            _commandHandler.WithoutCaseSensitiveCommands();
-            LoggerHolder.Instance.Debug("Case sensitive was disabled");
-
-            return this;
-        }
-
-        public BotManager EnableErrorLogToUser()
-        {
-            _sendErrorLogToUser = true;
-            LoggerHolder.Instance.Information("Enable log redirection to user");
-
-            return this;
-        }
-
-        public BotManager AddCommand(IBotCommand command)
-        {
-            _commandHandler.RegisterCommand(command);
-            LoggerHolder.Instance.Information($"New command added: {command.CommandName}");
-
-            return this;
-        }
-
-        public BotManager AddCommands(ICollection<IBotCommand> commands)
-        {
-            foreach (IBotCommand command in commands)
-                _commandHandler.RegisterCommand(command);
-
-            LoggerHolder.Instance.Information($"New commands added: {string.Join(", ", commands.Select(c => c.CommandName))}");
-
-            return this;
         }
 
         private void ApiProviderOnMessage(object sender, BotEventArgs e)
@@ -118,7 +57,7 @@ namespace Kysect.BotFramework.Core
             if (!commandResult.Value.EnsureStartWithPrefix(_prefix))
                 return;
 
-            commandResult = _commandHandler.IsCorrectArgumentCount(commandResult.Value.ApplySettings(_prefix, _caseSensitive));
+            commandResult = _commandHandler.IsCorrectArgumentCount(commandResult.Value.ApplySettings(_prefix));
             if (commandResult.IsFailed)
             {
                 HandlerError(commandResult, e);
