@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using FluentResults;
 using Kysect.BotFramework.ApiProviders;
 using Kysect.BotFramework.Core.BotMessages;
@@ -107,7 +107,7 @@ namespace Kysect.BotFramework.Core
             if (!commandResult.Value.EnsureStartWithPrefix(_prefix))
                 return;
 
-            commandResult = _commandHandler.IsCorrectArgumentCount(commandResult.Value.ApplySettings(_prefix, _caseSensitive));
+            commandResult = _commandHandler.IsCorrectArgumentCount(commandResult.Value.ApplySettings(_prefix));
             if (commandResult.IsFailed)
             {
                 HandlerError(commandResult, e);

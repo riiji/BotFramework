@@ -23,11 +23,8 @@ namespace Kysect.BotFramework.Core.CommandInvoking
             return prefix == '\0' || CommandName.FirstOrDefault() == prefix;
         }
 
-        public CommandArgumentContainer ApplySettings(char prefix, bool caseSensitive)
+        public CommandArgumentContainer ApplySettings(char prefix)
         {
-            if (!caseSensitive)
-                CommandName = CommandName.ToLower();
-
             if (CommandName.FirstOrDefault() == prefix)
                 CommandName = CommandName.Remove(0, 1);
 
