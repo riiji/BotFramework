@@ -15,7 +15,7 @@ namespace Kysect.BotFramework.Core.BotMessages
         
         public void Send(IBotApiProvider apiProvider, SenderInfo sender)
         {
-            throw new System.NotImplementedException();
+            apiProvider.SendMedia(MediaFile, Text, sender);
         }
     }
 }
