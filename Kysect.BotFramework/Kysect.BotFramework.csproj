@@ -4,7 +4,7 @@
     <OutputType>Library</OutputType>
     <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Authors>Kysect</Authors>
     <RootNamespace>Kysect.BotFramework</RootNamespace>
     <AssemblyName>Kysect.BotFramework</AssemblyName>
@@ -13,6 +13,8 @@
     <LangVersion>latest</LangVersion>
     <Company>Kysect</Company>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <RepositoryUrl>https://github.com/kysect/BotFramework</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/kysect/BotFramework</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
