@@ -11,7 +11,6 @@ using Kysect.BotFramework.Core.BotMedia;
 using Kysect.BotFramework.Core.BotMessages;
 using Kysect.BotFramework.Core.Tools.Loggers;
 using Kysect.BotFramework.Settings;
-using Newtonsoft.Json;
 
 namespace Kysect.BotFramework.ApiProviders.Discord
 {
