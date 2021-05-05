@@ -11,7 +11,7 @@ namespace Kysect.BotFramework.ApiProviders
         event EventHandler<BotEventArgs> OnMessage;
 
         void Restart();
-        Result<string> SendText(string text, SenderInfo sender);
+        public Result<string> SendText(string text, SenderInfo sender);
         public Result<string> SendMedia(IBotMediaFile mediaFile, string text, SenderInfo sender);
         public Result<string> SendMultipleMedia(List<IBotMediaFile> mediaFiles, string text, SenderInfo sender);
 
