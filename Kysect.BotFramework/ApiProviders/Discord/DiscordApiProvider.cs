@@ -138,7 +138,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             }
             else if (context.Message.Attachments.Count == 1)
             {
-                botMessage = parseMediaType(message.Attachments.First().Filename) switch
+                botMessage = ParseMediaType(message.Attachments.First().Filename) switch
                 {
                     MediaTypeEnum.Photo => new BotSingleMediaMessage(context.Message.Content,
                         new BotOnlinePhotoFile(context.Message.Attachments.First().Url)),
@@ -151,7 +151,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
                 List<IBotMediaFile> mediaFiles = new List<IBotMediaFile>();
                 foreach (var attachment in context.Message.Attachments)
                 {
-                    switch (parseMediaType(attachment.Filename))
+                    switch (ParseMediaType(attachment.Filename))
                     {
                         case MediaTypeEnum.Photo: mediaFiles.Add(new BotOnlinePhotoFile(attachment.Url)); break;
                         case MediaTypeEnum.Video: mediaFiles.Add(new BotOnlineVideoFile(attachment.Url)); break;
@@ -182,7 +182,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             return Task.CompletedTask;
         }
 
-        private MediaTypeEnum parseMediaType(string filename)
+        private MediaTypeEnum ParseMediaType(string filename)
         {
             if (filename.EndsWith("png") || filename.EndsWith("jpg") ||
                 filename.EndsWith("bmp")) return MediaTypeEnum.Photo;
