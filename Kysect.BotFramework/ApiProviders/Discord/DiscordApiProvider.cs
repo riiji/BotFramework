@@ -11,6 +11,7 @@ using Kysect.BotFramework.Core.BotMedia;
 using Kysect.BotFramework.Core.BotMessages;
 using Kysect.BotFramework.Core.Tools.Loggers;
 using Kysect.BotFramework.Settings;
+using Newtonsoft.Json;
 
 namespace Kysect.BotFramework.ApiProviders.Discord
 {
@@ -66,13 +67,41 @@ namespace Kysect.BotFramework.ApiProviders.Discord
 
         public Result<string> SendMultipleMedia(List<IBotMediaFile> mediaFiles, string text, SenderInfo sender)
         {
-            var result = SendMedia(mediaFiles.First(), text, sender);
+            Result<string> result;
+            if (mediaFiles.First() is IBotOnlineFile)
+            {
+                result = SendText(text, sender);
+                if (result.IsFailed)
+                {
+                    return result;
+                }
+                result = SendText(mediaFiles.First().Path, sender);
+            }
+            else
+            {
+                result = SendMedia(mediaFiles.First(), text, sender);
+            }
             foreach (var media in mediaFiles.Skip(1))
             {
                 if (result.IsFailed) return result;
-                result = SendMedia(media, string.Empty, sender);
+                if (media is IBotOnlineFile)
+                {
+                    result = SendText(media.Path, sender);
+                }
+                else
+                {
+                    result = SendMedia(media, string.Empty, sender);
+                }
             }
 
+            return result;
+        }
+
+        public Result<string> SendOnlineMedia(IBotOnlineFile file, string text, SenderInfo sender)
+        {
+            var result = SendText(text, sender);
+            if (result.IsFailed) return result;
+            result = SendText(file.Path, sender);
             return result;
         }
 
@@ -99,10 +128,52 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             if (message is null) return Task.CompletedTask;
             var context = new SocketCommandContext(_client, message);
             if (context.User.IsBot || context.Guild is null) return Task.CompletedTask;
-            //TODO: add message logging
+            LoggerHolder.Instance.Debug($"New message event: {context.Message.ToString()}");
+            //TODO: Refactor
+            IBotMessage botMessage = new BotTextMessage(String.Empty);
+            
+            if (context.Message.Attachments.Count == 0)
+            {
+                botMessage = new BotTextMessage(context.Message.Content);
+            }
+            else
+            {
+                if (context.Message.Attachments.Count > 1)
+                {
+                    List<IBotMediaFile> mediaFiles = new List<IBotMediaFile>();
+                    foreach (var attachment in context.Message.Attachments)
+                    {
+                        if (attachment.Filename.EndsWith("png") || attachment.Filename.EndsWith("jpg") ||
+                            attachment.Filename.EndsWith("bmp"))
+                        {
+                            mediaFiles.Add(new BotOnlinePhotoFile(attachment.Url));
+                        }
+                    }
+
+                    if (mediaFiles.Count == 0)
+                    {
+                        botMessage = new BotTextMessage(context.Message.Content);
+                    } else if (mediaFiles.Count == 1)
+                    {
+                        botMessage = new BotSingleMediaMessage(context.Message.Content, mediaFiles.First());
+                    }
+                    else
+                    {
+                        botMessage = new BotMultipleMediaMessage(context.Message.Content, mediaFiles);
+                    }
+                }
+                else
+                {
+                    if (context.Message.Attachments.First().Filename.EndsWith("png") || context.Message.Attachments.First().Filename.EndsWith("jpg") ||
+                        context.Message.Attachments.First().Filename.EndsWith("bmp"))
+                    {
+                        botMessage = new BotSingleMediaMessage(context.Message.Content,new BotOnlinePhotoFile(context.Message.Attachments.First().Url));
+                    }
+                }
+            }
             OnMessage?.Invoke(context.Client,
                 new BotEventArgs(
-                    new BotTextMessage(context.Message.ToString()),
+                    botMessage,
                     new SenderInfo(
                         (long) (context.Guild?.Id ?? 0),
                         (long) context.Channel.Id,

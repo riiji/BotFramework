@@ -16,7 +16,14 @@ namespace Kysect.BotFramework.Core.BotMessages
         
         public void Send(IBotApiProvider apiProvider, SenderInfo sender)
         {
-            apiProvider.SendMedia(MediaFile, Text, sender);
+            if (MediaFile is IBotOnlineFile onlineFile)
+            {
+                apiProvider.SendOnlineMedia(onlineFile, Text, sender);
+            }
+            else
+            {
+                apiProvider.SendMedia(MediaFile, Text, sender);
+            }
         }
     }
 }
