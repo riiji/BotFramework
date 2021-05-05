@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
@@ -137,11 +138,14 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             }
             else if (context.Message.Attachments.Count == 1)
             {
-                if (context.Message.Attachments.First().Filename.EndsWith("png") || context.Message.Attachments.First().Filename.EndsWith("jpg") ||
-                    context.Message.Attachments.First().Filename.EndsWith("bmp"))
+                botMessage = parseMediaType(message.Attachments.First().Filename) switch
                 {
-                    botMessage = new BotSingleMediaMessage(context.Message.Content,new BotOnlinePhotoFile(context.Message.Attachments.First().Url));
-                }
+                    MediaTypeEnum.Photo => new BotSingleMediaMessage(context.Message.Content,
+                        new BotOnlinePhotoFile(context.Message.Attachments.First().Url)),
+                    MediaTypeEnum.Video => new BotSingleMediaMessage(context.Message.Content,
+                        new BotOnlineVideoFile(context.Message.Attachments.First().Url)),
+                    MediaTypeEnum.Undefined => new BotTextMessage(context.Message.Content)
+                };
             } else 
             {
                 List<IBotMediaFile> mediaFiles = new List<IBotMediaFile>();
@@ -150,6 +154,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
                     switch (parseMediaType(attachment.Filename))
                     {
                         case MediaTypeEnum.Photo: mediaFiles.Add(new BotOnlinePhotoFile(attachment.Url)); break;
+                        case MediaTypeEnum.Video: mediaFiles.Add(new BotOnlineVideoFile(attachment.Url)); break;
                     }
                 }
 

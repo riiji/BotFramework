@@ -132,14 +132,16 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             {
                 task = file.MediaType switch
                 {
-                    MediaTypeEnum.Photo => _client.SendPhotoAsync(sender.GroupId, file.Id, text)
+                    MediaTypeEnum.Photo => _client.SendPhotoAsync(sender.GroupId, file.Id, text),
+                    MediaTypeEnum.Video => _client.SendVideoAsync(sender.GroupId, file.Id, caption: text)
                 };
             }
             else
             {
                 task = file.MediaType switch
                 {
-                    MediaTypeEnum.Photo => _client.SendPhotoAsync(sender.GroupId, file.Path, text)
+                    MediaTypeEnum.Photo => _client.SendPhotoAsync(sender.GroupId, file.Path, text),
+                    MediaTypeEnum.Video => _client.SendVideoAsync(sender.GroupId, file.Path, caption: text)
                 };
             }
 
@@ -187,21 +189,23 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             LoggerHolder.Instance.Debug("New message event: {@e}", e);
             IBotMessage message = new BotTextMessage(String.Empty);
             string text = e.Message.Text is null ? e.Message.Caption : e.Message.Text;
-            if (e.Message.Type == MessageType.Text)
+            switch (e.Message.Type)
             {
-                message = new BotTextMessage(text);
-            }
-            else
-            {
-                if (e.Message.Type == MessageType.Photo)
+                case MessageType.Photo:
                 {
                     var mediaFile = new BotOnlinePhotoFile(GetFileLink(e.Message.Photo.Last().FileId),e.Message.Photo.Last().FileId);
                     message = new BotSingleMediaMessage(text, mediaFile);
+                    break;
                 }
-                else
+                case MessageType.Video:
                 {
-                    message = new BotTextMessage(text);
+                    var mediaFile = new BotOnlineVideoFile(GetFileLink(e.Message.Video.FileId),e.Message.Video.FileId);
+                    message = new BotSingleMediaMessage(text, mediaFile);
+                    break;
                 }
+                default:
+                    message = new BotTextMessage(text);
+                    break;
             }
             OnMessage?.Invoke(sender,
                 new BotEventArgs(
