@@ -127,24 +127,18 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
 
         public Result<string> SendOnlineMedia(IBotOnlineFile file, string text, SenderInfo sender)
         {
-            Task<Message> task;
+            string fileIdentefier = file.Path;
             if (file.Id is not null)
             {
-                task = file.MediaType switch
-                {
-                    MediaTypeEnum.Photo => _client.SendPhotoAsync(sender.GroupId, file.Id, text),
-                    MediaTypeEnum.Video => _client.SendVideoAsync(sender.GroupId, file.Id, caption: text)
-                };
-            }
-            else
-            {
-                task = file.MediaType switch
-                {
-                    MediaTypeEnum.Photo => _client.SendPhotoAsync(sender.GroupId, file.Path, text),
-                    MediaTypeEnum.Video => _client.SendVideoAsync(sender.GroupId, file.Path, caption: text)
-                };
+                fileIdentefier = file.Id;
             }
 
+            Task<Message> task = file.MediaType switch
+            {
+                MediaTypeEnum.Photo => _client.SendPhotoAsync(sender.GroupId, fileIdentefier, text),
+                MediaTypeEnum.Video => _client.SendVideoAsync(sender.GroupId, fileIdentefier, caption: text)
+            };
+            
             try
             {
                 task.Wait();
