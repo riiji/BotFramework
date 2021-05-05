@@ -146,6 +146,10 @@ namespace Kysect.BotFramework.ApiProviders.Discord
                         new BotOnlineVideoFile(context.Message.Attachments.First().Url)),
                     MediaTypeEnum.Undefined => new BotTextMessage(context.Message.Content)
                 };
+                if (botMessage is BotTextMessage)
+                {
+                    LoggerHolder.Instance.Information($"Skipped file: {context.Message.Attachments.First().Filename}");
+                }
             } else 
             {
                 List<IBotMediaFile> mediaFiles = new List<IBotMediaFile>();
@@ -155,6 +159,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
                     {
                         case MediaTypeEnum.Photo: mediaFiles.Add(new BotOnlinePhotoFile(attachment.Url)); break;
                         case MediaTypeEnum.Video: mediaFiles.Add(new BotOnlineVideoFile(attachment.Url)); break;
+                        case MediaTypeEnum.Undefined: LoggerHolder.Instance.Information($"Skipped file: {attachment.Filename}"); break;
                     }
                 }
 
