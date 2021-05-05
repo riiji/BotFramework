@@ -129,45 +129,40 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             if (context.User.IsBot || context.Guild is null) return Task.CompletedTask;
             LoggerHolder.Instance.Debug($"New message event: {context.Message.ToString()}");
             //TODO: Refactor
-            IBotMessage botMessage = new BotTextMessage(String.Empty);
+            IBotMessage botMessage = default;
             
             if (context.Message.Attachments.Count == 0)
             {
                 botMessage = new BotTextMessage(context.Message.Content);
             }
-            else
+            else if (context.Message.Attachments.Count == 1)
             {
-                if (context.Message.Attachments.Count > 1)
+                if (context.Message.Attachments.First().Filename.EndsWith("png") || context.Message.Attachments.First().Filename.EndsWith("jpg") ||
+                    context.Message.Attachments.First().Filename.EndsWith("bmp"))
                 {
-                    List<IBotMediaFile> mediaFiles = new List<IBotMediaFile>();
-                    foreach (var attachment in context.Message.Attachments)
+                    botMessage = new BotSingleMediaMessage(context.Message.Content,new BotOnlinePhotoFile(context.Message.Attachments.First().Url));
+                }
+            } else 
+            {
+                List<IBotMediaFile> mediaFiles = new List<IBotMediaFile>();
+                foreach (var attachment in context.Message.Attachments)
+                {
+                    switch (parseMediaType(attachment.Filename))
                     {
-                        if (attachment.Filename.EndsWith("png") || attachment.Filename.EndsWith("jpg") ||
-                            attachment.Filename.EndsWith("bmp"))
-                        {
-                            mediaFiles.Add(new BotOnlinePhotoFile(attachment.Url));
-                        }
+                        case MediaTypeEnum.Photo: mediaFiles.Add(new BotOnlinePhotoFile(attachment.Url)); break;
                     }
+                }
 
-                    if (mediaFiles.Count == 0)
-                    {
-                        botMessage = new BotTextMessage(context.Message.Content);
-                    } else if (mediaFiles.Count == 1)
-                    {
-                        botMessage = new BotSingleMediaMessage(context.Message.Content, mediaFiles.First());
-                    }
-                    else
-                    {
-                        botMessage = new BotMultipleMediaMessage(context.Message.Content, mediaFiles);
-                    }
+                if (!mediaFiles.Any())
+                {
+                    botMessage = new BotTextMessage(context.Message.Content);
+                } else if (mediaFiles.Count == 1)
+                {
+                    botMessage = new BotSingleMediaMessage(context.Message.Content, mediaFiles.First());
                 }
                 else
                 {
-                    if (context.Message.Attachments.First().Filename.EndsWith("png") || context.Message.Attachments.First().Filename.EndsWith("jpg") ||
-                        context.Message.Attachments.First().Filename.EndsWith("bmp"))
-                    {
-                        botMessage = new BotSingleMediaMessage(context.Message.Content,new BotOnlinePhotoFile(context.Message.Attachments.First().Url));
-                    }
+                    botMessage = new BotMultipleMediaMessage(context.Message.Content, mediaFiles);
                 }
             }
             OnMessage?.Invoke(context.Client,
@@ -182,6 +177,15 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             return Task.CompletedTask;
         }
 
+        private MediaTypeEnum parseMediaType(string filename)
+        {
+            if (filename.EndsWith("png") || filename.EndsWith("jpg") ||
+                filename.EndsWith("bmp")) return MediaTypeEnum.Photo;
+            if (filename.EndsWith("mp4") || filename.EndsWith("mov") ||
+                filename.EndsWith("wmv") || filename.EndsWith("avi")) return MediaTypeEnum.Video;
+            return MediaTypeEnum.Undefined;
+        }
+        
         private void Initialize()
         {
             _client = new DiscordSocketClient();
