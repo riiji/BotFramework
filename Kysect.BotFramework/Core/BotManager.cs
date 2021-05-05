@@ -50,7 +50,6 @@ namespace Kysect.BotFramework.Core
             Result<CommandArgumentContainer> commandResult = _commandParser.ParseCommand(e);
             if (commandResult.IsFailed)
             {
-                HandlerError(commandResult, e);
                 return;
             }
 
