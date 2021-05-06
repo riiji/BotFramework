@@ -2,6 +2,6 @@
 {
     public interface IBotOnlineFile : IBotMediaFile
     {
-        public string Id { get; }
+        string Id { get; }
     }
 }

@@ -11,10 +11,10 @@ namespace Kysect.BotFramework.ApiProviders
         event EventHandler<BotEventArgs> OnMessage;
 
         void Restart();
-        public Result<string> SendText(string text, SenderInfo sender);
-        public Result<string> SendMedia(IBotMediaFile mediaFile, string text, SenderInfo sender);
-        public Result<string> SendMultipleMedia(List<IBotMediaFile> mediaFiles, string text, SenderInfo sender);
+        Result<string> SendText(string text, SenderInfo sender);
+        Result<string> SendMedia(IBotMediaFile mediaFile, string text, SenderInfo sender);
+        Result<string> SendMultipleMedia(List<IBotMediaFile> mediaFiles, string text, SenderInfo sender);
 
-        public Result<string> SendOnlineMedia(IBotOnlineFile file, string text, SenderInfo sender);
+        Result<string> SendOnlineMedia(IBotOnlineFile file, string text, SenderInfo sender);
     }
 }
