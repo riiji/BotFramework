@@ -219,7 +219,7 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
         private string GetFileLink(string id)
         {
             //TODO:Implement
-            return String.Empty;
+            return $"https://api.telegram.org/file/bot{_settings.AccessToken}/{_client.GetFileAsync(id).Result.FilePath}";
         } 
     }
 }
