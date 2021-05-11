@@ -11,7 +11,7 @@ namespace Kysect.BotFramework.Core.CommandInvoking
             if (string.IsNullOrWhiteSpace(commandName))
                 return Result.Fail($"[{nameof(CommandParser)}]: Message do not contains command name.");
 
-            return Result.Ok(new CommandArgumentContainer(commandName, botArguments.Sender, botArguments.GetCommandArguments()));
+            return Result.Ok(new CommandArgumentContainer(commandName, botArguments.Sender, botArguments.GetCommandArguments(), botArguments.GetMediaFiles()));
         }
     }
 }

@@ -3,6 +3,7 @@
     public enum MediaTypeEnum
     {
         Photo,
-        Video
+        Video,
+        Undefined
     }
 }

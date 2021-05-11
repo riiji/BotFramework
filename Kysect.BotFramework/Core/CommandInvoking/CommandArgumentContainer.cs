@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Kysect.BotFramework.Core.BotMedia;
 
 namespace Kysect.BotFramework.Core.CommandInvoking
 {
@@ -10,12 +11,15 @@ namespace Kysect.BotFramework.Core.CommandInvoking
         public SenderInfo Sender { get; }
 
         public List<string> Arguments { get; }
-
-        public CommandArgumentContainer(string commandName, SenderInfo sender, List<string> arguments)
+        
+        public List<IBotMediaFile> MediaFiles { get; }
+        
+        public CommandArgumentContainer(string commandName, SenderInfo sender, List<string> arguments, List<IBotMediaFile> mediaFiles)
         {
             CommandName = commandName;
             Sender = sender;
             Arguments = arguments;
+            MediaFiles = mediaFiles;
         }
 
         public bool EnsureStartWithPrefix(char prefix)

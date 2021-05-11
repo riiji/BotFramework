@@ -69,6 +69,11 @@ namespace Kysect.BotFramework.ApiProviders.VK
             throw new NotImplementedException();
         }
 
+        public Result<string> SendOnlineMedia(IBotOnlineFile file, string text, SenderInfo sender)
+        {
+            throw new NotImplementedException();
+        }
+
 
         public void Dispose()
         {
