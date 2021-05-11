@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
@@ -138,30 +137,14 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             }
             else if (context.Message.Attachments.Count == 1)
             {
-                botMessage = ParseMediaType(message.Attachments.First().Filename) switch
-                {
-                    MediaTypeEnum.Photo => new BotSingleMediaMessage(context.Message.Content,
-                        new BotOnlinePhotoFile(context.Message.Attachments.First().Url)),
-                    MediaTypeEnum.Video => new BotSingleMediaMessage(context.Message.Content,
-                        new BotOnlineVideoFile(context.Message.Attachments.First().Url)),
-                    MediaTypeEnum.Undefined => new BotTextMessage(context.Message.Content)
-                };
-                if (botMessage is BotTextMessage)
-                {
-                    LoggerHolder.Instance.Information($"Skipped file: {context.Message.Attachments.First().Filename}");
-                }
+                IBotOnlineFile onlineFile =
+                    getOnlineFile(message.Attachments.First().Filename, message.Attachments.First().Url);
+                botMessage = onlineFile is not null
+                    ? new BotSingleMediaMessage(context.Message.Content, onlineFile)
+                    : new BotTextMessage(context.Message.Content);
             } else 
             {
-                List<IBotMediaFile> mediaFiles = new List<IBotMediaFile>();
-                foreach (var attachment in context.Message.Attachments)
-                {
-                    switch (ParseMediaType(attachment.Filename))
-                    {
-                        case MediaTypeEnum.Photo: mediaFiles.Add(new BotOnlinePhotoFile(attachment.Url)); break;
-                        case MediaTypeEnum.Video: mediaFiles.Add(new BotOnlineVideoFile(attachment.Url)); break;
-                        case MediaTypeEnum.Undefined: LoggerHolder.Instance.Information($"Skipped file: {attachment.Filename}"); break;
-                    }
-                }
+                List<IBotMediaFile> mediaFiles = context.Message.Attachments.Select(attachment => getOnlineFile(attachment.Filename, attachment.Url)).Where(onlineFile => onlineFile is not null).Cast<IBotMediaFile>().ToList();
 
                 if (!mediaFiles.Any())
                 {
@@ -187,7 +170,18 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             return Task.CompletedTask;
         }
 
-        private MediaTypeEnum ParseMediaType(string filename)
+        private IBotOnlineFile getOnlineFile(string filename, string url)
+        {
+            switch (parseMediaType(filename))
+            {
+                case MediaTypeEnum.Photo: return new BotOnlinePhotoFile(url); 
+                case MediaTypeEnum.Video: return new BotOnlineVideoFile(url);
+                case MediaTypeEnum.Undefined:
+                default: LoggerHolder.Instance.Information($"Skipped file: {filename}"); return null;
+            }
+        }
+
+        private MediaTypeEnum parseMediaType(string filename)
         {
             if (filename.EndsWith("png") || filename.EndsWith("jpg") ||
                 filename.EndsWith("bmp")) return MediaTypeEnum.Photo;
