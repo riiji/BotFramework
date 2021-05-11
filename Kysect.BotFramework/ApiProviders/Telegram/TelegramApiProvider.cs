@@ -23,12 +23,16 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
         private readonly TelegramSettings _settings;
         private TelegramBotClient _client;
 
+        private InputMedia fileToSend;
         public TelegramApiProvider(ISettingsProvider<TelegramSettings> settingsProvider)
         {
             _settings = settingsProvider.GetSettings();
             Initialize();
         }
-
+        public string GetFileLink()
+        {
+            return $"https://api.telegram.org/file/bot{_settings.AccessToken}/{_client.GetFileAsync(fileToSend.FileId).Result.FilePath}";
+        }
         public event EventHandler<BotEventArgs> OnMessage;
 
         public Result<string> SendText(string text, SenderInfo sender)
@@ -51,7 +55,7 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
         public Result<string> SendMedia(IBotMediaFile mediaFile, string text, SenderInfo sender)
         {
             var stream = File.Open(mediaFile.Path, FileMode.Open);
-            var fileToSend = new InputMedia(stream, mediaFile.Path.Split(Path.DirectorySeparatorChar).Last());
+            fileToSend = new InputMedia(stream, mediaFile.Path.Split(Path.DirectorySeparatorChar).Last());
             var task = mediaFile.MediaType switch
             {
                 MediaTypeEnum.Photo => _client.SendPhotoAsync(sender.GroupId, fileToSend, text),
@@ -215,7 +219,7 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
         private string GetFileLink(string id)
         {
             //TODO:Implement
-            return String.Empty;
+            return $"https://api.telegram.org/file/bot{_settings.AccessToken}/{_client.GetFileAsync(id).Result.FilePath}";
         } 
     }
 }
