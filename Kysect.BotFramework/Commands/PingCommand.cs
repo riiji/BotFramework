@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using FluentResults;
+using Kysect.BotFramework.Core.BotMedia;
 using Kysect.BotFramework.Core.BotMessages;
 using Kysect.BotFramework.Core.CommandInvoking;
 
@@ -18,7 +20,7 @@ namespace Kysect.BotFramework.Commands
 
         public Task<Result<IBotMessage>> Execute(CommandArgumentContainer args)
         {
-            IBotMessage message = new BotTextMessage($@"Pong {args.Sender.Username}!");
+            IBotMessage message = new BotTextMessage("Pong!");
             return Task.FromResult(Result.Ok(message));
         }
     }

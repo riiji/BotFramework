@@ -2,7 +2,7 @@
 {
     public interface IBotMediaFile
     {
-        public MediaTypeEnum MediaType { get; }
-        public string Path { get; }
+        MediaTypeEnum MediaType { get; }
+        string Path { get; }
     }
 }

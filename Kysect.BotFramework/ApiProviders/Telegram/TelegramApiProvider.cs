@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentResults;
 using Kysect.BotFramework.Core;
 using Kysect.BotFramework.Core.BotMedia;
@@ -11,6 +12,7 @@ using Kysect.BotFramework.Settings;
 using Telegram.Bot;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using File = System.IO.File;
 
 namespace Kysect.BotFramework.ApiProviders.Telegram
@@ -123,6 +125,33 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             }
         }
 
+        public Result<string> SendOnlineMedia(IBotOnlineFile file, string text, SenderInfo sender)
+        {
+            string fileIdentefier = file.Path;
+            if (file.Id is not null)
+            {
+                fileIdentefier = file.Id;
+            }
+
+            Task<Message> task = file.MediaType switch
+            {
+                MediaTypeEnum.Photo => _client.SendPhotoAsync(sender.GroupId, fileIdentefier, text),
+                MediaTypeEnum.Video => _client.SendVideoAsync(sender.GroupId, fileIdentefier, caption: text)
+            };
+            
+            try
+            {
+                task.Wait();
+                return Result.Ok("Message sent.");
+            }
+            catch (Exception e)
+            {
+                const string message = "Error while sending message";
+                LoggerHolder.Instance.Error(e, message);
+                return Result.Fail(new Error(message).CausedBy(e));
+            }
+        }
+        
         public void Restart()
         {
             lock (_lock)
@@ -151,17 +180,42 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
         private void ClientOnMessage(object sender, MessageEventArgs e)
         {
             //TODO: Hm. Do we need to use try/catch here?
-            Console.WriteLine("OLO");
             LoggerHolder.Instance.Debug("New message event: {@e}", e);
+            IBotMessage message = new BotTextMessage(String.Empty);
+            string text = e.Message.Text is null ? e.Message.Caption : e.Message.Text;
+            switch (e.Message.Type)
+            {
+                case MessageType.Photo:
+                {
+                    var mediaFile = new BotOnlinePhotoFile(GetFileLink(e.Message.Photo.Last().FileId),e.Message.Photo.Last().FileId);
+                    message = new BotSingleMediaMessage(text, mediaFile);
+                    break;
+                }
+                case MessageType.Video:
+                {
+                    var mediaFile = new BotOnlineVideoFile(GetFileLink(e.Message.Video.FileId),e.Message.Video.FileId);
+                    message = new BotSingleMediaMessage(text, mediaFile);
+                    break;
+                }
+                default:
+                    message = new BotTextMessage(text);
+                    break;
+            }
             OnMessage?.Invoke(sender,
                 new BotEventArgs(
-                    new BotTextMessage(e.Message.Text),
+                    message,
                     new SenderInfo(
                         e.Message.Chat.Id,
-                        e.Message.ForwardFromMessageId,
+                        e.Message.From.Id,
                         e.Message.From.FirstName
                     )
                 ));
         }
+
+        private string GetFileLink(string id)
+        {
+            //TODO:Implement
+            return String.Empty;
+        } 
     }
 }

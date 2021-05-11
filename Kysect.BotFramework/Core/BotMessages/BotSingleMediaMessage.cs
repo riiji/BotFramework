@@ -8,14 +8,22 @@ namespace Kysect.BotFramework.Core.BotMessages
         public string Text { get; }
         public IBotMediaFile MediaFile { get; }
 
-        public BotSingleMediaMessage(IBotMediaFile mediaFile)
+        public BotSingleMediaMessage(string text, IBotMediaFile mediaFile)
         {
+            Text = text;
             MediaFile = mediaFile;
         }
         
         public void Send(IBotApiProvider apiProvider, SenderInfo sender)
         {
-            throw new System.NotImplementedException();
+            if (MediaFile is IBotOnlineFile onlineFile)
+            {
+                apiProvider.SendOnlineMedia(onlineFile, Text, sender);
+            }
+            else
+            {
+                apiProvider.SendMedia(MediaFile, Text, sender);
+            }
         }
     }
 }
