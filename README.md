@@ -6,6 +6,26 @@ BotFramework - фреймворк, который упрощает процед�
 
 Начало работы:
 
+### Настройка авторизации
+
+TSettings - класс, в котором описаны настройки бота. Пример такого класса (данный класс доступен из коробки)
+
+```csharp
+public class TelegramSettings
+    {
+        public TelegramSettings(string accessToken)
+        {
+            AccessToken = accessToken;
+        }
+
+        public TelegramSettings()
+        {
+        }
+
+        public string AccessToken { get; set; }
+    }
+```
+
 ### Получение настроек через конфигурационный файл
 
 Задать настройки можно с помощью json файла.
@@ -14,66 +34,44 @@ BotFramework - фреймворк, который упрощает процед�
 var settings = new ConfigSettingsProvider<TSettings>("filename");
 ```
 
-TSettings - класс, в котором описаны настройки бота. Пример такого класса (данный класс доступен из коробки)
-
-```csharp
-public class VkSettings
-{
-        public VkSettings(string vkKey, int vkAppId, string vkAppSecret, int vkGroupId)
-        {
-            VkKey = vkKey;
-            VkAppId = vkAppId;
-            VkAppSecret = vkAppSecret;
-            VkGroupId = vkGroupId;
-        }
-
-        public VkSettings()
-        {
-        }
-
-        public string VkKey { get; set; }
-        public int VkAppId { get; set; }
-        public string VkAppSecret { get; set; }
-        public int VkGroupId { get; set; }
-}
-```
-
-```csharp
-var settings = new SettingsFromConfig<VkSettings>("filename");
-```
-
-Вид JSON конфига для VkSettings
+Вид JSON конфига для TelegramSettings
 ```json
 {
-"VkKey":"",
-"VkAppId":"",
-"VkAppSecret":"",
-"VkGroupId":""
+    "AcessToken" : "token"
 }
+```
+
+### Получение настроек из строки
+
+Для упрощения процесса разработки, настройки можно получить из строки с токеном
+
+```csharp
+var settings = new ConstSettingsProvider<TSettings>(new TSettings(token));
 ```
 
 ### Добавление новых команд:
 
-Чтобы добавить команду, ваш класс должен реализовывать интерфейс IBotCommand
+Чтобы добавить команду, ваш класс должен реализовывать интерфейс IBotSyncCommand или IBotAsyncCommand
 
 Пример команды Ping
 ```csharp
-public class PingCommand : IBotCommand
-{
-        public string CommandName { get; } = "Ping";
-        public string Description { get; } = "Answer pong on ping message";
-        public string[] Args { get; } = new string[0];
+public class PingCommand : IBotAsyncCommand
+    {
+        public static readonly BotCommandDescriptor<PingCommand> Descriptor = new BotCommandDescriptor<PingCommand>(
+            "Ping",
+            "Answer pong on ping message");
 
         public Result CanExecute(CommandArgumentContainer args)
         {
             return Result.Ok();
         }
 
-        public Task<Result<string>> ExecuteAsync(CommandArgumentContainer args)
+        public Task<Result<IBotMessage>> Execute(CommandArgumentContainer args)
         {
-            return Task.FromResult(Result.Ok($"Pong {args.Sender.Username}"));
+            IBotMessage message = new BotTextMessage("Pong!");
+            return Task.FromResult(Result.Ok(message));
         }
-}
+    }
 ```
 
 Пример создания бота с командой Ping
@@ -84,10 +82,11 @@ var telegramToken = string.Empty;
 var settings = new ConstSettingsProvider<TelegramSettings>(new TelegramSettings(telegramToken));
 var api = new TelegramApiProvider(settings);
 
-new BotManager(api)
-    .AddDefaultLogger()
+BotManager botManager = new BotManagerBuilder()
     .SetPrefix('!')
-    .WithoutCaseSensitiveCommands()
-    .AddCommand(new PingCommand())
-    .Start();
+    .SetCaseSensitive(false)
+    .AddCommand(PingCommand.Descriptor)
+    .Build(api);
+
+botManager.Start();
 ```
