@@ -38,11 +38,17 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             try
             {
                 task.Wait();
-                return Result.Ok("Message send");
+                return Result.Ok("Message sent.");
             }
             catch (Exception e)
             {
-                const string message = "Error while sending message";
+                string message = "Error while sending message";
+                if (text.Length <= 0 || text.Length > 4096)
+                {
+                    message = "The message wasn't sent, the length is too big / small";
+                    LoggerHolder.Instance.Error(message);
+                    return Result.Fail(message);
+                }
                 LoggerHolder.Instance.Error(e, message);
                 return Result.Fail(new Error(message).CausedBy(e));
             }
