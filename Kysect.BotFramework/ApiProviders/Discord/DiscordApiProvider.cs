@@ -44,7 +44,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
                 {
                     string subString = text.Substring(0, 99) + "...";
                     LoggerHolder.Instance.Error($"The message wasn't sent by the command " +
-                                                $"\"{PingCommand.Descriptor.CommandName}\", the length is too big: {text}");
+                                                $"\"{PingCommand.Descriptor.CommandName}\", the length is too big: {subString}");
                     return Result.Fail(new Error(message).CausedBy(subString));
                 }
             }
