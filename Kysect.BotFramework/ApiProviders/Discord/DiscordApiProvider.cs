@@ -6,6 +6,7 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using FluentResults;
+using Kysect.BotFramework.Commands;
 using Kysect.BotFramework.Core;
 using Kysect.BotFramework.Core.BotMedia;
 using Kysect.BotFramework.Core.BotMessages;
@@ -30,9 +31,28 @@ namespace Kysect.BotFramework.ApiProviders.Discord
 
         public Result<string> SendText(string text, SenderInfo sender)
         {
+            string message = "Error while sending message";
+            switch (text.Length)
+            {
+                case (0):
+                {
+                    LoggerHolder.Instance.Error($"The message wasn't sent by the command " +
+                                                $"\"{PingCommand.Descriptor.CommandName}\", the length must not be zero.");
+                    return Result.Fail(new Error(message).CausedBy(text));
+                }
+                case ( > 2000):
+                {
+                    string subString = text.Substring(0, 99) + "...";
+                    LoggerHolder.Instance.Error($"The message wasn't sent by the command " +
+                                                $"\"{PingCommand.Descriptor.CommandName}\", the length is too big: {subString}");
+                    return Result.Fail(new Error(message).CausedBy(subString));
+                }
+            }
+            
             var task = _client.GetGuild((ulong) sender.GroupId)
                 .GetTextChannel((ulong) sender.UserSenderId)
                 .SendMessageAsync(text);
+            
             try
             {
                 task.Wait();
@@ -40,7 +60,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             }
             catch (Exception e)
             {
-                const string message = "Error while sending message";
+                message = "Error while sending message";
                 LoggerHolder.Instance.Error(e, message);
                 return Result.Fail(new Error(message).CausedBy(e));
             }

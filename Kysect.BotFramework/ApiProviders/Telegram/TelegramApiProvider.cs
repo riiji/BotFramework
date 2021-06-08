@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentResults;
+using Kysect.BotFramework.Commands;
 using Kysect.BotFramework.Core;
 using Kysect.BotFramework.Core.BotMedia;
 using Kysect.BotFramework.Core.BotMessages;
@@ -33,8 +34,26 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
 
         public Result<string> SendText(string text, SenderInfo sender)
         {
-            var task = _client.SendTextMessageAsync(sender.GroupId, text);
+            const string message = "Error while sending message";
+            switch (text.Length)
+            {
+                case (0):
+                {
+                    LoggerHolder.Instance.Error($"The message wasn't sent by the command " +
+                                                $"\"{PingCommand.Descriptor.CommandName}\", the length must not be zero.");
+                    return Result.Fail(new Error(message).CausedBy(text));
+                }
+                case ( > 4096):
+                {
+                    string subString = text.Substring(0, 99) + "...";
+                    LoggerHolder.Instance.Error($"The message wasn't sent by the command " +
+                                                $"\"{PingCommand.Descriptor.CommandName}\", the length is too big: {subString}");
+                    return Result.Fail(new Error(message).CausedBy(subString));
+                }
+            }
 
+            var task = _client.SendTextMessageAsync(sender.GroupId, text);
+            
             try
             {
                 task.Wait();
@@ -42,7 +61,6 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             }
             catch (Exception e)
             {
-                const string message = "Error while sending message";
                 LoggerHolder.Instance.Error(e, message);
                 return Result.Fail(new Error(message).CausedBy(e));
             }
