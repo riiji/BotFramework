@@ -23,6 +23,8 @@ namespace Kysect.BotFramework.ApiProviders.VK
 
         public VkFixedApiProvider(ISettingsProvider<VkSettings> settingsProvider)
         {
+            throw new NotImplementedException();
+
             _settings = settingsProvider.GetSettings();
             Initialize();
         }
@@ -31,6 +33,8 @@ namespace Kysect.BotFramework.ApiProviders.VK
 
         public void Restart()
         {
+            throw new NotImplementedException();
+
             //TODO: looks like this method must be `public async Task RestartSafe`
             //fyi: *Safe means that method never throw exception. Probably, we need to use await + try/catch
             lock (_lock)
@@ -41,8 +45,10 @@ namespace Kysect.BotFramework.ApiProviders.VK
             }
         }
 
-        public Result<string> SendText(string text, SenderInfo sender)
+        public Result<string> SendTextMessage(string text, SenderInfo sender)
         {
+            throw new NotImplementedException();
+
             var sendMessageTask = _api.Messages.Send
             (
                 randomId: RandomUtilities.GetRandom(),
@@ -77,6 +83,8 @@ namespace Kysect.BotFramework.ApiProviders.VK
 
         public void Dispose()
         {
+            throw new NotImplementedException();
+
             //TODO: add flag _isDisposed
             _client.OnMessageNew -= Client_OnMessageNew;
             _client.LongPollFailureReceived -= Client_LongPollFailureReceived;
@@ -86,6 +94,8 @@ namespace Kysect.BotFramework.ApiProviders.VK
 
         private void Initialize()
         {
+            throw new NotImplementedException();
+
             //TODO: log inner error?
             //TODO: Add inner error message to ArgumentException?
             //TODO: Replace ArgumentException with custom exception (BorFrameworkException?)
@@ -113,6 +123,7 @@ namespace Kysect.BotFramework.ApiProviders.VK
 
         private void Client_OnMessageNew(object sender, MessagesMessage e)
         {
+            throw new NotImplementedException();
             //TODO: add some logs with Debug level?
             var userTask = _api.Users.Get(new[] {e.FromId.ToString()});
             userTask.WaitSafe();
