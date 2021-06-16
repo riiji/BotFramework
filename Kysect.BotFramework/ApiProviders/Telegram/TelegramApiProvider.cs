@@ -132,26 +132,50 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
         private List<IAlbumInputMedia> collectInputMedia(List<IBotMediaFile> mediaFiles, string text, List<FileStream> streams)
         {
             var filesToSend = new List<IAlbumInputMedia>();
-
-            streams.Add(File.Open(mediaFiles.First().Path, FileMode.Open));
-            var inputMedia = new InputMedia(streams.Last(),
-                mediaFiles.First().Path.Split(Path.DirectorySeparatorChar).Last());
-            IAlbumInputMedia fileToSend = mediaFiles.First().MediaType switch
+            IAlbumInputMedia fileToSend;
+            if (mediaFiles.First() is IBotOnlineFile onlineFile)
             {
-                MediaTypeEnum.Photo => new InputMediaPhoto(inputMedia) {Caption = text},
-                MediaTypeEnum.Video => new InputMediaVideo(inputMedia) {Caption = text}
-            };
+                fileToSend = mediaFiles.First().MediaType switch
+                {
+                    MediaTypeEnum.Photo => new InputMediaPhoto(onlineFile.Id) {Caption = text},
+                    MediaTypeEnum.Video => new InputMediaVideo(onlineFile.Id) {Caption = text}
+                };
+            }
+            else
+            {
+                streams.Add(File.Open(mediaFiles.First().Path, FileMode.Open));
+                var inputMedia = new InputMedia(streams.Last(),
+                    mediaFiles.First().Path.Split(Path.DirectorySeparatorChar).Last());
+                fileToSend = mediaFiles.First().MediaType switch
+                {
+                    MediaTypeEnum.Photo => new InputMediaPhoto(inputMedia) {Caption = text},
+                    MediaTypeEnum.Video => new InputMediaVideo(inputMedia) {Caption = text}
+                };
+            }
+            
             filesToSend.Add(fileToSend);
 
             foreach (var mediaFile in mediaFiles.Skip(1))
             {
-                streams.Add(File.Open(mediaFile.Path, FileMode.Open));
-                inputMedia = new InputMedia(streams.Last(), mediaFile.Path.Split(Path.DirectorySeparatorChar).Last());
-                fileToSend = mediaFile.MediaType switch
+                if (mediaFile is IBotOnlineFile onlineMediaFile)
                 {
-                    MediaTypeEnum.Photo => new InputMediaPhoto(inputMedia),
-                    MediaTypeEnum.Video => new InputMediaVideo(inputMedia)
-                };
+                    fileToSend = mediaFile.MediaType switch
+                    {
+                        MediaTypeEnum.Photo => new InputMediaPhoto(onlineMediaFile.Id) {Caption = text},
+                        MediaTypeEnum.Video => new InputMediaVideo(onlineMediaFile.Id) {Caption = text}
+                    };
+                }
+                else
+                {
+                    streams.Add(File.Open(mediaFile.Path, FileMode.Open));
+                    var inputMedia = new InputMedia(streams.Last(), mediaFile.Path.Split(Path.DirectorySeparatorChar).Last());
+                    fileToSend = mediaFile.MediaType switch
+                    {
+                        MediaTypeEnum.Photo => new InputMediaPhoto(inputMedia),
+                        MediaTypeEnum.Video => new InputMediaVideo(inputMedia)
+                    };
+                }
+                
                 filesToSend.Add(fileToSend);
             }
 
