@@ -23,77 +23,81 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
         private readonly object _lock = new();
         private readonly TelegramSettings _settings;
         private TelegramBotClient _client;
-        
+        public event EventHandler<BotEventArgs> OnMessage;
+
         public TelegramApiProvider(ISettingsProvider<TelegramSettings> settingsProvider)
         {
             _settings = settingsProvider.GetSettings();
             Initialize();
         }
         
-        public event EventHandler<BotEventArgs> OnMessage;
-
-        public Result<string> SendText(string text, SenderInfo sender)
+        private void Initialize()
         {
-            const string message = "Error while sending message";
-            switch (text.Length)
-            {
-                case (0):
-                {
-                    LoggerHolder.Instance.Error($"The message wasn't sent by the command " +
-                                                $"\"{PingCommand.Descriptor.CommandName}\", the length must not be zero.");
-                    return Result.Fail(new Error(message).CausedBy(text));
-                }
-                case ( > 4096):
-                {
-                    string subString = text.Substring(0, 99) + "...";
-                    LoggerHolder.Instance.Error($"The message wasn't sent by the command " +
-                                                $"\"{PingCommand.Descriptor.CommandName}\", the length is too big: {subString}");
-                    return Result.Fail(new Error(message).CausedBy(subString));
-                }
-            }
+            _client = new TelegramBotClient(_settings.AccessToken);
 
-            var task = _client.SendTextMessageAsync(sender.GroupId, text);
-            
-            try
+            _client.OnMessage += ClientOnMessage;
+            _client.StartReceiving();
+        }
+
+        public void Restart()
+        {
+            lock (_lock)
             {
-                task.Wait();
-                return Result.Ok("Message send");
-            }
-            catch (Exception e)
-            {
-                LoggerHolder.Instance.Error(e, message);
-                return Result.Fail(new Error(message).CausedBy(e));
+                if (_client != null)
+                    Dispose();
+
+                Initialize();
             }
         }
 
-        public Result<string> SendMedia(IBotMediaFile mediaFile, string text, SenderInfo sender)
+        public void Dispose()
         {
-            var stream = File.Open(mediaFile.Path, FileMode.Open);
-            var fileToSend = new InputMedia(stream, mediaFile.Path.Split(Path.DirectorySeparatorChar).Last());
-            var task = mediaFile.MediaType switch
+            _client.OnMessage -= ClientOnMessage;
+            _client.StopReceiving();
+        }
+        
+        private void ClientOnMessage(object sender, MessageEventArgs e)
+        {
+            LoggerHolder.Instance.Debug("New message event: {@e}", e);
+            IBotMessage message = new BotTextMessage(String.Empty);
+            string text = e.Message.Text is null ? e.Message.Caption : e.Message.Text;
+            switch (e.Message.Type)
             {
-                MediaTypeEnum.Photo => _client.SendPhotoAsync(sender.GroupId, fileToSend, text),
-                MediaTypeEnum.Video => _client.SendVideoAsync(sender.GroupId, fileToSend, caption: text)
-            };
-            
-            try
-            {
-                task.Wait();
-                stream.Close();
-                return Result.Ok("Message send");
+                case MessageType.Photo:
+                {
+                    var mediaFile = new BotOnlinePhotoFile(getFileLink(e.Message.Photo.Last().FileId),e.Message.Photo.Last().FileId);
+                    message = new BotSingleMediaMessage(text, mediaFile);
+                    break;
+                }
+                case MessageType.Video:
+                {
+                    var mediaFile = new BotOnlineVideoFile(getFileLink(e.Message.Video.FileId),e.Message.Video.FileId);
+                    message = new BotSingleMediaMessage(text, mediaFile);
+                    break;
+                }
+                default:
+                    message = new BotTextMessage(text);
+                    break;
             }
-            catch (Exception e)
-            {
-                const string message = "Error while sending message";
-                LoggerHolder.Instance.Error(e, message);
-                stream.Close();
-                return Result.Fail(new Error(message).CausedBy(e));
-            }
+            OnMessage?.Invoke(sender,
+                new BotEventArgs(
+                    message,
+                    new SenderInfo(
+                        e.Message.Chat.Id,
+                        e.Message.From.Id,
+                        e.Message.From.FirstName
+                    )
+                ));
         }
 
+        private string getFileLink(string id)
+        {
+            return $"https://api.telegram.org/file/bot{_settings.AccessToken}/{_client.GetFileAsync(id).Result.FilePath}";
+        } 
+        
         public Result<string> SendMultipleMedia(List<IBotMediaFile> mediaFiles, string text, SenderInfo sender)
         {
-            //todo: hack
+            //TODO: hack
             if (mediaFiles.Count > 10)
             {
                 const string message = "Too many files provided";
@@ -101,7 +105,32 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
                 return Result.Fail(new Error(message));
             }
 
+            var result = checkText(text);
+            if (result.IsFailed)
+                return result;
+
             var streams = new List<FileStream>();
+            var filesToSend = collectInputMedia(mediaFiles, text, streams);
+
+            var task = _client.SendMediaGroupAsync(filesToSend, sender.GroupId);
+
+            try
+            {
+                task.Wait();
+                foreach (var stream in streams) stream.Close();
+                return Result.Ok("Message send");
+            }
+            catch (Exception e)
+            {
+                const string message = "Error while sending message";
+                LoggerHolder.Instance.Error(e, message);
+                foreach (var stream in streams) stream.Close();
+                return Result.Fail(new Error(message).CausedBy(e));
+            }
+        }
+
+        private List<IAlbumInputMedia> collectInputMedia(List<IBotMediaFile> mediaFiles, string text, List<FileStream> streams)
+        {
             var filesToSend = new List<IAlbumInputMedia>();
 
             streams.Add(File.Open(mediaFiles.First().Path, FileMode.Open));
@@ -126,30 +155,47 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
                 filesToSend.Add(fileToSend);
             }
 
-            var task = _client.SendMediaGroupAsync(filesToSend, sender.GroupId);
+            return filesToSend;
+        }
 
+        public Result<string> SendMedia(IBotMediaFile mediaFile, string text, SenderInfo sender)
+        {
+            var result = checkText(text);
+            if (result.IsFailed)
+                return result;
+            
+            var stream = File.Open(mediaFile.Path, FileMode.Open);
+            var fileToSend = new InputMedia(stream, mediaFile.Path.Split(Path.DirectorySeparatorChar).Last());
+            var task = mediaFile.MediaType switch
+            {
+                MediaTypeEnum.Photo => _client.SendPhotoAsync(sender.GroupId, fileToSend, text),
+                MediaTypeEnum.Video => _client.SendVideoAsync(sender.GroupId, fileToSend, caption: text)
+            };
+            
             try
             {
                 task.Wait();
-                foreach (var stream in streams) stream.Close();
+                stream.Close();
                 return Result.Ok("Message send");
             }
             catch (Exception e)
             {
                 const string message = "Error while sending message";
                 LoggerHolder.Instance.Error(e, message);
-                foreach (var stream in streams) stream.Close();
+                stream.Close();
                 return Result.Fail(new Error(message).CausedBy(e));
             }
         }
-
+        
         public Result<string> SendOnlineMedia(IBotOnlineFile file, string text, SenderInfo sender)
         {
-            string fileIdentefier = file.Path;
-            if (file.Id is not null)
+            var result = checkText(text);
+            if (result.IsFailed)
             {
-                fileIdentefier = file.Id;
+                return result;
             }
+            
+            string fileIdentefier = file.Id is null ? file.Path : file.Id;
 
             Task<Message> task = file.MediaType switch
             {
@@ -170,69 +216,50 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             }
         }
         
-        public void Restart()
+        public Result<string> SendTextMessage(string text, SenderInfo sender)
         {
-            lock (_lock)
+            if (text.Length == 0)
             {
-                if (_client != null)
-                    Dispose();
+                LoggerHolder.Instance.Error($"The message wasn't sent by the command " +
+                                            $"\"{PingCommand.Descriptor.CommandName}\", the length must not be zero.");
+                return Result.Ok();
+            }
 
-                Initialize();
+            return sendText(text, sender);
+        }
+
+        private Result<string> sendText(string text, SenderInfo sender)
+        {
+            Result<string> result = checkText(text);
+            if (result.IsFailed)
+                return result;
+            
+            var task = _client.SendTextMessageAsync(sender.GroupId, text);
+            
+            try
+            {
+                task.Wait();
+                return Result.Ok("Message send");
+            }
+            catch (Exception e)
+            {
+                const string message = "Error while sending message";
+                LoggerHolder.Instance.Error(e, message);
+                return Result.Fail(new Error(message).CausedBy(e));
             }
         }
-
-        public void Dispose()
+        
+        private Result<string> checkText(string text)
         {
-            _client.OnMessage -= ClientOnMessage;
-            _client.StopReceiving();
-        }
-
-        private void Initialize()
-        {
-            _client = new TelegramBotClient(_settings.AccessToken);
-
-            _client.OnMessage += ClientOnMessage;
-            _client.StartReceiving();
-        }
-
-        private void ClientOnMessage(object sender, MessageEventArgs e)
-        {
-            //TODO: Hm. Do we need to use try/catch here?
-            LoggerHolder.Instance.Debug("New message event: {@e}", e);
-            IBotMessage message = new BotTextMessage(String.Empty);
-            string text = e.Message.Text is null ? e.Message.Caption : e.Message.Text;
-            switch (e.Message.Type)
+            if (text.Length > 4096)
             {
-                case MessageType.Photo:
-                {
-                    var mediaFile = new BotOnlinePhotoFile(GetFileLink(e.Message.Photo.Last().FileId),e.Message.Photo.Last().FileId);
-                    message = new BotSingleMediaMessage(text, mediaFile);
-                    break;
-                }
-                case MessageType.Video:
-                {
-                    var mediaFile = new BotOnlineVideoFile(GetFileLink(e.Message.Video.FileId),e.Message.Video.FileId);
-                    message = new BotSingleMediaMessage(text, mediaFile);
-                    break;
-                }
-                default:
-                    message = new BotTextMessage(text);
-                    break;
+                string subString = text.Substring(0, 99) + "...";
+                string errorMessage = $"The message wasn't sent by the command " +
+                                      $"\"{PingCommand.Descriptor.CommandName}\", the length is too big.";
+                return Result.Fail(new Error(errorMessage).CausedBy(subString));
             }
-            OnMessage?.Invoke(sender,
-                new BotEventArgs(
-                    message,
-                    new SenderInfo(
-                        e.Message.Chat.Id,
-                        e.Message.From.Id,
-                        e.Message.From.FirstName
-                    )
-                ));
-        }
 
-        private string GetFileLink(string id)
-        {
-            return $"https://api.telegram.org/file/bot{_settings.AccessToken}/{_client.GetFileAsync(id).Result.FilePath}";
-        } 
+            return Result.Ok();
+        }
     }
 }
