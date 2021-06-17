@@ -4,6 +4,7 @@ using System.Linq;
 using Kysect.BotFramework.Core.BotMedia;
 using Kysect.BotFramework.Core.BotMessages;
 using Kysect.BotFramework.Core.CommandInvoking;
+using Telegram.Bot.Types;
 
 namespace Kysect.BotFramework.Core
 {
@@ -15,7 +16,7 @@ namespace Kysect.BotFramework.Core
             Sender = sender;
         }
 
-        public BotEventArgs(IBotMessage message, CommandArgumentContainer commandWithArgs) : this(message, commandWithArgs.Sender)
+        public BotEventArgs(IBotMessage message, CommandContainer commandWithArgs) : this(message, commandWithArgs.Sender)
         {
         }
 
@@ -25,7 +26,9 @@ namespace Kysect.BotFramework.Core
 
         public string FindCommandName()
         {
-            //TODO: add separator list
+            if (Message.Text is null)
+                return String.Empty;
+            
             return Message.Text.Split().FirstOrDefault();
         }
 
@@ -39,7 +42,9 @@ namespace Kysect.BotFramework.Core
             if (Message is BotSingleMediaMessage singleMediaMessage)
             {
                 return new List<IBotMediaFile>() {singleMediaMessage.MediaFile};
-            } else if (Message is BotMultipleMediaMessage multipleMediaMessage)
+            }
+            
+            if (Message is BotMultipleMediaMessage multipleMediaMessage)
             {
                 return multipleMediaMessage.MediaFiles;
             }

@@ -5,6 +5,6 @@ namespace Kysect.BotFramework.Core.CommandInvoking
 {
     public interface IBotSyncCommand : IBotCommand
     {
-        Result<IBotMessage> Execute(CommandArgumentContainer args);
+        Result<IBotMessage> Execute(CommandContainer args);
     }
 }

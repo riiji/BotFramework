@@ -1,7 +1,5 @@
-﻿using System.Linq;
 using System.Threading.Tasks;
 using FluentResults;
-using Kysect.BotFramework.Core.BotMedia;
 using Kysect.BotFramework.Core.BotMessages;
 using Kysect.BotFramework.Core.CommandInvoking;
 
@@ -13,12 +11,12 @@ namespace Kysect.BotFramework.Commands
             "Ping",
             "Answer pong on ping message");
 
-        public Result CanExecute(CommandArgumentContainer args)
+        public Result CanExecute(CommandContainer args)
         {
             return Result.Ok();
         }
 
-        public Task<Result<IBotMessage>> Execute(CommandArgumentContainer args)
+        public Task<Result<IBotMessage>> Execute(CommandContainer args)
         {
             IBotMessage message = new BotTextMessage("Pong!");
             return Task.FromResult(Result.Ok(message));

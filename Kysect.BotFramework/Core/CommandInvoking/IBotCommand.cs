@@ -4,6 +4,6 @@ namespace Kysect.BotFramework.Core.CommandInvoking
 {
     public interface IBotCommand
     {
-        Result CanExecute(CommandArgumentContainer args);
+        Result CanExecute(CommandContainer args);
     }
 }

@@ -12,7 +12,7 @@ namespace Kysect.BotFramework.Tests.Commands_Should
         public void PingCommand_ShouldReturnPong()
         {
             PingCommand pingCommand = new PingCommand();
-            CommandArgumentContainer fakeContainer = A.Fake<CommandArgumentContainer>();
+            CommandContainer fakeContainer = A.Fake<CommandContainer>();
             pingCommand.Execute(fakeContainer).Result.IsSuccess.Should().Be(true);
         }
 

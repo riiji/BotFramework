@@ -31,7 +31,6 @@ namespace Kysect.BotFramework.Core
 
         private void ApiProviderOnMessage(object sender, BotEventArgs e)
         {
-            
             try
             {
                 ProcessMessage(e);
@@ -47,39 +46,38 @@ namespace Kysect.BotFramework.Core
 
         private void ProcessMessage(BotEventArgs e)
         {
-            Result<CommandArgumentContainer> commandResult = _commandParser.ParseCommand(e);
+            Result<CommandContainer> commandResult = _commandParser.ParseCommand(e);
             if (commandResult.IsFailed)
+                return;
+
+            if (!commandResult.Value.StartsWithPrefix(_prefix))
+                return;
+
+            var command = commandResult.Value.RemovePrefix(_prefix);
+            
+            var checkResult = _commandHandler.CheckArgsCount(command);
+            if (checkResult.IsFailed)
             {
+                HandlerError(checkResult, e);
                 return;
             }
 
-            if (!commandResult.Value.EnsureStartWithPrefix(_prefix))
-                return;
-
-            commandResult = _commandHandler.IsCorrectArgumentCount(commandResult.Value.ApplySettings(_prefix));
-            if (commandResult.IsFailed)
+            checkResult = _commandHandler.CanCommandBeExecuted(commandResult.Value);
+            if (checkResult.IsFailed)
             {
-                HandlerError(commandResult, e);
-                return;
-            }
-
-            commandResult = _commandHandler.IsCommandCanBeExecuted(commandResult.Value);
-            if (commandResult.IsFailed)
-            {
-                HandlerError(commandResult, e);
+                HandlerError(checkResult, e);
                 return;
             }
 
             Result<IBotMessage> executionResult = _commandHandler.ExecuteCommand(commandResult.Value);
             if (executionResult.IsFailed)
             {
-                HandlerError(commandResult, e);
+                HandlerError(executionResult, e);
                 return;
             }
 
             IBotMessage message = executionResult.Value;
             SenderInfo sender = commandResult.Value.Sender;
-            //_apiProvider.WriteMessage(new BotEventArgs(executionResult.Value, commandResult.Value));
             message.Send(_apiProvider,sender);
         }
 
@@ -88,6 +86,7 @@ namespace Kysect.BotFramework.Core
             LoggerHolder.Instance.Error(result.ToString());
             BotTextMessage errorMessage = new BotTextMessage("Something went wrong.");
             errorMessage.Send(_apiProvider,botEventArgs.Sender);
+            
             if (_sendErrorLogToUser)
             {
                 BotTextMessage errorlogMessage = new BotTextMessage(result.ToString());
