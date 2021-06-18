@@ -2,7 +2,7 @@
 {
     public class BotVideoFile : IBotMediaFile
     {
-        public MediaTypeEnum MediaType { get; } = MediaTypeEnum.Video;
+        public MediaTypeEnum MediaType => MediaTypeEnum.Video;
         public string Path { get; }
 
         public BotVideoFile(string path)
