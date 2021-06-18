@@ -6,10 +6,6 @@ namespace Kysect.BotFramework.Core.Tools
     {
         private static readonly Random Random = new Random();
 
-        public static int GetRandom()
-        {
-            return Random.Next();
-        }
+        public static int GetRandom() => Random.Next();
     }
-
 }

@@ -12,9 +12,6 @@ namespace Kysect.BotFramework.Settings
             _configPath = configPath;
         }
 
-        public TSettings GetSettings()
-        {
-            return JsonConvert.DeserializeObject<TSettings>(File.ReadAllText(_configPath));
-        }
+        public TSettings GetSettings() => JsonConvert.DeserializeObject<TSettings>(File.ReadAllText(_configPath));
     }
 }

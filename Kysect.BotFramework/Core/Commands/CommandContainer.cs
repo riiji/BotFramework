@@ -7,14 +7,12 @@ namespace Kysect.BotFramework.Core.CommandInvoking
     public class CommandContainer
     {
         public string CommandName { get; private set; }
-
         public SenderInfo Sender { get; }
-
         public List<string> Arguments { get; }
-        
         public List<IBotMediaFile> MediaFiles { get; }
-        
-        public CommandContainer(string commandName, SenderInfo sender, List<string> arguments, List<IBotMediaFile> mediaFiles)
+
+        public CommandContainer(string commandName, SenderInfo sender, List<string> arguments,
+            List<IBotMediaFile> mediaFiles)
         {
             CommandName = commandName;
             Sender = sender;
@@ -22,22 +20,19 @@ namespace Kysect.BotFramework.Core.CommandInvoking
             MediaFiles = mediaFiles;
         }
 
-        public bool StartsWithPrefix(char prefix)
-        {
-            return prefix == '\0' || CommandName.FirstOrDefault() == prefix;
-        }
+        public bool StartsWithPrefix(char prefix) => prefix == '\0' || CommandName.FirstOrDefault() == prefix;
 
         public CommandContainer RemovePrefix(char prefix)
         {
             if (CommandName.FirstOrDefault() == prefix)
+            {
                 CommandName = CommandName.Remove(0, 1);
+            }
 
             return this;
         }
 
-        public override string ToString()
-        {
-            return $"[CommandArgumentContainer CommandName:{CommandName}; Arguments:{string.Join(",", Arguments)}]";
-        }
+        public override string ToString() =>
+            $"[CommandArgumentContainer CommandName:{CommandName}; Arguments:{string.Join(",", Arguments)}]";
     }
 }

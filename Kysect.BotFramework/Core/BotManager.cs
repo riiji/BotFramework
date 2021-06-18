@@ -9,19 +9,25 @@ namespace Kysect.BotFramework.Core
 {
     public class BotManager : IDisposable
     {
-        private readonly CommandHandler _commandHandler;
         private readonly IBotApiProvider _apiProvider;
+        private readonly CommandHandler _commandHandler;
         private readonly ICommandParser _commandParser;
         private readonly char _prefix;
         private readonly bool _sendErrorLogToUser;
 
-        public BotManager(IBotApiProvider apiProvider, CommandHandler commandHandler, char prefix, bool sendErrorLogToUser)
+        public BotManager(IBotApiProvider apiProvider, CommandHandler commandHandler, char prefix,
+            bool sendErrorLogToUser)
         {
             _apiProvider = apiProvider;
             _prefix = prefix;
             _sendErrorLogToUser = sendErrorLogToUser;
             _commandParser = new CommandParser();
             _commandHandler = commandHandler;
+        }
+
+        public void Dispose()
+        {
+            _apiProvider.OnMessage -= ApiProviderOnMessage;
         }
 
         public void Start()
@@ -48,14 +54,18 @@ namespace Kysect.BotFramework.Core
         {
             Result<CommandContainer> commandResult = _commandParser.ParseCommand(e);
             if (commandResult.IsFailed)
+            {
                 return;
+            }
 
             if (!commandResult.Value.StartsWithPrefix(_prefix))
+            {
                 return;
+            }
 
-            var command = commandResult.Value.RemovePrefix(_prefix);
-            
-            var checkResult = _commandHandler.CheckArgsCount(command);
+            CommandContainer command = commandResult.Value.RemovePrefix(_prefix);
+
+            Result checkResult = _commandHandler.CheckArgsCount(command);
             if (checkResult.IsFailed)
             {
                 HandlerError(checkResult, e);
@@ -78,25 +88,20 @@ namespace Kysect.BotFramework.Core
 
             IBotMessage message = executionResult.Value;
             SenderInfo sender = commandResult.Value.Sender;
-            message.Send(_apiProvider,sender);
+            message.Send(_apiProvider, sender);
         }
 
         private void HandlerError(Result result, BotEventArgs botEventArgs)
         {
             LoggerHolder.Instance.Error(result.ToString());
-            BotTextMessage errorMessage = new BotTextMessage("Something went wrong.");
-            errorMessage.Send(_apiProvider,botEventArgs.Sender);
-            
+            var errorMessage = new BotTextMessage("Something went wrong.");
+            errorMessage.Send(_apiProvider, botEventArgs.Sender);
+
             if (_sendErrorLogToUser)
             {
-                BotTextMessage errorlogMessage = new BotTextMessage(result.ToString());
-                errorlogMessage.Send(_apiProvider,botEventArgs.Sender);
+                var errorlogMessage = new BotTextMessage(result.ToString());
+                errorlogMessage.Send(_apiProvider, botEventArgs.Sender);
             }
-        }
-
-        public void Dispose()
-        {
-            _apiProvider.OnMessage -= ApiProviderOnMessage;
         }
     }
 }

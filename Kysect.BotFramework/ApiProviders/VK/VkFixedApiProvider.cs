@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentResults;
 using Kysect.BotFramework.Core;
 using Kysect.BotFramework.Core.BotMedia;
@@ -16,7 +17,7 @@ namespace Kysect.BotFramework.ApiProviders.VK
 {
     public class VkFixedApiProvider : IBotApiProvider, IDisposable
     {
-        private readonly object _lock = new();
+        private readonly object _lock = new object();
         private readonly VkSettings _settings;
         private Vkontakte _api;
         private BotLongPollClient _client;
@@ -39,7 +40,10 @@ namespace Kysect.BotFramework.ApiProviders.VK
             //fyi: *Safe means that method never throw exception. Probably, we need to use await + try/catch
             lock (_lock)
             {
-                if (_client != null) Dispose();
+                if (_client != null)
+                {
+                    Dispose();
+                }
 
                 Initialize();
             }
@@ -49,7 +53,7 @@ namespace Kysect.BotFramework.ApiProviders.VK
         {
             throw new NotImplementedException();
 
-            var sendMessageTask = _api.Messages.Send
+            Task<int> sendMessageTask = _api.Messages.Send
             (
                 randomId: RandomUtilities.GetRandom(),
                 peerId: (int) sender.GroupId,
@@ -65,20 +69,14 @@ namespace Kysect.BotFramework.ApiProviders.VK
                 : Result.Ok($"Vk write {text} to {sender.GroupId} ok");
         }
 
-        public Result<string> SendMedia(IBotMediaFile mediaFile, string text, SenderInfo sender)
-        {
+        public Result<string> SendMedia(IBotMediaFile mediaFile, string text, SenderInfo sender) =>
             throw new NotImplementedException();
-        }
 
-        public Result<string> SendMultipleMedia(List<IBotMediaFile> mediaPaths, string text, SenderInfo sender)
-        {
+        public Result<string> SendMultipleMedia(List<IBotMediaFile> mediaPaths, string text, SenderInfo sender) =>
             throw new NotImplementedException();
-        }
 
-        public Result<string> SendOnlineMedia(IBotOnlineFile file, string text, SenderInfo sender)
-        {
+        public Result<string> SendOnlineMedia(IBotOnlineFile file, string text, SenderInfo sender) =>
             throw new NotImplementedException();
-        }
 
 
         public void Dispose()
@@ -100,16 +98,21 @@ namespace Kysect.BotFramework.ApiProviders.VK
             //TODO: Add inner error message to ArgumentException?
             //TODO: Replace ArgumentException with custom exception (BorFrameworkException?)
             _api = new Vkontakte(_settings.VkAppId, _settings.VkAppSecret);
-            var serverTask = _api.Groups.GetLongPollServer();
+            Task<GroupsLongPollServer> serverTask = _api.Groups.GetLongPollServer();
             serverTask.WaitSafe();
             if (serverTask.IsFaulted)
+            {
                 throw new ArgumentException("internal error");
+            }
 
-            var server = serverTask.Result;
-            var clientTask = _api.StartBotLongPollClient(server.Server, server.Key, int.Parse(server.Ts));
+            GroupsLongPollServer server = serverTask.Result;
+            Task<BotLongPollClient> clientTask =
+                _api.StartBotLongPollClient(server.Server, server.Key, int.Parse(server.Ts));
             clientTask.WaitSafe();
             if (clientTask.IsFaulted)
+            {
                 throw new ArgumentException("internal error");
+            }
 
             _client = clientTask.Result;
             _client.OnMessageNew += Client_OnMessageNew;
@@ -125,19 +128,22 @@ namespace Kysect.BotFramework.ApiProviders.VK
         {
             throw new NotImplementedException();
             //TODO: add some logs with Debug level?
-            var userTask = _api.Users.Get(new[] {e.FromId.ToString()});
+            Task<UsersUserXtrCounters[]> userTask = _api.Users.Get(new[] {e.FromId.ToString()});
             userTask.WaitSafe();
 
             //TODO: log error?
             if (userTask.IsFaulted)
+            {
                 return;
+            }
 
-            var users = userTask.Result;
+            UsersUserXtrCounters[] users = userTask.Result;
             //TODO: single? Ensure is not null?
-            var user = users.FirstOrDefault();
+            UsersUserXtrCounters user = users.FirstOrDefault();
 
             OnMessage?.Invoke(sender,
-                new BotEventArgs(new BotTextMessage(e.Text), new SenderInfo(e.PeerId, e.FromId, user?.FirstName)));
+                              new BotEventArgs(new BotTextMessage(e.Text),
+                                               new SenderInfo(e.PeerId, e.FromId, user?.FirstName)));
         }
     }
 }

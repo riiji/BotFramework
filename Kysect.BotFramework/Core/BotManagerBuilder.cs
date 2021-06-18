@@ -9,12 +9,12 @@ namespace Kysect.BotFramework.Core
 {
     public class BotManagerBuilder
     {
-        public ServiceCollection ServiceCollection { get; } = new ServiceCollection();
+        private readonly List<BotCommandDescriptor> _commands = new List<BotCommandDescriptor>();
+        private bool _caseSensitive = true;
 
         private char _prefix = '\0';
-        private bool _caseSensitive = true;
         private bool _sendErrorLogToUser;
-        private readonly List<BotCommandDescriptor> _commands = new List<BotCommandDescriptor>();
+        public ServiceCollection ServiceCollection { get; } = new ServiceCollection();
 
         public BotManagerBuilder AddLogger(ILogger logger)
         {

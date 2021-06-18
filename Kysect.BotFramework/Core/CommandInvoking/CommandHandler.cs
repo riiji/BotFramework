@@ -19,11 +19,14 @@ namespace Kysect.BotFramework.Core.CommandInvoking
         {
             Result<BotCommandDescriptor> commandTask = _commands.GetCommand(args.CommandName);
             if (commandTask.IsFailed)
+            {
                 return commandTask.ToResult<CommandContainer>();
+            }
 
             return commandTask.Value.Args.Length == args.Arguments.Count
                 ? Result.Ok()
-                : Result.Fail<CommandContainer>("Cannot execute command. Argument count miss matched with command signature");
+                : Result.Fail<CommandContainer>(
+                    "Cannot execute command. Argument count miss matched with command signature");
         }
 
 
@@ -32,7 +35,9 @@ namespace Kysect.BotFramework.Core.CommandInvoking
             Result<BotCommandDescriptor> commandTask = _commands.GetCommand(args.CommandName);
 
             if (commandTask.IsFailed)
+            {
                 return commandTask.ToResult<CommandContainer>();
+            }
 
             IBotCommand command = commandTask.Value.ResolveCommand(_serviceProvider);
 
@@ -40,7 +45,8 @@ namespace Kysect.BotFramework.Core.CommandInvoking
 
             return canExecute.IsSuccess
                 ? Result.Ok()
-                : Result.Fail<CommandContainer>($"Command [{commandTask.Value.CommandName}] cannot be executed: {canExecute}");
+                : Result.Fail<CommandContainer>(
+                    $"Command [{commandTask.Value.CommandName}] cannot be executed: {canExecute}");
         }
 
         public CommandHandler SetCaseSensitive(bool caseSensitive)
@@ -59,7 +65,9 @@ namespace Kysect.BotFramework.Core.CommandInvoking
             Result<BotCommandDescriptor> commandDescriptor = _commands.GetCommand(args.CommandName);
 
             if (!commandDescriptor.IsSuccess)
+            {
                 return commandDescriptor.ToResult<IBotMessage>();
+            }
 
             try
             {
@@ -74,13 +82,13 @@ namespace Kysect.BotFramework.Core.CommandInvoking
             }
             catch (Exception e)
             {
-                return Result.Fail(new Error($"Command execution failed. Command: {args.CommandName}; arguments: {string.Join(", ", args.Arguments)}").CausedBy(e));
+                return Result.Fail(
+                    new Error(
+                            $"Command execution failed. Command: {args.CommandName}; arguments: {string.Join(", ", args.Arguments)}")
+                        .CausedBy(e));
             }
         }
 
-        public CommandHolder GetCommands()
-        {
-            return _commands;
-        }
+        public CommandHolder GetCommands() => _commands;
     }
 }

@@ -2,6 +2,8 @@
 {
     public class DiscordSettings
     {
+        public string AccessToken { get; set; }
+
         public DiscordSettings(string accessToken)
         {
             AccessToken = accessToken;
@@ -10,7 +12,5 @@
         public DiscordSettings()
         {
         }
-
-        public string AccessToken { get; set; }
     }
 }
