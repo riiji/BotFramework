@@ -1,6 +1,6 @@
 ﻿using FluentResults;
 
-namespace Kysect.BotFramework.Core.CommandInvoking
+namespace Kysect.BotFramework.Core.Commands
 {
     public interface IBotCommand
     {

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Kysect.BotFramework.ApiProviders;
 using Kysect.BotFramework.Core.CommandInvoking;
+using Kysect.BotFramework.Core.Commands;
 using Kysect.BotFramework.Core.Tools.Loggers;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -19,7 +20,7 @@ namespace Kysect.BotFramework.Core
         public BotManagerBuilder AddLogger(ILogger logger)
         {
             LoggerHolder.Init(logger);
-            LoggerHolder.Instance.Information("Logger was initalized");
+            LoggerHolder.Instance.Information("Logger was initialized");
 
             return this;
         }

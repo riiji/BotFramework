@@ -2,7 +2,7 @@
 using System.Linq;
 using Kysect.BotFramework.Core.BotMedia;
 
-namespace Kysect.BotFramework.Core.CommandInvoking
+namespace Kysect.BotFramework.Core.Commands
 {
     public class CommandContainer
     {

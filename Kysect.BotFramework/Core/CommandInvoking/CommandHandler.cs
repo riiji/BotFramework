@@ -1,6 +1,7 @@
 using System;
 using FluentResults;
 using Kysect.BotFramework.Core.BotMessages;
+using Kysect.BotFramework.Core.Commands;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Kysect.BotFramework.Core.CommandInvoking
@@ -82,10 +83,9 @@ namespace Kysect.BotFramework.Core.CommandInvoking
             }
             catch (Exception e)
             {
-                return Result.Fail(
-                    new Error(
-                            $"Command execution failed. Command: {args.CommandName}; arguments: {string.Join(", ", args.Arguments)}")
-                        .CausedBy(e));
+                string errorMessage =
+                    $"Command execution failed. Command: {args.CommandName}; arguments: {string.Join(", ", args.Arguments)}";
+                return Result.Fail(new Error(errorMessage).CausedBy(e));
             }
         }
 

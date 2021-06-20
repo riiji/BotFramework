@@ -4,11 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentResults;
-using Kysect.BotFramework.Commands;
 using Kysect.BotFramework.Core;
 using Kysect.BotFramework.Core.BotMedia;
 using Kysect.BotFramework.Core.BotMessages;
 using Kysect.BotFramework.Core.Tools.Loggers;
+using Kysect.BotFramework.DefaultCommands;
 using Kysect.BotFramework.Settings;
 using Telegram.Bot;
 using Telegram.Bot.Args;
@@ -63,7 +63,7 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
         {
             LoggerHolder.Instance.Debug("New message event: {@e}", e);
             IBotMessage message = new BotTextMessage(string.Empty);
-            string text = e.Message.Text is null ? e.Message.Caption : e.Message.Text;
+            string text = e.Message.Text ?? e.Message.Caption;
             switch (e.Message.Type)
             {
                 case MessageType.Photo:
@@ -246,12 +246,12 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
                 return result;
             }
 
-            string fileIdentefier = file.Id is null ? file.Path : file.Id;
+            string fileIdentifier = file.Id ?? file.Path;
 
             Task<Message> task = file.MediaType switch
             {
-                MediaTypeEnum.Photo => _client.SendPhotoAsync(sender.GroupId, fileIdentefier, text),
-                MediaTypeEnum.Video => _client.SendVideoAsync(sender.GroupId, fileIdentefier, caption: text)
+                MediaTypeEnum.Photo => _client.SendPhotoAsync(sender.GroupId, fileIdentifier, text),
+                MediaTypeEnum.Video => _client.SendVideoAsync(sender.GroupId, fileIdentifier, caption: text)
             };
 
             try
