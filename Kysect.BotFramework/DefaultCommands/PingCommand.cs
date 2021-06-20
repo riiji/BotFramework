@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using FluentResults;
 using Kysect.BotFramework.Core.BotMessages;
-using Kysect.BotFramework.Core.CommandInvoking;
+using Kysect.BotFramework.Core.Commands;
 
-namespace Kysect.BotFramework.Commands
+namespace Kysect.BotFramework.DefaultCommands
 {
     public class PingCommand : IBotAsyncCommand
     {

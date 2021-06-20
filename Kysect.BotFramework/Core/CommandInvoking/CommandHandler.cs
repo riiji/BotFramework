@@ -1,6 +1,7 @@
 using System;
 using FluentResults;
 using Kysect.BotFramework.Core.BotMessages;
+using Kysect.BotFramework.Core.Commands;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Kysect.BotFramework.Core.CommandInvoking

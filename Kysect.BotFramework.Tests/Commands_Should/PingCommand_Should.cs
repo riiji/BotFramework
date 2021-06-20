@@ -1,7 +1,8 @@
 ﻿using FakeItEasy;
 using FluentAssertions;
-using Kysect.BotFramework.Commands;
 using Kysect.BotFramework.Core.CommandInvoking;
+using Kysect.BotFramework.Core.Commands;
+using Kysect.BotFramework.DefaultCommands;
 using NUnit.Framework;
 
 namespace Kysect.BotFramework.Tests.Commands_Should

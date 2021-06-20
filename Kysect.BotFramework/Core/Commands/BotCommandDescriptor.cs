@@ -1,14 +1,13 @@
 ﻿using System;
+using Kysect.BotFramework.Core.CommandInvoking;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Kysect.BotFramework.Core.CommandInvoking
+namespace Kysect.BotFramework.Core.Commands
 {
     public abstract class BotCommandDescriptor
     {
         public string CommandName { get; }
-
         public string Description { get; }
-
         public string[] Args { get; }
 
         public BotCommandDescriptor(string commandName, string description, string[] args)

@@ -7,11 +7,11 @@ using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
 using FluentResults;
-using Kysect.BotFramework.Commands;
 using Kysect.BotFramework.Core;
 using Kysect.BotFramework.Core.BotMedia;
 using Kysect.BotFramework.Core.BotMessages;
 using Kysect.BotFramework.Core.Tools.Loggers;
+using Kysect.BotFramework.DefaultCommands;
 using Kysect.BotFramework.Settings;
 
 namespace Kysect.BotFramework.ApiProviders.Discord
@@ -62,9 +62,9 @@ namespace Kysect.BotFramework.ApiProviders.Discord
                     return result;
                 }
 
-                if (media is IBotOnlineFile)
+                if (media is IBotOnlineFile onlineMediaFile)
                 {
-                    result = SendOnlineMedia(media as IBotOnlineFile, string.Empty, sender);
+                    result = SendOnlineMedia(onlineMediaFile, string.Empty, sender);
                 }
                 else
                 {

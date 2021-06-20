@@ -3,6 +3,7 @@ using FluentResults;
 using Kysect.BotFramework.ApiProviders;
 using Kysect.BotFramework.Core.BotMessages;
 using Kysect.BotFramework.Core.CommandInvoking;
+using Kysect.BotFramework.Core.Commands;
 using Kysect.BotFramework.Core.Tools.Loggers;
 
 namespace Kysect.BotFramework.Core
@@ -99,8 +100,8 @@ namespace Kysect.BotFramework.Core
 
             if (_sendErrorLogToUser)
             {
-                var errorlogMessage = new BotTextMessage(result.ToString());
-                errorlogMessage.Send(_apiProvider, botEventArgs.Sender);
+                var errorLogMessage = new BotTextMessage(result.ToString());
+                errorLogMessage.Send(_apiProvider, botEventArgs.Sender);
             }
         }
     }
