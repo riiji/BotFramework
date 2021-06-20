@@ -44,135 +44,19 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
                 Initialize();
             }
         }
-
-        public Result<string> SendMultipleMedia(List<IBotMediaFile> mediaFiles, string text, SenderInfo sender)
-        {
-            //TODO: hack
-            if (mediaFiles.Count > 10)
-            {
-                const string message = "Too many files provided";
-                LoggerHolder.Instance.Error(message);
-                return Result.Fail(new Error(message));
-            }
-
-            Result<string> result = checkText(text);
-            if (result.IsFailed)
-            {
-                return result;
-            }
-
-            List<FileStream> streams = new List<FileStream>();
-            List<IAlbumInputMedia> filesToSend = collectInputMedia(mediaFiles, text, streams);
-
-            Task<Message[]> task = _client.SendMediaGroupAsync(filesToSend, sender.GroupId);
-
-            try
-            {
-                task.Wait();
-                foreach (FileStream stream in streams)
-                {
-                    stream.Close();
-                }
-
-                return Result.Ok("Message send");
-            }
-            catch (Exception e)
-            {
-                const string message = "Error while sending message";
-                LoggerHolder.Instance.Error(e, message);
-                foreach (FileStream stream in streams)
-                {
-                    stream.Close();
-                }
-
-                return Result.Fail(new Error(message).CausedBy(e));
-            }
-        }
-
-        public Result<string> SendMedia(IBotMediaFile mediaFile, string text, SenderInfo sender)
-        {
-            Result<string> result = checkText(text);
-            if (result.IsFailed)
-            {
-                return result;
-            }
-
-            FileStream stream = File.Open(mediaFile.Path, FileMode.Open);
-            var fileToSend = new InputMedia(stream, mediaFile.Path.Split(Path.DirectorySeparatorChar).Last());
-            Task<Message> task = mediaFile.MediaType switch
-            {
-                MediaTypeEnum.Photo => _client.SendPhotoAsync(sender.GroupId, fileToSend, text),
-                MediaTypeEnum.Video => _client.SendVideoAsync(sender.GroupId, fileToSend, caption: text)
-            };
-
-            try
-            {
-                task.Wait();
-                stream.Close();
-                return Result.Ok("Message send");
-            }
-            catch (Exception e)
-            {
-                const string message = "Error while sending message";
-                LoggerHolder.Instance.Error(e, message);
-                stream.Close();
-                return Result.Fail(new Error(message).CausedBy(e));
-            }
-        }
-
-        public Result<string> SendOnlineMedia(IBotOnlineFile file, string text, SenderInfo sender)
-        {
-            Result<string> result = checkText(text);
-            if (result.IsFailed)
-            {
-                return result;
-            }
-
-            string fileIdentefier = file.Id is null ? file.Path : file.Id;
-
-            Task<Message> task = file.MediaType switch
-            {
-                MediaTypeEnum.Photo => _client.SendPhotoAsync(sender.GroupId, fileIdentefier, text),
-                MediaTypeEnum.Video => _client.SendVideoAsync(sender.GroupId, fileIdentefier, caption: text)
-            };
-
-            try
-            {
-                task.Wait();
-                return Result.Ok("Message sent.");
-            }
-            catch (Exception e)
-            {
-                const string message = "Error while sending message";
-                LoggerHolder.Instance.Error(e, message);
-                return Result.Fail(new Error(message).CausedBy(e));
-            }
-        }
-
-        public Result<string> SendTextMessage(string text, SenderInfo sender)
-        {
-            if (text.Length == 0)
-            {
-                LoggerHolder.Instance.Error("The message wasn't sent by the command " +
-                                            $"\"{PingCommand.Descriptor.CommandName}\", the length must not be zero.");
-                return Result.Ok();
-            }
-
-            return SendText(text, sender);
-        }
-
-        public void Dispose()
-        {
-            _client.OnMessage -= ClientOnMessage;
-            _client.StopReceiving();
-        }
-
+        
         private void Initialize()
         {
             _client = new TelegramBotClient(_settings.AccessToken);
 
             _client.OnMessage += ClientOnMessage;
             _client.StartReceiving();
+        }
+        
+        public void Dispose()
+        {
+            _client.OnMessage -= ClientOnMessage;
+            _client.StopReceiving();
         }
 
         private void ClientOnMessage(object sender, MessageEventArgs e)
@@ -214,6 +98,47 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
         private string GetFileLink(string id) =>
             $"https://api.telegram.org/file/bot{_settings.AccessToken}/{_client.GetFileAsync(id).Result.FilePath}";
 
+        public Result<string> SendMultipleMedia(List<IBotMediaFile> mediaFiles, string text, SenderInfo sender)
+        {
+            var checkResult = CheckMediaFiles(mediaFiles);
+            if (checkResult.IsFailed)
+                return checkResult;
+
+            Result<string> result = CheckText(text);
+            if (result.IsFailed)
+            {
+                return result;
+            }
+
+            List<FileStream> streams = new List<FileStream>();
+            List<IAlbumInputMedia> filesToSend = collectInputMedia(mediaFiles, text, streams);
+
+            Task<Message[]> task = _client.SendMediaGroupAsync(filesToSend, sender.GroupId);
+
+            try
+            {
+                task.Wait();
+                foreach (FileStream stream in streams)
+                {
+                    stream.Close();
+                }
+
+                return Result.Ok("Message send");
+            }
+            catch (Exception e)
+            {
+                foreach (FileStream stream in streams)
+                {
+                    stream.Close();
+                }
+                
+                const string message = "Error while sending message";
+                LoggerHolder.Instance.Error(e, message);
+
+                return Result.Fail(new Error(message).CausedBy(e));
+            }
+        }
+        
         private List<IAlbumInputMedia> collectInputMedia(List<IBotMediaFile> mediaFiles, string text,
             List<FileStream> streams)
         {
@@ -269,9 +194,94 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             return filesToSend;
         }
 
+        private Result<string> CheckMediaFiles(List<IBotMediaFile> mediaFiles)
+        {
+            //TODO: hack
+            if (mediaFiles.Count > 10)
+            {
+                const string message = "Too many files provided";
+                LoggerHolder.Instance.Error(message);
+                return Result.Fail(message);
+            }
+
+            return Result.Ok();
+        }
+
+        public Result<string> SendMedia(IBotMediaFile mediaFile, string text, SenderInfo sender)
+        {
+            Result<string> result = CheckText(text);
+            if (result.IsFailed)
+            {
+                return result;
+            }
+
+            FileStream stream = File.Open(mediaFile.Path, FileMode.Open);
+            var fileToSend = new InputMedia(stream, mediaFile.Path.Split(Path.DirectorySeparatorChar).Last());
+            Task<Message> task = mediaFile.MediaType switch
+            {
+                MediaTypeEnum.Photo => _client.SendPhotoAsync(sender.GroupId, fileToSend, text),
+                MediaTypeEnum.Video => _client.SendVideoAsync(sender.GroupId, fileToSend, caption: text)
+            };
+
+            try
+            {
+                task.Wait();
+                stream.Close();
+                return Result.Ok("Message send");
+            }
+            catch (Exception e)
+            {
+                const string message = "Error while sending message";
+                LoggerHolder.Instance.Error(e, message);
+                stream.Close();
+                return Result.Fail(new Error(message).CausedBy(e));
+            }
+        }
+
+        public Result<string> SendOnlineMedia(IBotOnlineFile file, string text, SenderInfo sender)
+        {
+            Result<string> result = CheckText(text);
+            if (result.IsFailed)
+            {
+                return result;
+            }
+
+            string fileIdentefier = file.Id is null ? file.Path : file.Id;
+
+            Task<Message> task = file.MediaType switch
+            {
+                MediaTypeEnum.Photo => _client.SendPhotoAsync(sender.GroupId, fileIdentefier, text),
+                MediaTypeEnum.Video => _client.SendVideoAsync(sender.GroupId, fileIdentefier, caption: text)
+            };
+
+            try
+            {
+                task.Wait();
+                return Result.Ok("Message sent.");
+            }
+            catch (Exception e)
+            {
+                const string message = "Error while sending message";
+                LoggerHolder.Instance.Error(e, message);
+                return Result.Fail(new Error(message).CausedBy(e));
+            }
+        }
+
+        public Result<string> SendTextMessage(string text, SenderInfo sender)
+        {
+            if (text.Length == 0)
+            {
+                LoggerHolder.Instance.Error("The message wasn't sent by the command " +
+                                            $"\"{PingCommand.Descriptor.CommandName}\", the length must not be zero.");
+                return Result.Ok();
+            }
+
+            return SendText(text, sender);
+        }
+
         private Result<string> SendText(string text, SenderInfo sender)
         {
-            Result<string> result = checkText(text);
+            Result<string> result = CheckText(text);
             if (result.IsFailed)
             {
                 return result;
@@ -292,7 +302,7 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             }
         }
 
-        private Result<string> checkText(string text)
+        private Result<string> CheckText(string text)
         {
             if (text.Length > 4096)
             {
