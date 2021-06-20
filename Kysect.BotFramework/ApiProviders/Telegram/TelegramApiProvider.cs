@@ -158,7 +158,7 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
                 return Result.Ok();
             }
 
-            return sendText(text, sender);
+            return SendText(text, sender);
         }
 
         public void Dispose()
@@ -184,14 +184,14 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             {
                 case MessageType.Photo:
                 {
-                    var mediaFile = new BotOnlinePhotoFile(getFileLink(e.Message.Photo.Last().FileId),
+                    var mediaFile = new BotOnlinePhotoFile(GetFileLink(e.Message.Photo.Last().FileId),
                                                            e.Message.Photo.Last().FileId);
                     message = new BotSingleMediaMessage(text, mediaFile);
                     break;
                 }
                 case MessageType.Video:
                 {
-                    var mediaFile = new BotOnlineVideoFile(getFileLink(e.Message.Video.FileId), e.Message.Video.FileId);
+                    var mediaFile = new BotOnlineVideoFile(GetFileLink(e.Message.Video.FileId), e.Message.Video.FileId);
                     message = new BotSingleMediaMessage(text, mediaFile);
                     break;
                 }
@@ -211,7 +211,7 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
                               ));
         }
 
-        private string getFileLink(string id) =>
+        private string GetFileLink(string id) =>
             $"https://api.telegram.org/file/bot{_settings.AccessToken}/{_client.GetFileAsync(id).Result.FilePath}";
 
         private List<IAlbumInputMedia> collectInputMedia(List<IBotMediaFile> mediaFiles, string text,
@@ -269,7 +269,7 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             return filesToSend;
         }
 
-        private Result<string> sendText(string text, SenderInfo sender)
+        private Result<string> SendText(string text, SenderInfo sender)
         {
             Result<string> result = checkText(text);
             if (result.IsFailed)

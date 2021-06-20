@@ -54,7 +54,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             {
                 result = SendMedia(mediaFiles.First(), text, sender);
             }
-
+            
             foreach (IBotMediaFile media in mediaFiles.Skip(1))
             {
                 if (result.IsFailed)
@@ -77,7 +77,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
 
         public Result<string> SendMedia(IBotMediaFile mediaFile, string text, SenderInfo sender)
         {
-            Result<string> result = checkText(text);
+            Result<string> result = CheckText(text);
             if (result.IsFailed)
             {
                 return result;
@@ -103,14 +103,14 @@ namespace Kysect.BotFramework.ApiProviders.Discord
         {
             if (text.Length != 0)
             {
-                Result<string> result = sendText(text, sender);
+                Result<string> result = SendText(text, sender);
                 if (result.IsFailed)
                 {
                     return result;
                 }
             }
 
-            return sendText(file.Path, sender);
+            return SendText(file.Path, sender);
         }
 
         public Result<string> SendTextMessage(string text, SenderInfo sender)
@@ -122,7 +122,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
                 return Result.Ok();
             }
 
-            return sendText(text, sender);
+            return SendText(text, sender);
         }
 
         public void Dispose()
@@ -157,7 +157,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
 
             LoggerHolder.Instance.Debug($"New message event: {context.Message}");
 
-            IBotMessage botMessage = parseMessage(message, context);
+            IBotMessage botMessage = ParseMessage(message, context);
 
             OnMessage?.Invoke(context.Client,
                               new BotEventArgs(
@@ -172,7 +172,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             return Task.CompletedTask;
         }
 
-        private IBotMessage parseMessage(SocketUserMessage message, SocketCommandContext context)
+        private IBotMessage ParseMessage(SocketUserMessage message, SocketCommandContext context)
         {
             if (context.Message.Attachments.Count == 0)
             {
@@ -182,7 +182,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             if (context.Message.Attachments.Count == 1)
             {
                 IBotOnlineFile onlineFile =
-                    getOnlineFile(message.Attachments.First().Filename, message.Attachments.First().Url);
+                    GetOnlineFile(message.Attachments.First().Filename, message.Attachments.First().Url);
                 return onlineFile is not null
                     ? new BotSingleMediaMessage(context.Message.Content, onlineFile)
                     : new BotTextMessage(context.Message.Content);
@@ -190,7 +190,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
 
             List<IBotMediaFile> mediaFiles = context.Message.Attachments
                                                     .Select(attachment =>
-                                                                getOnlineFile(attachment.Filename, attachment.Url))
+                                                                GetOnlineFile(attachment.Filename, attachment.Url))
                                                     .Where(onlineFile => onlineFile is not null).Cast<IBotMediaFile>()
                                                     .ToList();
 
@@ -209,9 +209,9 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             return new BotMultipleMediaMessage(context.Message.Content, mediaFiles);
         }
 
-        private IBotOnlineFile getOnlineFile(string filename, string url)
+        private IBotOnlineFile GetOnlineFile(string filename, string url)
         {
-            switch (parseMediaType(filename))
+            switch (ParseMediaType(filename))
             {
                 case MediaTypeEnum.Photo: return new BotOnlinePhotoFile(url);
                 case MediaTypeEnum.Video: return new BotOnlineVideoFile(url);
@@ -222,7 +222,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             }
         }
 
-        private MediaTypeEnum parseMediaType(string filename)
+        private MediaTypeEnum ParseMediaType(string filename)
         {
             if (filename.EndsWith("png") || filename.EndsWith("jpg") ||
                 filename.EndsWith("bmp"))
@@ -239,9 +239,9 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             return MediaTypeEnum.Undefined;
         }
 
-        private Result<string> sendText(string text, SenderInfo sender)
+        private Result<string> SendText(string text, SenderInfo sender)
         {
-            Result<string> result = checkText(text);
+            Result<string> result = CheckText(text);
             if (result.IsFailed)
             {
                 return result;
@@ -264,7 +264,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             }
         }
 
-        private Result<string> checkText(string text)
+        private Result<string> CheckText(string text)
         {
             if (text.Length > 2000)
             {
