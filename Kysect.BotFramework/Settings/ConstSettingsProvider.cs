@@ -9,9 +9,6 @@
             _settings = settings;
         }
 
-        public TSettings GetSettings()
-        {
-            return _settings;
-        }
+        public TSettings GetSettings() => _settings;
     }
 }

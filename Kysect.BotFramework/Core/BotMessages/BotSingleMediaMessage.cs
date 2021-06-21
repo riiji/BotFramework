@@ -5,7 +5,6 @@ namespace Kysect.BotFramework.Core.BotMessages
 {
     public class BotSingleMediaMessage : IBotMessage
     {
-        public string Text { get; }
         public IBotMediaFile MediaFile { get; }
 
         public BotSingleMediaMessage(string text, IBotMediaFile mediaFile)
@@ -13,7 +12,9 @@ namespace Kysect.BotFramework.Core.BotMessages
             Text = text;
             MediaFile = mediaFile;
         }
-        
+
+        public string Text { get; }
+
         public void Send(IBotApiProvider apiProvider, SenderInfo sender)
         {
             if (MediaFile is IBotOnlineFile onlineFile)

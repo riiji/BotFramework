@@ -2,10 +2,10 @@
 using FluentResults;
 using Kysect.BotFramework.Core.BotMessages;
 
-namespace Kysect.BotFramework.Core.CommandInvoking
+namespace Kysect.BotFramework.Core.Commands
 {
     public interface IBotAsyncCommand : IBotCommand
     {
-        Task<Result<IBotMessage>> Execute(CommandArgumentContainer args);
+        Task<Result<IBotMessage>> Execute(CommandContainer args);
     }
 }

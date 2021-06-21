@@ -10,23 +10,22 @@ namespace Kysect.BotFramework.Tests
 {
     public class WaitSafe_Should
     {
+        private Func<Task> _fakeFunction;
+
         [SetUp]
         public void Setup()
         {
             _fakeFunction = A.Fake<Func<Task>>();
 
             A.CallTo(() => _fakeFunction.Invoke())
-                .Invokes(() => Thread.Sleep(3000))
-                .Returns(Task.FromException(new Exception()));
-
+             .Invokes(() => Thread.Sleep(3000))
+             .Returns(Task.FromException(new Exception()));
         }
 
-        private Func<Task> _fakeFunction;
-        
         [Test]
         public void WaitSafe_WhenException_ShouldReturnFailedTask()
         {
-            var fakeFunctionTask = _fakeFunction.Invoke();
+            Task fakeFunctionTask = _fakeFunction.Invoke();
             fakeFunctionTask.WaitSafe();
 
             fakeFunctionTask.IsFaulted.Should().Be(true);
@@ -35,7 +34,7 @@ namespace Kysect.BotFramework.Tests
         [Test]
         public void WaitSafe_WhenException_ShouldCompleted()
         {
-            var fakeFunctionTask = _fakeFunction.Invoke();
+            Task fakeFunctionTask = _fakeFunction.Invoke();
             fakeFunctionTask.WaitSafe();
 
             fakeFunctionTask.IsCompleted.Should().Be(true);
@@ -44,13 +43,10 @@ namespace Kysect.BotFramework.Tests
         [Test]
         public void WaitSafe_WhenException_ShouldntCompletedSuccessfully()
         {
-            var fakeFunctionTask = _fakeFunction.Invoke();
+            Task fakeFunctionTask = _fakeFunction.Invoke();
             fakeFunctionTask.WaitSafe();
 
             fakeFunctionTask.IsCompletedSuccessfully.Should().Be(false);
         }
-
-
-
     }
 }

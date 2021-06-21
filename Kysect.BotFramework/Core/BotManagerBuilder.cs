@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Kysect.BotFramework.ApiProviders;
 using Kysect.BotFramework.Core.CommandInvoking;
+using Kysect.BotFramework.Core.Commands;
 using Kysect.BotFramework.Core.Tools.Loggers;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -9,17 +10,17 @@ namespace Kysect.BotFramework.Core
 {
     public class BotManagerBuilder
     {
-        public ServiceCollection ServiceCollection { get; } = new ServiceCollection();
+        private readonly List<BotCommandDescriptor> _commands = new List<BotCommandDescriptor>();
+        private bool _caseSensitive = true;
 
         private char _prefix = '\0';
-        private bool _caseSensitive = true;
         private bool _sendErrorLogToUser;
-        private readonly List<BotCommandDescriptor> _commands = new List<BotCommandDescriptor>();
+        public ServiceCollection ServiceCollection { get; } = new ServiceCollection();
 
         public BotManagerBuilder AddLogger(ILogger logger)
         {
             LoggerHolder.Init(logger);
-            LoggerHolder.Instance.Information("Logger was initalized");
+            LoggerHolder.Instance.Information("Logger was initialized");
 
             return this;
         }

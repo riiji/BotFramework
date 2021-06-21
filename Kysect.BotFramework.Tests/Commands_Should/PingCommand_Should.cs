@@ -1,8 +1,9 @@
 ﻿using FakeItEasy;
 using FluentAssertions;
-using Kysect.BotFramework.Commands;
-using NUnit.Framework;
 using Kysect.BotFramework.Core.CommandInvoking;
+using Kysect.BotFramework.Core.Commands;
+using Kysect.BotFramework.DefaultCommands;
+using NUnit.Framework;
 
 namespace Kysect.BotFramework.Tests.Commands_Should
 {
@@ -11,10 +12,9 @@ namespace Kysect.BotFramework.Tests.Commands_Should
         [Test]
         public void PingCommand_ShouldReturnPong()
         {
-            PingCommand pingCommand = new PingCommand();
-            CommandArgumentContainer fakeContainer = A.Fake<CommandArgumentContainer>();
+            var pingCommand = new PingCommand();
+            var fakeContainer = A.Fake<CommandContainer>();
             pingCommand.Execute(fakeContainer).Result.IsSuccess.Should().Be(true);
         }
-
     }
 }
