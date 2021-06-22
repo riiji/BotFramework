@@ -1,3 +1,5 @@
+[![Nuget](https://img.shields.io/nuget/v/Kysect.BotFramework?style=flat-square)](https://www.nuget.org/packages/Kysect.BotFramework)
+
 # BotFramework
 
 BotFramework - фреймворк, который упрощает процедуру создания ботов за счет абстрагирования над API конкретных месенджеров.
