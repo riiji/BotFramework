@@ -163,9 +163,10 @@ namespace Kysect.BotFramework.ApiProviders.Discord
                               new BotEventArgs(
                                   botMessage,
                                   new SenderInfo(
-                                      (long) (context.Guild?.Id ?? 0),
+                                      (long) (context.Guild.Id),
                                       (long) context.Channel.Id,
-                                      context.User.Username
+                                      context.User.Username,
+                                      CheckIsAdmin(context.User)
                                   )
                               ));
 
@@ -237,6 +238,12 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             }
 
             return MediaTypeEnum.Undefined;
+        }
+
+        private bool CheckIsAdmin(SocketUser user)
+        {
+            var socketGuildUser = user as SocketGuildUser;
+            return socketGuildUser.GuildPermissions.Administrator;
         }
 
         private Result<string> SendText(string text, SenderInfo sender)

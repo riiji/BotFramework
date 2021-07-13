@@ -83,20 +83,27 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
                     message = new BotTextMessage(text);
                     break;
             }
-
+            
             OnMessage?.Invoke(sender,
                               new BotEventArgs(
                                   message,
                                   new SenderInfo(
                                       e.Message.Chat.Id,
                                       e.Message.From.Id,
-                                      e.Message.From.FirstName
+                                      e.Message.From.FirstName,
+                                      CheckIsAdmin(e.Message.From.Id,e.Message.Chat.Id)
                                   )
                               ));
         }
 
         private string GetFileLink(string id) =>
             $"https://api.telegram.org/file/bot{_settings.AccessToken}/{_client.GetFileAsync(id).Result.FilePath}";
+
+        private bool CheckIsAdmin(int userId, long chatId)
+        {
+            var chatMember = _client.GetChatMemberAsync(chatId, userId).Result;
+            return chatMember.Status is ChatMemberStatus.Administrator or ChatMemberStatus.Creator;
+        }
 
         public Result<string> SendMultipleMedia(List<IBotMediaFile> mediaFiles, string text, SenderInfo sender)
         {
