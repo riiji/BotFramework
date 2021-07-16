@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using Kysect.BotFramework.ApiProviders.Telegram;
-using Kysect.BotFramework.Commands;
+using Kysect.BotFramework.DefaultCommands;
 using Kysect.BotFramework.Core;
 using Kysect.BotFramework.Settings;
 
