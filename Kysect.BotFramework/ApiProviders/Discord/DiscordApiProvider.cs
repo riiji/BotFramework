@@ -83,7 +83,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
                 return result;
             }
 
-            Task<RestUserMessage> task = _client.GetGuild((ulong) sender.GroupId)
+            Task<RestUserMessage> task = _client.GetGuild((ulong) sender.ChatId)
                                                 .GetTextChannel((ulong) sender.UserSenderId)
                                                 .SendFileAsync(mediaFile.Path, text);
             try
@@ -165,6 +165,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
                                   new SenderInfo(
                                       (long) (context.Guild.Id),
                                       (long) context.Channel.Id,
+                                      (long) context.User.Id,
                                       context.User.Username,
                                       CheckIsAdmin(context.User)
                                   )
@@ -254,7 +255,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
                 return result;
             }
 
-            Task<RestUserMessage> task = _client.GetGuild((ulong) sender.GroupId)
+            Task<RestUserMessage> task = _client.GetGuild((ulong) sender.ChatId)
                                                 .GetTextChannel((ulong) sender.UserSenderId)
                                                 .SendMessageAsync(text);
 
