@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.Rest;
 using Discord.WebSocket;
+using DSharpPlus;
+using DSharpPlus.Entities;
 using FluentResults;
 using Kysect.BotFramework.Core;
 using Kysect.BotFramework.Core.BotMedia;
@@ -13,6 +17,8 @@ using Kysect.BotFramework.Core.BotMessages;
 using Kysect.BotFramework.Core.Tools.Loggers;
 using Kysect.BotFramework.DefaultCommands;
 using Kysect.BotFramework.Settings;
+using TokenType = Discord.TokenType;
+using System.Text.RegularExpressions;
 
 namespace Kysect.BotFramework.ApiProviders.Discord
 {
@@ -21,6 +27,12 @@ namespace Kysect.BotFramework.ApiProviders.Discord
         private readonly object _lock = new object();
         private readonly DiscordSettings _settings;
         private DiscordSocketClient _client;
+        private int _argsCount;
+        
+        private readonly string[] _emojis =
+        {
+            "", "1️⃣", "2️⃣", "3️⃣","4️⃣","5️⃣","6️⃣","7️⃣", "8️⃣", "9️⃣", "🔟"
+        };
 
         public DiscordApiProvider(ISettingsProvider<DiscordSettings> settingsProvider)
         {
@@ -118,11 +130,25 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             if (text.Length == 0)
             {
                 LoggerHolder.Instance.Error("The message wasn't sent by the command " +
-                                            $"\"{PingCommand.Descriptor.CommandName}\", the length must not be zero.");
+                                            "\"{CommandName}\", the length must not be zero", 
+                                            PingCommand.Descriptor.CommandName);
                 return Result.Ok();
             }
-
+            
             return SendText(text, sender);
+        }
+        
+        public Result<string> SendPollMessage(string text, SenderInfo sender)
+        {
+            if (text.Length == 0)
+            {
+                LoggerHolder.Instance.Error("The message wasn't sent by the command " +
+                                            "\"{CommandName}\", the length must not be zero", 
+                                            PollCommand.Descriptor.CommandName);
+                return Result.Ok();
+            }
+            
+            return SendPoll(text, sender);
         }
 
         public void Dispose()
@@ -150,15 +176,22 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             }
 
             var context = new SocketCommandContext(_client, message);
+            if (!context.User.IsBot && context.Message.Content.Contains("!Poll"))
+            {
+                _argsCount = GetPollArguments(message.Content).Count() - 1;
+            }
+            if (context.User.IsBot && context.Message.Embeds.Any())
+            {
+                ReactWithEmojis(context);
+            }
+            
             if (context.User.IsBot || context.Guild is null)
             {
                 return Task.CompletedTask;
             }
-
             LoggerHolder.Instance.Debug($"New message event: {context.Message}");
-
+            
             IBotMessage botMessage = ParseMessage(message, context);
-
             OnMessage?.Invoke(context.Client,
                               new BotEventArgs(
                                   botMessage,
@@ -270,6 +303,45 @@ namespace Kysect.BotFramework.ApiProviders.Discord
                 return Result.Fail(new Error(message).CausedBy(e));
             }
         }
+        
+        private Result<string> SendPoll(string text, SenderInfo sender)
+        {
+            List<string> arguments = GetPollArguments(text);
+
+            Result<string> result = CheckText(text);
+            if (result.IsFailed)
+            {
+                return result;
+            }
+
+            for (int i = 1; i < arguments.Count; i++)
+            {
+                arguments[i] = _emojis[i] + "\t" + arguments[i];
+            }
+            
+            var embed = new EmbedBuilder
+            {
+                Title = arguments[0],
+                Color = Color.Purple,
+                Description = String.Join("\n", arguments.Skip(1))
+            };
+
+            Task<RestUserMessage> task = _client.GetGuild((ulong) sender.GroupId)
+                .GetTextChannel((ulong) sender.UserSenderId)
+                .SendMessageAsync(embed: embed.Build());
+
+            try
+            {
+                task.Wait();
+                return Result.Ok("Message send");
+            }
+            catch (Exception e)
+            {
+                var message = "Error while sending message";
+                LoggerHolder.Instance.Error(e, message);
+                return Result.Fail(new Error(message).CausedBy(e));
+            }
+        }
 
         private Result<string> CheckText(string text)
         {
@@ -277,11 +349,37 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             {
                 string subString = text.Substring(0, 99) + "...";
                 string errorMessage = "The message wasn't sent by the command " +
-                                      $"\"{PingCommand.Descriptor.CommandName}\", the length is too big.";
+                                      $"\"{PingCommand.Descriptor.CommandName}\", the length is too big";
                 return Result.Fail(new Error(errorMessage).CausedBy(subString));
             }
 
             return Result.Ok();
+        }
+        
+        private List<string> GetPollArguments(string args)
+        {
+            var regex = new Regex(@"[^\s""']+|""([^""]*)""|'([^']*)'"); // Splits into "..." '...' a b c
+            var matches = regex.Matches(args);
+            List<string> options = new List<string>();
+                
+            if (matches.Count > 0)
+            {
+                foreach (Match match in matches)
+                {
+                    options.Add(match.Value.Replace("\"", ""));
+                }
+            }
+
+            return options;
+        }
+        
+        private async void ReactWithEmojis(SocketCommandContext context)
+        {
+            for (int i = 1; i < _argsCount; i++)
+            {
+                await context.Message.AddReactionAsync(new Emoji(_emojis[i]))
+                    .ConfigureAwait(false);
+            }
         }
     }
 }

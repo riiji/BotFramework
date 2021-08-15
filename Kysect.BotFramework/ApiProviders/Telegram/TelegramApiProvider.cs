@@ -29,7 +29,6 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             _settings = settingsProvider.GetSettings();
             Initialize();
         }
-
         public event EventHandler<BotEventArgs> OnMessage;
 
         public void Restart()
@@ -308,6 +307,8 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
                 return Result.Fail(new Error(message).CausedBy(e));
             }
         }
+        
+        public Result<string> SendPollMessage(string text, SenderInfo sender) => throw new NotImplementedException();
 
         private Result<string> CheckText(string text)
         {

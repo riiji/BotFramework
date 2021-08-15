@@ -31,6 +31,8 @@ namespace Kysect.BotFramework.ApiProviders.VK
 
         public Result<string> SendTextMessage(string text, SenderInfo sender) => throw new NotImplementedException();
 
+        public Result<string> SendPollMessage(string text, SenderInfo sender) => throw new NotImplementedException();
+
         public void Dispose()
         {
             throw new NotImplementedException();

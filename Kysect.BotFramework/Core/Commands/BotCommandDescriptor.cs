@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Kysect.BotFramework.Core.CommandInvoking;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,9 +9,9 @@ namespace Kysect.BotFramework.Core.Commands
     {
         public string CommandName { get; }
         public string Description { get; }
-        public string[] Args { get; }
+        public List<string> Args { get; }
 
-        public BotCommandDescriptor(string commandName, string description, string[] args)
+        public BotCommandDescriptor(string commandName, string description, List<string> args)
         {
             CommandName = commandName;
             Description = description;
@@ -22,13 +23,13 @@ namespace Kysect.BotFramework.Core.Commands
 
     public class BotCommandDescriptor<T> : BotCommandDescriptor where T : IBotCommand
     {
-        public BotCommandDescriptor(string commandName, string description, string[] args) 
+        public BotCommandDescriptor(string commandName, string description, List<string> args) 
             : base(commandName, description, args)
         {
         }
 
         public BotCommandDescriptor(string commandName, string description) 
-            : this(commandName, description, Array.Empty<string>())
+            : this(commandName, description, new List<string>())
         {
         }
 

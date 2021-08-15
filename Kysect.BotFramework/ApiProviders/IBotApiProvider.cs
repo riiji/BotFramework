@@ -15,5 +15,6 @@ namespace Kysect.BotFramework.ApiProviders
         Result<string> SendMedia(IBotMediaFile mediaFile, string text, SenderInfo sender);
         Result<string> SendOnlineMedia(IBotOnlineFile file, string text, SenderInfo sender);
         Result<string> SendTextMessage(string text, SenderInfo sender);
+        Result<string> SendPollMessage(string text, SenderInfo sender);
     }
 }

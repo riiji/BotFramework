@@ -2,6 +2,7 @@ using System;
 using FluentResults;
 using Kysect.BotFramework.Core.BotMessages;
 using Kysect.BotFramework.Core.Commands;
+using Kysect.BotFramework.DefaultCommands;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Kysect.BotFramework.Core.CommandInvoking
@@ -24,7 +25,7 @@ namespace Kysect.BotFramework.Core.CommandInvoking
                 return commandTask.ToResult<CommandContainer>();
             }
 
-            return commandTask.Value.Args.Length == args.Arguments.Count
+            return (commandTask.Value.Args.Count == args.Arguments.Count) || (args.CommandName == "Poll") // Better way to check for Poll?
                 ? Result.Ok()
                 : Result.Fail<CommandContainer>(
                     "Cannot execute command. Argument count miss matched with command signature");

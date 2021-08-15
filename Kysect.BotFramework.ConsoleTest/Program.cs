@@ -1,7 +1,9 @@
 using System.Threading.Tasks;
+using Kysect.BotFramework.ApiProviders.Discord;
 using Kysect.BotFramework.ApiProviders.Telegram;
-using Kysect.BotFramework.Commands;
+using Kysect.BotFramework.DefaultCommands;
 using Kysect.BotFramework.Core;
+using Kysect.BotFramework.DefaultCommands;
 using Kysect.BotFramework.Settings;
 
 namespace Kysect.BotFramework.ConsoleTest
@@ -19,6 +21,7 @@ namespace Kysect.BotFramework.ConsoleTest
                 .SetPrefix('!')
                 .SetCaseSensitive(false)
                 .AddCommand(PingCommand.Descriptor)
+                .AddCommand(PollCommand.Descriptor)
                 .Build(api);
 
             botManager.Start();
