@@ -3,6 +3,8 @@ using Kysect.BotFramework.ApiProviders;
 using Kysect.BotFramework.Core.CommandInvoking;
 using Kysect.BotFramework.Core.Commands;
 using Kysect.BotFramework.Core.Tools.Loggers;
+using Kysect.BotFramework.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
@@ -59,11 +61,15 @@ namespace Kysect.BotFramework.Core
 
         public BotManager Build(IBotApiProvider apiProvider)
         {
+            ServiceCollection.AddDbContext<BotFrameworkDbContext>(o =>
+                                                                  {
+                                                                      o.UseSqlite("Filename=bf.db");
+                                                                  });
             ServiceProvider serviceProvider = ServiceCollection.BuildServiceProvider();
             var commandHandler = new CommandHandler(serviceProvider);
             _commands.ForEach(commandHandler.RegisterCommand);
             commandHandler.SetCaseSensitive(_caseSensitive);
-            return new BotManager(apiProvider, commandHandler, _prefix, _sendErrorLogToUser);
+            return new BotManager(apiProvider, commandHandler, _prefix, _sendErrorLogToUser, serviceProvider);
         }
     }
 }

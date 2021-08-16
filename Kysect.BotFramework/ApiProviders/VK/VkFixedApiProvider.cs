@@ -6,6 +6,7 @@ using FluentResults;
 using Kysect.BotFramework.Core;
 using Kysect.BotFramework.Core.BotMedia;
 using Kysect.BotFramework.Core.BotMessages;
+using Kysect.BotFramework.Core.Contexts;
 using Kysect.BotFramework.Core.Tools;
 using Kysect.BotFramework.Core.Tools.Extensions;
 using Kysect.BotFramework.Settings;
@@ -17,7 +18,7 @@ namespace Kysect.BotFramework.ApiProviders.VK
 {
     public class VkFixedApiProvider : IBotApiProvider, IDisposable
     {
-        public event EventHandler<BotEventArgs> OnMessage;
+        public event EventHandler<BotMessageEventArgs> OnMessage;
         public void Restart()
         {
             throw new NotImplementedException();

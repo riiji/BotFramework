@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Kysect.BotFramework.ApiProviders;
 using Kysect.BotFramework.Core.BotMedia;
+using Kysect.BotFramework.Core.Contexts;
 
 namespace Kysect.BotFramework.Core.BotMessages
 {

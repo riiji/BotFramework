@@ -1,21 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Kysect.BotFramework.Core.BotMedia;
+using Kysect.BotFramework.Core.Contexts;
 
 namespace Kysect.BotFramework.Core.Commands
 {
     public class CommandContainer
     {
         public string CommandName { get; private set; }
-        public SenderInfo Sender { get; }
+        public DialogContext Context { get; }
         public List<string> Arguments { get; }
         public List<IBotMediaFile> MediaFiles { get; }
 
-        public CommandContainer(string commandName, SenderInfo sender, List<string> arguments,
+        public CommandContainer(string commandName, DialogContext context, List<string> arguments,
             List<IBotMediaFile> mediaFiles)
         {
             CommandName = commandName;
-            Sender = sender;
+            Context = context;
             Arguments = arguments;
             MediaFiles = mediaFiles;
         }
