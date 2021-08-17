@@ -255,7 +255,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
                 return result;
             }
 
-            var discordSender = sender as DiscordSenderInfo;
+            var discordSender = (DiscordSenderInfo)sender;
             Task<RestUserMessage> task = _client.GetGuild(discordSender.GuildId)
                                                 .GetTextChannel((ulong) sender.ChatId)
                                                 .SendMessageAsync(text);

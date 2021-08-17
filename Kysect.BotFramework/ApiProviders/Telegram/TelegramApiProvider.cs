@@ -147,7 +147,7 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             }
         }
         
-        private IEnumerable<IAlbumInputMedia> CollectInputMedia(List<IBotMediaFile> mediaFiles, string text,
+        private List<IAlbumInputMedia> CollectInputMedia(List<IBotMediaFile> mediaFiles, string text,
             List<FileStream> streams)
         {
             List<IAlbumInputMedia> filesToSend = new List<IAlbumInputMedia>();
