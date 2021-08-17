@@ -7,7 +7,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
 {
     public class DiscordSenderInfo : SenderInfo
     {
-        public ulong GuildId { get; internal set; }
+        public ulong GuildId { get; }
 
         public DiscordSenderInfo(long chatId, long userSenderId, string userSenderUsername, bool isAdmin, ulong guildId)
             : base(chatId, userSenderId, userSenderUsername, isAdmin)
@@ -39,27 +39,30 @@ namespace Kysect.BotFramework.ApiProviders.Discord
 
                 var context = new DialogContextEntity
                 {
-                    SenderInfoId = entity.Id
+                    SenderInfoId = entity.Id,
+                    ContextType = ContextType.Discord
                 };
 
                 dbContext.Add(context);
                 dbContext.SaveChanges();
 
-                return new DialogContext(context.State, context.SenderInfoId, this);
+                return new DialogContext(context.State, context.SenderInfoId, ContextType.Discord, this);
             }
 
-            DialogContextEntity contextModel = dbContext.DialogContexts.FirstOrDefault(c => c.SenderInfoId == contextSenderInfo.Id);
+            DialogContextEntity contextModel = dbContext.DialogContexts.FirstOrDefault(c => 
+                c.SenderInfoId == contextSenderInfo.Id && c.ContextType == ContextType.Discord);
             if (contextModel is null)
             {
                 contextModel = new DialogContextEntity
                 {
-                    SenderInfoId = contextSenderInfo.Id
+                    SenderInfoId = contextSenderInfo.Id,
+                    ContextType = ContextType.Discord
                 };
 
                 dbContext.Add(contextModel);
                 dbContext.SaveChanges();
             }
-            return new DialogContext(contextModel.State, contextModel.SenderInfoId, this);
+            return new DialogContext(contextModel.State, contextModel.SenderInfoId, ContextType.Discord, this);
         }
     }
 }

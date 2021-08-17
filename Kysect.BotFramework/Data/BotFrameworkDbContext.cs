@@ -17,7 +17,11 @@ namespace Kysect.BotFramework.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<DialogContextEntity>().HasKey(d => d.SenderInfoId);
+            modelBuilder.Entity<DialogContextEntity>().HasKey(d => new
+            {
+                d.SenderInfoId,
+                d.ContextType
+            });
             modelBuilder.Entity<DiscordSenderInfoEntity>().HasKey(d => d.Id);
             modelBuilder.Entity<TelegramSenderInfoEntity>().HasKey(t => t.Id);
         }

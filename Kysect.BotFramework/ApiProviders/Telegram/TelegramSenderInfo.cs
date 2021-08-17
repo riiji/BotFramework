@@ -9,8 +9,7 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
     {
         public TelegramSenderInfo(long chatId, long userSenderId, string userSenderUsername, bool isAdmin)
             : base(chatId, userSenderId, userSenderUsername, isAdmin)
-        {
-        }
+        { }
         
         private TelegramSenderInfoEntity ToEntity()
         {
@@ -32,27 +31,32 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
                 dbContext.TelegramSenderInfos.AddAsync(entity);
                 dbContext.SaveChangesAsync();
 
-                var context = new DialogContextEntity();
-                context.SenderInfoId = entity.Id;
+                var context = new DialogContextEntity
+                {
+                    SenderInfoId = entity.Id,
+                    ContextType = ContextType.Telegram
+                };
 
                 dbContext.Add(context);
                 dbContext.SaveChanges();
 
-                return new DialogContext(context.State, context.SenderInfoId, this);
+                return new DialogContext(context.State, context.SenderInfoId, ContextType.Telegram, this);
             }
 
-            var contextModel = dbContext.DialogContexts.FirstOrDefault(c=>c.SenderInfoId == contextSenderInfo.Id);
+            DialogContextEntity contextModel = dbContext.DialogContexts.FirstOrDefault(c=> 
+                c.SenderInfoId == contextSenderInfo.Id && c.ContextType == ContextType.Telegram);
             if (contextModel is null)
             {
                 contextModel = new DialogContextEntity
                 {
-                    SenderInfoId = contextSenderInfo.Id
+                    SenderInfoId = contextSenderInfo.Id,
+                    ContextType = ContextType.Telegram
                 };
 
                 dbContext.Add(contextModel);
                 dbContext.SaveChanges();
             }
-            return new DialogContext(contextModel.State, contextModel.SenderInfoId, this);
+            return new DialogContext(contextModel.State, contextModel.SenderInfoId, ContextType.Telegram, this);
         }
     }
 }
