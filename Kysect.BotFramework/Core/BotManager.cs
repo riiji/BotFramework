@@ -59,7 +59,7 @@ namespace Kysect.BotFramework.Core
         private void ProcessMessage(BotNewMessageEventArgs e)
         {
             var dbContext =  _serviceProvider.GetService<BotFrameworkDbContext>();
-            DialogContext context = e.SenderInfo.GetDialogContext(dbContext);
+            DialogContext context = e.SenderInfo.GetOrCreateDialogContext(dbContext);
             var botEventArgs = new BotEventArgs(e.Message, context);
             
             Result<CommandContainer> commandResult = _commandParser.ParseCommand(botEventArgs);

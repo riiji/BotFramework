@@ -17,6 +17,6 @@ namespace Kysect.BotFramework.Core.Contexts
             IsAdmin = isAdmin;
         }
 
-        internal abstract DialogContext GetDialogContext(BotFrameworkDbContext dbContext);
+        internal abstract DialogContext GetOrCreateDialogContext(BotFrameworkDbContext dbContext);
     }
 }

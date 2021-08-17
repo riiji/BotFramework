@@ -26,7 +26,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             return entity;
         }
 
-        internal override DialogContext GetDialogContext(BotFrameworkDbContext dbContext)
+        internal override DialogContext GetOrCreateDialogContext(BotFrameworkDbContext dbContext)
         {
             DiscordSenderInfoEntity contextSenderInfo =  dbContext.DiscordSenderInfos.FirstOrDefault(si =>
                 si.GuildId == GuildId && si.ChatId == ChatId && si.UserSenderId == UserSenderId

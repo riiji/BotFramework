@@ -21,7 +21,7 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             return entity;
         }
 
-        internal override DialogContext GetDialogContext(BotFrameworkDbContext dbContext)
+        internal override DialogContext GetOrCreateDialogContext(BotFrameworkDbContext dbContext)
         {
             TelegramSenderInfoEntity contextSenderInfo =  dbContext.TelegramSenderInfos.FirstOrDefault(si => 
                 si.ChatId == ChatId && si.UserSenderId == UserSenderId);
