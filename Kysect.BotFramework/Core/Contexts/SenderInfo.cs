@@ -1,5 +1,4 @@
 ﻿using Kysect.BotFramework.Data;
-using Kysect.BotFramework.Data.Entities;
 
 namespace Kysect.BotFramework.Core.Contexts
 {
@@ -10,10 +9,6 @@ namespace Kysect.BotFramework.Core.Contexts
         public string UserSenderUsername { get; internal set; }
         public bool IsAdmin { get; internal set; }
 
-        public SenderInfo()
-        {
-        }
-        
         protected SenderInfo(long chatId, long userSenderId, string userSenderUsername, bool isAdmin)
         {
             ChatId = chatId;

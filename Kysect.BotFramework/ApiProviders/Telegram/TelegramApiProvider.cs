@@ -119,7 +119,7 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             }
 
             List<FileStream> streams = new List<FileStream>();
-            List<IAlbumInputMedia> filesToSend = collectInputMedia(mediaFiles, text, streams);
+            IEnumerable<IAlbumInputMedia> filesToSend = CollectInputMedia(mediaFiles, text, streams);
 
             Task<Message[]> task = _client.SendMediaGroupAsync(filesToSend, sender.ChatId);
 
@@ -147,7 +147,7 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             }
         }
         
-        private List<IAlbumInputMedia> collectInputMedia(List<IBotMediaFile> mediaFiles, string text,
+        private IEnumerable<IAlbumInputMedia> CollectInputMedia(List<IBotMediaFile> mediaFiles, string text,
             List<FileStream> streams)
         {
             List<IAlbumInputMedia> filesToSend = new List<IAlbumInputMedia>();
@@ -205,14 +205,15 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
         private Result<string> CheckMediaFiles(List<IBotMediaFile> mediaFiles)
         {
             //TODO: hack
-            if (mediaFiles.Count > 10)
+            if (mediaFiles.Count <= 10)
             {
-                const string message = "Too many files provided";
-                LoggerHolder.Instance.Error(message);
-                return Result.Fail(message);
+                return Result.Ok();
             }
 
-            return Result.Ok();
+            const string message = "Too many files provided";
+            LoggerHolder.Instance.Error(message);
+            return Result.Fail(message);
+
         }
 
         public Result<string> SendMedia(IBotMediaFile mediaFile, string text, SenderInfo sender)

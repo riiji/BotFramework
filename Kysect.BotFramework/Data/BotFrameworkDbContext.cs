@@ -1,7 +1,4 @@
-﻿using Kysect.BotFramework.ApiProviders.Discord;
-using Kysect.BotFramework.ApiProviders.Telegram;
-using Kysect.BotFramework.Core.Contexts;
-using Kysect.BotFramework.Data.Entities;
+﻿using Kysect.BotFramework.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kysect.BotFramework.Data

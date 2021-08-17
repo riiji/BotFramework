@@ -1,5 +1,4 @@
 ﻿using System;
-using Kysect.BotFramework.Core.CommandInvoking;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Kysect.BotFramework.Core.Commands

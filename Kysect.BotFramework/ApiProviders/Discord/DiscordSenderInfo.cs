@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Kysect.BotFramework.Core;
 using Kysect.BotFramework.Core.Contexts;
 using Kysect.BotFramework.Data;
 using Kysect.BotFramework.Data.Entities;

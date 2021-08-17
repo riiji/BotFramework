@@ -218,7 +218,6 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             {
                 case MediaTypeEnum.Photo: return new BotOnlinePhotoFile(url);
                 case MediaTypeEnum.Video: return new BotOnlineVideoFile(url);
-                case MediaTypeEnum.Undefined:
                 default:
                     LoggerHolder.Instance.Information($"Skipped file: {filename}");
                     return null;
@@ -257,7 +256,6 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             }
 
             var discordSender = sender as DiscordSenderInfo;
-            
             Task<RestUserMessage> task = _client.GetGuild(discordSender.GuildId)
                                                 .GetTextChannel((ulong) sender.ChatId)
                                                 .SendMessageAsync(text);
