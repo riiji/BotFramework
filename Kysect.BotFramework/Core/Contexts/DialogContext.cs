@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Linq;
 using Kysect.BotFramework.Data;
+using Kysect.BotFramework.Data.Entities;
 
 namespace Kysect.BotFramework.Core.Contexts
 {
     public class DialogContext
     {
         public int State { get; set; }
+        private long SenderInfoId;
         public SenderInfo SenderInfo { get; }
 
-        public DialogContext(int state, SenderInfo senderInfo)
+        public DialogContext(int state, long senderInfoId, SenderInfo senderInfo)
         {
             State = state;
             SenderInfo = senderInfo;
@@ -17,7 +19,7 @@ namespace Kysect.BotFramework.Core.Contexts
 
         internal void Update(BotFrameworkDbContext dbContext)
         {
-            var context = dbContext.DialogContexts.FirstOrDefault(x => x.SenderInfoId == SenderInfo.Id);
+            DialogContextEntity context = dbContext.DialogContexts.FirstOrDefault(x => x.SenderInfoId == SenderInfoId);
             context.State = State;
             dbContext.DialogContexts.Update(context);
             dbContext.SaveChanges();

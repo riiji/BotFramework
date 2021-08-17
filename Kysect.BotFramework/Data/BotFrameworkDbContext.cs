@@ -1,15 +1,16 @@
 ﻿using Kysect.BotFramework.ApiProviders.Discord;
 using Kysect.BotFramework.ApiProviders.Telegram;
 using Kysect.BotFramework.Core.Contexts;
+using Kysect.BotFramework.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kysect.BotFramework.Data
 {
     public class BotFrameworkDbContext : DbContext
     {
-        public DbSet<DialogContextModel> DialogContexts { get; set; }
-        public DbSet<DiscordSenderInfo> DiscordSenderInfos { get; set; }
-        public DbSet<TelegramSenderInfo> TelegramSenderInfos { get; set; }
+        public DbSet<DialogContextEntity> DialogContexts { get; set; }
+        public DbSet<DiscordSenderInfoEntity> DiscordSenderInfos { get; set; }
+        public DbSet<TelegramSenderInfoEntity> TelegramSenderInfos { get; set; }
         
         public BotFrameworkDbContext(DbContextOptions options) : base(options)
         {
@@ -19,9 +20,9 @@ namespace Kysect.BotFramework.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<DialogContextModel>().HasKey(d => d.SenderInfoId);
-            modelBuilder.Entity<DiscordSenderInfo>().HasKey(d => d.Id);
-            modelBuilder.Entity<TelegramSenderInfo>().HasKey(t => t.Id);
+            modelBuilder.Entity<DialogContextEntity>().HasKey(d => d.SenderInfoId);
+            modelBuilder.Entity<DiscordSenderInfoEntity>().HasKey(d => d.Id);
+            modelBuilder.Entity<TelegramSenderInfoEntity>().HasKey(t => t.Id);
         }
     }
 }

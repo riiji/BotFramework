@@ -2,6 +2,7 @@
 using Kysect.BotFramework.Core;
 using Kysect.BotFramework.Core.Contexts;
 using Kysect.BotFramework.Data;
+using Kysect.BotFramework.Data.Entities;
 
 namespace Kysect.BotFramework.ApiProviders.Discord
 {
@@ -9,46 +10,57 @@ namespace Kysect.BotFramework.ApiProviders.Discord
     {
         public ulong GuildId { get; internal set; }
 
-        public DiscordSenderInfo() : base()
-        {
-            
-        }
-        
         public DiscordSenderInfo(long chatId, long userSenderId, string userSenderUsername, bool isAdmin, ulong guildId)
             : base(chatId, userSenderId, userSenderUsername, isAdmin)
         {
             GuildId = guildId;
         }
 
+        private DiscordSenderInfoEntity ToEntity()
+        {
+            var entity = new DiscordSenderInfoEntity
+            {
+                GuildId = GuildId,
+                ChatId = ChatId,
+                UserSenderId = UserSenderId
+            };
+            return entity;
+        }
 
         internal override DialogContext GetDialogContext(BotFrameworkDbContext dbContext)
         {
-            var contextSenderInfo =  dbContext.DiscordSenderInfos.FirstOrDefault(si =>
+            DiscordSenderInfoEntity contextSenderInfo =  dbContext.DiscordSenderInfos.FirstOrDefault(si =>
                 si.GuildId == GuildId && si.ChatId == ChatId && si.UserSenderId == UserSenderId
             );
             if (contextSenderInfo is null)
             {
-                dbContext.DiscordSenderInfos.AddAsync(this);
+                DiscordSenderInfoEntity entity = ToEntity();
+                dbContext.DiscordSenderInfos.AddAsync(entity);
                 dbContext.SaveChangesAsync();
 
-                var context = new DialogContextModel();
-                context.SenderInfoId = Id;
+                var context = new DialogContextEntity
+                {
+                    SenderInfoId = entity.Id
+                };
 
                 dbContext.Add(context);
                 dbContext.SaveChanges();
 
-                return new DialogContext(context.State, this);
-            }
-            
-            this.Id = contextSenderInfo.Id;
-            if (contextSenderInfo.IsAdmin != IsAdmin || contextSenderInfo.UserSenderUsername != UserSenderUsername)
-            {
-                dbContext.DiscordSenderInfos.Update(this);
-                dbContext.SaveChanges();    
+                return new DialogContext(context.State, context.SenderInfoId, this);
             }
 
-            var contextModel = dbContext.DialogContexts.FirstOrDefault(c => c.SenderInfoId == this.Id);
-            return new DialogContext(contextModel.State, this);
+            DialogContextEntity contextModel = dbContext.DialogContexts.FirstOrDefault(c => c.SenderInfoId == contextSenderInfo.Id);
+            if (contextModel is null)
+            {
+                var context = new DialogContextEntity
+                {
+                    SenderInfoId = contextSenderInfo.Id
+                };
+
+                dbContext.Add(context);
+                dbContext.SaveChanges();
+            }
+            return new DialogContext(contextModel.State, contextModel.SenderInfoId, this);
         }
     }
 }
