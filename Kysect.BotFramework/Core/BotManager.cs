@@ -18,12 +18,12 @@ namespace Kysect.BotFramework.Core
         private readonly ICommandParser _commandParser;
         private readonly char _prefix;
         private readonly bool _sendErrorLogToUser;
-        private readonly ServiceProvider _provider;
+        private readonly ServiceProvider _serviceProvider;
 
         public BotManager(IBotApiProvider apiProvider, CommandHandler commandHandler, char prefix,
             bool sendErrorLogToUser, ServiceProvider provider)
         {
-            _provider = provider;
+            _serviceProvider = provider;
             _apiProvider = apiProvider;
             _prefix = prefix;
             _sendErrorLogToUser = sendErrorLogToUser;
@@ -41,17 +41,11 @@ namespace Kysect.BotFramework.Core
             _apiProvider.OnMessage += ApiProviderOnMessage;
         }
 
-        private void ApiProviderOnMessage(object sender, BotMessageEventArgs e)
+        private void ApiProviderOnMessage(object sender, BotNewMessageEventArgs e)
         {
             try
             {
-                var dbContext =  _provider.GetService<BotFrameworkDbContext>();
-
-                var context = e.SenderInfo.GetDialogContext(dbContext);
-
-                var botEventArgs = new BotEventArgs(e.Message, context);
-                
-                ProcessMessage(botEventArgs);
+                ProcessMessage(e);
             }
             catch (Exception exception)
             {
@@ -62,9 +56,13 @@ namespace Kysect.BotFramework.Core
             }
         }
 
-        private void ProcessMessage(BotEventArgs e)
+        private void ProcessMessage(BotNewMessageEventArgs e)
         {
-            Result<CommandContainer> commandResult = _commandParser.ParseCommand(e);
+            var dbContext =  _serviceProvider.GetService<BotFrameworkDbContext>();
+            DialogContext context = e.SenderInfo.GetDialogContext(dbContext);
+            var botEventArgs = new BotEventArgs(e.Message, context);
+            
+            Result<CommandContainer> commandResult = _commandParser.ParseCommand(botEventArgs);
             if (commandResult.IsFailed)
             {
                 return;
@@ -80,25 +78,24 @@ namespace Kysect.BotFramework.Core
             Result checkResult = _commandHandler.CheckArgsCount(command);
             if (checkResult.IsFailed)
             {
-                HandlerError(checkResult, e);
+                HandlerError(checkResult, botEventArgs);
                 return;
             }
 
             checkResult = _commandHandler.CanCommandBeExecuted(commandResult.Value);
             if (checkResult.IsFailed)
             {
-                HandlerError(checkResult, e);
+                HandlerError(checkResult, botEventArgs);
                 return;
             }
 
             Result<IBotMessage> executionResult = _commandHandler.ExecuteCommand(commandResult.Value);
             if (executionResult.IsFailed)
             {
-                HandlerError(executionResult, e);
+                HandlerError(executionResult, botEventArgs);
                 return;
             }
             
-            var dbContext =  _provider.GetService<BotFrameworkDbContext>();
             commandResult.Value.Context.Update(dbContext);
 
             IBotMessage message = executionResult.Value;

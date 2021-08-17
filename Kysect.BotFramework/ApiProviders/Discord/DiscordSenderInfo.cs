@@ -52,12 +52,12 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             DialogContextEntity contextModel = dbContext.DialogContexts.FirstOrDefault(c => c.SenderInfoId == contextSenderInfo.Id);
             if (contextModel is null)
             {
-                var context = new DialogContextEntity
+                contextModel = new DialogContextEntity
                 {
                     SenderInfoId = contextSenderInfo.Id
                 };
 
-                dbContext.Add(context);
+                dbContext.Add(contextModel);
                 dbContext.SaveChanges();
             }
             return new DialogContext(contextModel.State, contextModel.SenderInfoId, this);

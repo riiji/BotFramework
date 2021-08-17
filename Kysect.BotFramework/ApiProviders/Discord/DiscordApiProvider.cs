@@ -29,7 +29,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             Initialize();
         }
 
-        public event EventHandler<BotMessageEventArgs> OnMessage;
+        public event EventHandler<BotNewMessageEventArgs> OnMessage;
 
         public void Restart()
         {
@@ -161,7 +161,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             IBotMessage botMessage = ParseMessage(message, context);
 
             OnMessage?.Invoke(context.Client,
-                              new BotMessageEventArgs(
+                              new BotNewMessageEventArgs(
                                   botMessage,
                                   new DiscordSenderInfo(
                                       (long) context.Channel.Id,
@@ -258,7 +258,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
 
             var discordSender = sender as DiscordSenderInfo;
             
-            Task<RestUserMessage> task = _client.GetGuild((ulong) discordSender.GuildId)
+            Task<RestUserMessage> task = _client.GetGuild(discordSender.GuildId)
                                                 .GetTextChannel((ulong) sender.ChatId)
                                                 .SendMessageAsync(text);
 

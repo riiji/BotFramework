@@ -31,7 +31,7 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             Initialize();
         }
 
-        public event EventHandler<BotMessageEventArgs> OnMessage;
+        public event EventHandler<BotNewMessageEventArgs> OnMessage;
 
         public void Restart()
         {
@@ -86,7 +86,7 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             }
             
             OnMessage?.Invoke(sender,
-                              new BotMessageEventArgs(
+                              new BotNewMessageEventArgs(
                                   message,
                                   new TelegramSenderInfo(
                                       e.Message.Chat.Id,

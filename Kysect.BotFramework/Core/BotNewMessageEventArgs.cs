@@ -3,12 +3,12 @@ using Kysect.BotFramework.Core.Contexts;
 
 namespace Kysect.BotFramework.Core
 {
-    public class BotMessageEventArgs
+    public class BotNewMessageEventArgs
     {
         public IBotMessage Message { get; }
         public SenderInfo SenderInfo { get; }
 
-        public BotMessageEventArgs(IBotMessage message, SenderInfo senderInfo)
+        public BotNewMessageEventArgs(IBotMessage message, SenderInfo senderInfo)
         {
             Message = message;
             SenderInfo = senderInfo;

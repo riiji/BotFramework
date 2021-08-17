@@ -45,8 +45,10 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             var contextModel = dbContext.DialogContexts.FirstOrDefault(c=>c.SenderInfoId == contextSenderInfo.Id);
             if (contextModel is null)
             {
-                contextModel = new DialogContextEntity();
-                contextModel.SenderInfoId = contextSenderInfo.Id;
+                contextModel = new DialogContextEntity
+                {
+                    SenderInfoId = contextSenderInfo.Id
+                };
 
                 dbContext.Add(contextModel);
                 dbContext.SaveChanges();

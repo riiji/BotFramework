@@ -18,7 +18,7 @@ namespace Kysect.BotFramework.ApiProviders.VK
 {
     public class VkFixedApiProvider : IBotApiProvider, IDisposable
     {
-        public event EventHandler<BotMessageEventArgs> OnMessage;
+        public event EventHandler<BotNewMessageEventArgs> OnMessage;
         public void Restart()
         {
             throw new NotImplementedException();
