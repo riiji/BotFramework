@@ -119,7 +119,7 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             }
 
             List<FileStream> streams = new List<FileStream>();
-            IEnumerable<IAlbumInputMedia> filesToSend = CollectInputMedia(mediaFiles, text, streams);
+            List<IAlbumInputMedia> filesToSend = CollectInputMedia(mediaFiles, text, streams);
 
             Task<Message[]> task = _client.SendMediaGroupAsync(filesToSend, sender.ChatId);
 

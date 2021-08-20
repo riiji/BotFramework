@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Kysect.BotFramework.Core.Contexts;
+﻿using Kysect.BotFramework.Core.Contexts;
 using Kysect.BotFramework.Data;
 using Kysect.BotFramework.Data.Entities;
 
@@ -28,40 +27,10 @@ namespace Kysect.BotFramework.ApiProviders.Discord
 
         internal override DialogContext GetOrCreateDialogContext(BotFrameworkDbContext dbContext)
         {
-            DiscordSenderInfoEntity contextSenderInfo =  dbContext.DiscordSenderInfos.FirstOrDefault(si =>
-                si.GuildId == GuildId && si.ChatId == ChatId && si.UserSenderId == UserSenderId
-            );
-            if (contextSenderInfo is null)
-            {
-                DiscordSenderInfoEntity entity = ToEntity();
-                dbContext.DiscordSenderInfos.AddAsync(entity);
-                dbContext.SaveChangesAsync();
+            var contextSenderInfo = DiscordSenderInfoEntity.GetOrCreate(this, dbContext);
 
-                var context = new DialogContextEntity
-                {
-                    SenderInfoId = entity.Id,
-                    ContextType = ContextType.Discord
-                };
-
-                dbContext.Add(context);
-                dbContext.SaveChanges();
-
-                return new DialogContext(context.State, context.SenderInfoId, ContextType.Discord, this);
-            }
-
-            DialogContextEntity contextModel = dbContext.DialogContexts.FirstOrDefault(c => 
-                c.SenderInfoId == contextSenderInfo.Id && c.ContextType == ContextType.Discord);
-            if (contextModel is null)
-            {
-                contextModel = new DialogContextEntity
-                {
-                    SenderInfoId = contextSenderInfo.Id,
-                    ContextType = ContextType.Discord
-                };
-
-                dbContext.Add(contextModel);
-                dbContext.SaveChanges();
-            }
+            var contextModel = DialogContextEntity.GetOrCreate(contextSenderInfo, ContextType.Discord, dbContext);
+            
             return new DialogContext(contextModel.State, contextModel.SenderInfoId, ContextType.Discord, this);
         }
     }

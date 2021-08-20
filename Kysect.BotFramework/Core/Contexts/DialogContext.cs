@@ -19,7 +19,7 @@ namespace Kysect.BotFramework.Core.Contexts
             SenderInfo = senderInfo;
         }
 
-        internal void Update(BotFrameworkDbContext dbContext)
+        internal void SaveChanges(BotFrameworkDbContext dbContext)
         {
             DialogContextEntity context = dbContext.DialogContexts.FirstOrDefault(x => x.SenderInfoId == _senderInfoId && x.ContextType == _contextType);
             context.State = State;

@@ -96,7 +96,7 @@ namespace Kysect.BotFramework.Core
                 return;
             }
             
-            commandResult.Value.Context.Update(dbContext);
+            commandResult.Value.Context.SaveChanges(dbContext);
 
             IBotMessage message = executionResult.Value;
             SenderInfo sender = commandResult.Value.Context.SenderInfo;
