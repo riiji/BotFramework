@@ -3,26 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using Kysect.BotFramework.Core.BotMedia;
 using Kysect.BotFramework.Core.BotMessages;
-using Kysect.BotFramework.Core.CommandInvoking;
-using Kysect.BotFramework.Core.Commands;
+using Kysect.BotFramework.Core.Contexts;
 
 namespace Kysect.BotFramework.Core
 {
     public class BotEventArgs : EventArgs
     {
         public IBotMessage Message { get; }
+        public DialogContext Context { get; }
 
-        public SenderInfo Sender { get; }
-
-        public BotEventArgs(IBotMessage message, SenderInfo sender)
+        public BotEventArgs(IBotMessage message, DialogContext context)
         {
             Message = message;
-            Sender = sender;
-        }
-
-        public BotEventArgs(IBotMessage message, CommandContainer commandWithArgs) : this(message,
-            commandWithArgs.Sender)
-        {
+            Context = context;
         }
 
         public string FindCommandName()

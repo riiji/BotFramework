@@ -4,7 +4,10 @@ using Kysect.BotFramework.ApiProviders;
 using Kysect.BotFramework.Core.BotMessages;
 using Kysect.BotFramework.Core.CommandInvoking;
 using Kysect.BotFramework.Core.Commands;
+using Kysect.BotFramework.Core.Contexts;
 using Kysect.BotFramework.Core.Tools.Loggers;
+using Kysect.BotFramework.Data;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Kysect.BotFramework.Core
 {
@@ -15,10 +18,12 @@ namespace Kysect.BotFramework.Core
         private readonly ICommandParser _commandParser;
         private readonly char _prefix;
         private readonly bool _sendErrorLogToUser;
+        private readonly ServiceProvider _serviceProvider;
 
         public BotManager(IBotApiProvider apiProvider, CommandHandler commandHandler, char prefix,
-            bool sendErrorLogToUser)
+            bool sendErrorLogToUser, ServiceProvider provider)
         {
+            _serviceProvider = provider;
             _apiProvider = apiProvider;
             _prefix = prefix;
             _sendErrorLogToUser = sendErrorLogToUser;
@@ -36,7 +41,7 @@ namespace Kysect.BotFramework.Core
             _apiProvider.OnMessage += ApiProviderOnMessage;
         }
 
-        private void ApiProviderOnMessage(object sender, BotEventArgs e)
+        private void ApiProviderOnMessage(object sender, BotNewMessageEventArgs e)
         {
             try
             {
@@ -44,16 +49,20 @@ namespace Kysect.BotFramework.Core
             }
             catch (Exception exception)
             {
-                LoggerHolder.Instance.Error(exception, $"Message handling from [{e.Sender.Username}] failed.");
+                LoggerHolder.Instance.Error(exception, $"Message handling from [{e.SenderInfo.UserSenderUsername}] failed.");
                 LoggerHolder.Instance.Debug($"Failed message: {e.Message.Text}");
                 //FYI: we do not need to restart on each exception, but probably we have case were restart must be.
                 //_apiProvider.Restart();
             }
         }
 
-        private void ProcessMessage(BotEventArgs e)
+        private void ProcessMessage(BotNewMessageEventArgs e)
         {
-            Result<CommandContainer> commandResult = _commandParser.ParseCommand(e);
+            var dbContext =  _serviceProvider.GetService<BotFrameworkDbContext>();
+            DialogContext context = e.SenderInfo.GetOrCreateDialogContext(dbContext);
+            var botEventArgs = new BotEventArgs(e.Message, context);
+            
+            Result<CommandContainer> commandResult = _commandParser.ParseCommand(botEventArgs);
             if (commandResult.IsFailed)
             {
                 return;
@@ -69,26 +78,29 @@ namespace Kysect.BotFramework.Core
             Result checkResult = _commandHandler.CheckArgsCount(command);
             if (checkResult.IsFailed)
             {
-                HandlerError(checkResult, e);
+                HandlerError(checkResult, botEventArgs);
                 return;
             }
 
             checkResult = _commandHandler.CanCommandBeExecuted(commandResult.Value);
             if (checkResult.IsFailed)
             {
-                HandlerError(checkResult, e);
+                HandlerError(checkResult, botEventArgs);
                 return;
             }
 
             Result<IBotMessage> executionResult = _commandHandler.ExecuteCommand(commandResult.Value);
             if (executionResult.IsFailed)
             {
-                HandlerError(executionResult, e);
+                HandlerError(executionResult, botEventArgs);
                 return;
             }
+            
+            commandResult.Value.Context.SaveChanges(dbContext);
 
             IBotMessage message = executionResult.Value;
-            SenderInfo sender = commandResult.Value.Sender;
+            SenderInfo sender = commandResult.Value.Context.SenderInfo;
+
             message.Send(_apiProvider, sender);
         }
 
@@ -96,12 +108,12 @@ namespace Kysect.BotFramework.Core
         {
             LoggerHolder.Instance.Error(result.ToString());
             var errorMessage = new BotTextMessage("Something went wrong.");
-            errorMessage.Send(_apiProvider, botEventArgs.Sender);
+            errorMessage.Send(_apiProvider, botEventArgs.Context.SenderInfo);
 
             if (_sendErrorLogToUser)
             {
                 var errorLogMessage = new BotTextMessage(result.ToString());
-                errorLogMessage.Send(_apiProvider, botEventArgs.Sender);
+                errorLogMessage.Send(_apiProvider, botEventArgs.Context.SenderInfo);
             }
         }
     }

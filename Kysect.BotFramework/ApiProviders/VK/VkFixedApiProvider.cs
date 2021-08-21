@@ -1,23 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using FluentResults;
 using Kysect.BotFramework.Core;
 using Kysect.BotFramework.Core.BotMedia;
-using Kysect.BotFramework.Core.BotMessages;
-using Kysect.BotFramework.Core.Tools;
-using Kysect.BotFramework.Core.Tools.Extensions;
-using Kysect.BotFramework.Settings;
-using VkApi.Wrapper;
-using VkApi.Wrapper.LongPolling.Bot;
-using VkApi.Wrapper.Objects;
+using Kysect.BotFramework.Core.Contexts;
 
 namespace Kysect.BotFramework.ApiProviders.VK
 {
     public class VkFixedApiProvider : IBotApiProvider, IDisposable
     {
-        public event EventHandler<BotEventArgs> OnMessage;
+        public event EventHandler<BotNewMessageEventArgs> OnMessage;
         public void Restart()
         {
             throw new NotImplementedException();

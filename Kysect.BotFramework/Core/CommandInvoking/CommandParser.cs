@@ -14,7 +14,7 @@ namespace Kysect.BotFramework.Core.CommandInvoking
                 return Result.Fail($"[{nameof(CommandParser)}]: Message do not contains command name.");
             }
 
-            return Result.Ok(new CommandContainer(commandName, botArguments.Sender, botArguments.GetCommandArguments(),
+            return Result.Ok(new CommandContainer(commandName, botArguments.Context, botArguments.GetCommandArguments(),
                                                   botArguments.GetMediaFiles()));
         }
     }

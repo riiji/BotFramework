@@ -83,7 +83,7 @@ namespace Kysect.BotFramework.Core.CommandInvoking
             }
             catch (Exception e)
             {
-                string errorMessage =
+                var errorMessage =
                     $"Command execution failed. Command: {args.CommandName}; arguments: {string.Join(", ", args.Arguments)}";
                 return Result.Fail(new Error(errorMessage).CausedBy(e));
             }

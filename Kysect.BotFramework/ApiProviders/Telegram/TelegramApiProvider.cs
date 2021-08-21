@@ -7,6 +7,7 @@ using FluentResults;
 using Kysect.BotFramework.Core;
 using Kysect.BotFramework.Core.BotMedia;
 using Kysect.BotFramework.Core.BotMessages;
+using Kysect.BotFramework.Core.Contexts;
 using Kysect.BotFramework.Core.Tools.Loggers;
 using Kysect.BotFramework.DefaultCommands;
 using Kysect.BotFramework.Settings;
@@ -30,7 +31,7 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             Initialize();
         }
 
-        public event EventHandler<BotEventArgs> OnMessage;
+        public event EventHandler<BotNewMessageEventArgs> OnMessage;
 
         public void Restart()
         {
@@ -85,9 +86,9 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             }
             
             OnMessage?.Invoke(sender,
-                              new BotEventArgs(
+                              new BotNewMessageEventArgs(
                                   message,
-                                  new SenderInfo(
+                                  new TelegramSenderInfo(
                                       e.Message.Chat.Id,
                                       e.Message.From.Id,
                                       e.Message.From.FirstName,
@@ -118,9 +119,9 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             }
 
             List<FileStream> streams = new List<FileStream>();
-            List<IAlbumInputMedia> filesToSend = collectInputMedia(mediaFiles, text, streams);
+            List<IAlbumInputMedia> filesToSend = CollectInputMedia(mediaFiles, text, streams);
 
-            Task<Message[]> task = _client.SendMediaGroupAsync(filesToSend, sender.GroupId);
+            Task<Message[]> task = _client.SendMediaGroupAsync(filesToSend, sender.ChatId);
 
             try
             {
@@ -146,7 +147,7 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             }
         }
         
-        private List<IAlbumInputMedia> collectInputMedia(List<IBotMediaFile> mediaFiles, string text,
+        private List<IAlbumInputMedia> CollectInputMedia(List<IBotMediaFile> mediaFiles, string text,
             List<FileStream> streams)
         {
             List<IAlbumInputMedia> filesToSend = new List<IAlbumInputMedia>();
@@ -204,14 +205,15 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
         private Result<string> CheckMediaFiles(List<IBotMediaFile> mediaFiles)
         {
             //TODO: hack
-            if (mediaFiles.Count > 10)
+            if (mediaFiles.Count <= 10)
             {
-                const string message = "Too many files provided";
-                LoggerHolder.Instance.Error(message);
-                return Result.Fail(message);
+                return Result.Ok();
             }
 
-            return Result.Ok();
+            const string message = "Too many files provided";
+            LoggerHolder.Instance.Error(message);
+            return Result.Fail(message);
+
         }
 
         public Result<string> SendMedia(IBotMediaFile mediaFile, string text, SenderInfo sender)
@@ -226,8 +228,8 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
             var fileToSend = new InputMedia(stream, mediaFile.Path.Split(Path.DirectorySeparatorChar).Last());
             Task<Message> task = mediaFile.MediaType switch
             {
-                MediaTypeEnum.Photo => _client.SendPhotoAsync(sender.GroupId, fileToSend, text),
-                MediaTypeEnum.Video => _client.SendVideoAsync(sender.GroupId, fileToSend, caption: text)
+                MediaTypeEnum.Photo => _client.SendPhotoAsync(sender.ChatId, fileToSend, text),
+                MediaTypeEnum.Video => _client.SendVideoAsync(sender.ChatId, fileToSend, caption: text)
             };
 
             try
@@ -257,8 +259,8 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
 
             Task<Message> task = file.MediaType switch
             {
-                MediaTypeEnum.Photo => _client.SendPhotoAsync(sender.GroupId, fileIdentifier, text),
-                MediaTypeEnum.Video => _client.SendVideoAsync(sender.GroupId, fileIdentifier, caption: text)
+                MediaTypeEnum.Photo => _client.SendPhotoAsync(sender.ChatId, fileIdentifier, text),
+                MediaTypeEnum.Video => _client.SendVideoAsync(sender.ChatId, fileIdentifier, caption: text)
             };
 
             try
@@ -294,7 +296,7 @@ namespace Kysect.BotFramework.ApiProviders.Telegram
                 return result;
             }
 
-            Task<Message> task = _client.SendTextMessageAsync(sender.GroupId, text);
+            Task<Message> task = _client.SendTextMessageAsync(sender.ChatId, text);
 
             try
             {

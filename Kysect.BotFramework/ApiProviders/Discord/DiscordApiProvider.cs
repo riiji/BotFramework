@@ -10,6 +10,7 @@ using FluentResults;
 using Kysect.BotFramework.Core;
 using Kysect.BotFramework.Core.BotMedia;
 using Kysect.BotFramework.Core.BotMessages;
+using Kysect.BotFramework.Core.Contexts;
 using Kysect.BotFramework.Core.Tools.Loggers;
 using Kysect.BotFramework.DefaultCommands;
 using Kysect.BotFramework.Settings;
@@ -28,7 +29,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             Initialize();
         }
 
-        public event EventHandler<BotEventArgs> OnMessage;
+        public event EventHandler<BotNewMessageEventArgs> OnMessage;
 
         public void Restart()
         {
@@ -83,7 +84,7 @@ namespace Kysect.BotFramework.ApiProviders.Discord
                 return result;
             }
 
-            Task<RestUserMessage> task = _client.GetGuild((ulong) sender.GroupId)
+            Task<RestUserMessage> task = _client.GetGuild((ulong) sender.ChatId)
                                                 .GetTextChannel((ulong) sender.UserSenderId)
                                                 .SendFileAsync(mediaFile.Path, text);
             try
@@ -160,15 +161,16 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             IBotMessage botMessage = ParseMessage(message, context);
 
             OnMessage?.Invoke(context.Client,
-                              new BotEventArgs(
+                              new BotNewMessageEventArgs(
                                   botMessage,
-                                  new SenderInfo(
-                                      (long) (context.Guild.Id),
+                                  new DiscordSenderInfo(
                                       (long) context.Channel.Id,
+                                      (long) context.User.Id,
                                       context.User.Username,
-                                      CheckIsAdmin(context.User)
+                                      CheckIsAdmin(context.User),
+                                      context.Guild.Id)
                                   )
-                              ));
+                              );
 
             return Task.CompletedTask;
         }
@@ -216,7 +218,6 @@ namespace Kysect.BotFramework.ApiProviders.Discord
             {
                 case MediaTypeEnum.Photo: return new BotOnlinePhotoFile(url);
                 case MediaTypeEnum.Video: return new BotOnlineVideoFile(url);
-                case MediaTypeEnum.Undefined:
                 default:
                     LoggerHolder.Instance.Information($"Skipped file: {filename}");
                     return null;
@@ -254,8 +255,9 @@ namespace Kysect.BotFramework.ApiProviders.Discord
                 return result;
             }
 
-            Task<RestUserMessage> task = _client.GetGuild((ulong) sender.GroupId)
-                                                .GetTextChannel((ulong) sender.UserSenderId)
+            var discordSender = (DiscordSenderInfo)sender;
+            Task<RestUserMessage> task = _client.GetGuild(discordSender.GuildId)
+                                                .GetTextChannel((ulong) sender.ChatId)
                                                 .SendMessageAsync(text);
 
             try
