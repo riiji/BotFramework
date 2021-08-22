@@ -33,6 +33,13 @@ jobs:
           # Secret value
           value: ${{ env.bot_version }}
           token: ${{ secrets.GH_SECRETS }}
+
+      - name: Set Bot version to csproj
+        uses: microsoft/variable-substitution@v1 
+        with:
+          files: 'Kysect.BotFramework/Kysect.BotFramework.csproj'
+        env:
+          Project.PropertyGroup.Version: ${{ secrets.BOT_VERSION }}
           
       - name: Publish NuGet
         # You may pin to the exact commit or the version.
