@@ -5,16 +5,16 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>0.1.1</Version>
-    <Authors>Kysect</Authors>
+    <Authors>riijiii</Authors>
     <RootNamespace>Kysect.BotFramework</RootNamespace>
     <AssemblyName>Kysect.BotFramework</AssemblyName>
     <PackageLicenseExpression></PackageLicenseExpression>
     <PackageLicenseFile></PackageLicenseFile>
     <LangVersion>latest</LangVersion>
-    <Company>Kysect</Company>
+    <Company>riijiii</Company>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <RepositoryUrl>https://github.com/kysect/BotFramework</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/kysect/BotFramework</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/riiji/BotFramework</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/riiji/BotFramework</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
