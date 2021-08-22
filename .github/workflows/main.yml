@@ -31,10 +31,8 @@ jobs:
       - name: test
         run: |
           echo "version=0.0.1" >> $GITHUB_ENV
-      - name: test2
-        run: |
           echo "${{ env.version }}"
-          
+      
       - name: Set new version of repository to environment
         run: |
           chmod +x .github/get-version.sh
