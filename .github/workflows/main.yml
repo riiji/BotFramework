@@ -22,17 +22,17 @@ jobs:
         run: |
           chmod +x .github/get-version.sh
           echo bot_version=$(.github/get-version.sh ${{ secrets.BOT_VERSION }}) >> $GITHUB_ENV
-          
-      - name: Set new Github Secret
+      - name: Set Action Secret
         # You may pin to the exact commit or the version.
-        # uses: kornicameister/gh-secrets-action@5507968cab07470eddcbbf2b2b0aaa50eee1343c
-        uses: kornicameister/gh-secrets-action@v3
+        # uses: hmanzur/actions-set-secret@377391a32b6d43a053d7847dde34ac6179ac9f55
+        uses: hmanzur/actions-set-secret@v2.0.0
         with:
-          repository: riiji/BotFramework
+          # Secret name
+          name: BOT_VERSION
+          # Secret value
+          value: ${{ env.bot_version }}
           token: ${{ secrets.GH_SECRETS }}
-          secrets: >
-            BOT_VERSION: {{ env.bot_version }}
-    
+          
       - name: Publish NuGet
         # You may pin to the exact commit or the version.
         # uses: brandedoutcast/publish-nuget@c12b8546b67672ee38ac87bea491ac94a587f7cc
