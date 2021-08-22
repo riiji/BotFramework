@@ -34,13 +34,12 @@ jobs:
           value: ${{ env.bot_version }}
           token: ${{ secrets.GH_SECRETS }}
 
-      - name: Set Bot version to csproj
-        uses: microsoft/variable-substitution@v1 
-        with:
-          files: 'Kysect.BotFramework/Kysect.BotFramework.csproj'
-        env:
-          Project.PropertyGroup.Version: ${{ secrets.BOT_VERSION }}
-          
+      - name: Install xmlstarlet
+        run: sudo apt-get install xmlstarlet
+
+      - name: Set Bot version to csproj via xmlstarlet
+        run: echo $(xmlstarlet ed -u /Project/PropertyGroup/Version -v ${{ secrets.BOT_VERSION }} Kysect.BotFramework/Kysect.BotFramework.csproj) > Kysect.BotFramework/Kysect.BotFramework.csproj
+        
       - name: Publish NuGet
         # You may pin to the exact commit or the version.
         # uses: brandedoutcast/publish-nuget@c12b8546b67672ee38ac87bea491ac94a587f7cc
@@ -48,5 +47,3 @@ jobs:
         with:
           PROJECT_FILE_PATH: Kysect.BotFramework/Kysect.BotFramework.csproj
           NUGET_KEY: ${{ secrets.NUGET_SECRET }}
-          VERSION_STATIC: ${{ secrets.BOT_VERSION }}
-
