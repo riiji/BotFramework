@@ -30,7 +30,7 @@ jobs:
         with:
           repository: riiji/BotFramework
           token: ${{ secrets.GH_SECRETS }}
-          secrets:  >
+          secrets: >
             BOT_VERSION: {{ env.bot_version }}
     
       - name: Publish NuGet
