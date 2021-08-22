@@ -19,6 +19,11 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       
+      - name: test
+        run: |
+          echo ASD=1.0.0 >> $GITHUB_ENV
+          echo env=${{ env.ASD }}
+      
       - name: Set new version of repository to environment
         run: |
           chmod +x .github/get-version.sh
