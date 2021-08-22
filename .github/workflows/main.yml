@@ -1,6 +1,4 @@
-# This is a basic workflow to help you get started with Actions
-
-name: CI
+name: Publish Nuget
 
 # Controls when the workflow will run
 on:
@@ -21,13 +19,12 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       
-      - name: Set Github Secret To Environment
-        run: export BOT_VERSION=${{ secrets.BOT_VERSION }} |
-             echo "::set-env name=BOT_VERSION::$BOT_VERSION"
-      
-      - name: Check Github Secret
-        run: echo $BOT_VERSION
-        
+      - name: Set new version of repository to environment
+        run: |
+          // make script executable
+          chmod +x "${GITHUB_WORKSPACE}/.github/get-version.sh"
+          echo BOT_VERSION=$("${GITHUB_WORKSPACE}/.github/get-version.sh ${{ secrets.BOT_VERSION }}") >> $GITHUB_ENV
+          echo ${{ env.BOT_VERSION }}
 
       - name: Publish NuGet
         # You may pin to the exact commit or the version.
@@ -36,3 +33,4 @@ jobs:
         with:
           PROJECT_FILE_PATH: Kysect.BotFramework/Kysect.BotFramework.csproj
           NUGET_KEY: ${{ secrets.NUGET_SECRET }}
+
