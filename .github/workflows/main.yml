@@ -38,7 +38,7 @@ jobs:
         run: sudo apt-get install xmlstarlet
 
       - name: Set Bot version to csproj via xmlstarlet
-        run: echo $(xmlstarlet ed -u /Project/PropertyGroup/Version -v ${{ secrets.BOT_VERSION }} Kysect.BotFramework/Kysect.BotFramework.csproj) > Kysect.BotFramework/Kysect.BotFramework.csproj
+        run: echo $(xmlstarlet ed -u /Project/PropertyGroup/Version -v ${{ env.bot_version }} Kysect.BotFramework/Kysect.BotFramework.csproj) > Kysect.BotFramework/Kysect.BotFramework.csproj
         
       - name: Print xml
         run: echo $(cat Kysect.BotFramework/Kysect.BotFramework.csproj)
