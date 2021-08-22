@@ -30,7 +30,7 @@ jobs:
       
       - name: test
         run: |
-          echo "version=1.0.0" >> $GITHUB_ENV
+          echo "version=apple" >> $GITHUB_ENV
       - name: test2
         run: |
           echo "${{ env.version }}"
