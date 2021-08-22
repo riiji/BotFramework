@@ -15,16 +15,6 @@ jobs:
  
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    
-      - name: Set the value
-        id: step_one
-        run: |
-          echo "action_state=yellow" >> $GITHUB_ENV
-      - name: Use the value
-        id: step_two
-        run: |
-          echo "${{ env.action_state }}" # This will output 'yellow'
-
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
     
@@ -32,10 +22,16 @@ jobs:
         run: |
           chmod +x .github/get-version.sh
           echo bot_version=$(.github/get-version.sh ${{ secrets.BOT_VERSION }}) >> $GITHUB_ENV
-      
-      - name: Get new version
-        run: | 
-          echo "${{ env.bot_version }}"
+          
+      - name: Set new Github Secret
+        # You may pin to the exact commit or the version.
+        # uses: kornicameister/gh-secrets-action@5507968cab07470eddcbbf2b2b0aaa50eee1343c
+        uses: kornicameister/gh-secrets-action@v3
+        with:
+          repository: riiji/BotFramework
+          token: ${{ secrets.GH_SECRETS }}
+          secrets:  >
+            BOT_VERSION: {{ env.bot_version }}
     
       - name: Publish NuGet
         # You may pin to the exact commit or the version.
@@ -44,4 +40,5 @@ jobs:
         with:
           PROJECT_FILE_PATH: Kysect.BotFramework/Kysect.BotFramework.csproj
           NUGET_KEY: ${{ secrets.NUGET_SECRET }}
+          VERSION:STATIC: ${{ secrets.BOT_VERSION }}
 
