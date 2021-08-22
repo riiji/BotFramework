@@ -21,6 +21,7 @@ jobs:
       
       - name: Set new version of repository to environment
         run: |
+          chmod +x .github/get-version.sh
           echo BOT_VERSION=$(.github/get-version.sh ${{ secrets.BOT_VERSION }})
       - name: Publish NuGet
         # You may pin to the exact commit or the version.
