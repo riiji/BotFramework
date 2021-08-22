@@ -1,5 +1,6 @@
 name: Publish Nuget
 
+
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
@@ -15,17 +16,24 @@ jobs:
  
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      
+    
       - name: Set new version of repository to environment
         run: |
-          // make script executable
-          chmod +x "${GITHUB_WORKSPACE}/.github/get-version.sh"
-          echo BOT_VERSION=$("${GITHUB_WORKSPACE}/.github/get-version.sh ${{ secrets.BOT_VERSION }}") >> $GITHUB_ENV
-          echo ${{ env.BOT_VERSION }}
-
+          chmod +x .github/get-version.sh
+          echo bot_version=$(.github/get-version.sh ${{ secrets.BOT_VERSION }}) >> $GITHUB_ENV
+      - name: Set Action Secret
+        # You may pin to the exact commit or the version.
+        # uses: hmanzur/actions-set-secret@377391a32b6d43a053d7847dde34ac6179ac9f55
+        uses: hmanzur/actions-set-secret@v2.0.0
+        with:
+          # Secret name
+          name: BOT_VERSION
+          # Secret value
+          value: ${{ env.bot_version }}
+          token: ${{ secrets.GH_SECRETS }}
+          
       - name: Publish NuGet
         # You may pin to the exact commit or the version.
         # uses: brandedoutcast/publish-nuget@c12b8546b67672ee38ac87bea491ac94a587f7cc
@@ -33,4 +41,5 @@ jobs:
         with:
           PROJECT_FILE_PATH: Kysect.BotFramework/Kysect.BotFramework.csproj
           NUGET_KEY: ${{ secrets.NUGET_SECRET }}
+          VERSION_STATIC: ${{ secrets.BOT_VERSION }}
 
