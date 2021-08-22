@@ -20,6 +20,14 @@ jobs:
     
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+      
+      - name: Set Github Secret To Environment
+        run: export BOT_VERSION=${{ secrets.BOT_VERSION }} |
+             echo "::set-env name=BOT_VERSION::$BOT_VERSION"
+      
+      - name: Check Github Secret
+        run: echo $BOT_VERSION
+        
 
       - name: Publish NuGet
         # You may pin to the exact commit or the version.
