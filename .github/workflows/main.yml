@@ -40,5 +40,5 @@ jobs:
         with:
           PROJECT_FILE_PATH: Kysect.BotFramework/Kysect.BotFramework.csproj
           NUGET_KEY: ${{ secrets.NUGET_SECRET }}
-          VERSION:STATIC: ${{ secrets.BOT_VERSION }}
+          VERSION_STATIC: ${{ secrets.BOT_VERSION }}
 
