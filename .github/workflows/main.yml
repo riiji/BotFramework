@@ -21,7 +21,7 @@ jobs:
       
       - name: test
         run: |
-          echo ASD=1.0.0 >> $GITHUB_ENV
+          echo "ASD=1.0.0" >> $GITHUB_ENV
           echo env=${{ env.ASD }}
       
       - name: Set new version of repository to environment
