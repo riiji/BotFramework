@@ -4,17 +4,17 @@
     <OutputType>Library</OutputType>
     <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.1</Version>
-    <Authors>riijiii</Authors>
+    <Version>${{ secrets.BOT_VERSION }}</Version>
+    <Authors>Kysect</Authors>
     <RootNamespace>Kysect.BotFramework</RootNamespace>
     <AssemblyName>Kysect.BotFramework</AssemblyName>
     <PackageLicenseExpression></PackageLicenseExpression>
     <PackageLicenseFile></PackageLicenseFile>
     <LangVersion>latest</LangVersion>
-    <Company>riijiii</Company>
+    <Company>Kysect</Company>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <RepositoryUrl>https://github.com/riiji/BotFramework</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/riiji/BotFramework</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/kysect/BotFramework</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/kysect/BotFramework</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
